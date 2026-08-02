@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: restaurant-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: restaurant_platform
+
+    ports:
+      - "55432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7
+    container_name: restaurant-redis
+    restart: unless-stopped
+
+    ports:
+      - "6379:6379"
+
+  # Optional APM: docker compose --profile observability up -d
+  # Then: OTEL_ENABLED=1 OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:4318
+  jaeger:
+    profiles: ["observability"]
+    image: jaegertracing/all-in-one:1.57
+    container_name: restaurant-jaeger
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686" # UI
+      - "4318:4318"   # OTLP HTTP
+
+volumes:
+  postgres_data:

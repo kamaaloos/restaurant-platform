@@ -1,0 +1,69 @@
+export type KitchenStatus = "NEW" | "ACCEPTED" | "PREPARING" | "READY";
+
+export type KitchenDevice = {
+  id: string;
+  name: string;
+  deviceType: "KITCHEN" | "MANAGER" | string;
+  status: "ONLINE" | "OFFLINE" | string;
+  branchId: string;
+  restaurantId: string;
+  branchName: string;
+  lastSeen: string | null;
+  appVersion: string | null;
+};
+
+export type KitchenTicket = {
+  id: string;
+  status: KitchenStatus | string;
+  mode?: "DINE_IN" | "WALK_IN" | string;
+  queueNumber?: number | null;
+  customerName: string | null;
+  createdAt: string;
+  updatedAt: string;
+  ageSeconds: number;
+  ageMinutes: number;
+  table: { number: string } | null;
+  items: Array<{
+    id: string;
+    quantity: number;
+    notes: string | null;
+    seatNumber?: number | null;
+    course?: string | null;
+    firedAt?: string | null;
+    menuItem: { name: string };
+    modifiers?: Array<{
+      groupName: string;
+      optionName: string;
+    }>;
+  }>;
+};
+
+export type KitchenDashboard = {
+  new: number;
+  accepted: number;
+  preparing: number;
+  ready: number;
+  open: number;
+  averageWaitMinutes: number;
+  averagePrepTimeMinutes: number | null;
+  longestWaitingMinutes: number;
+};
+
+export const NEXT_ACTIONS: Partial<
+  Record<KitchenStatus, { status: KitchenStatus; label: string }>
+> = {
+  NEW: { status: "ACCEPTED", label: "Accept" },
+  ACCEPTED: { status: "PREPARING", label: "Start" },
+  PREPARING: { status: "READY", label: "Ready" },
+};
+
+export const BOARD_COLUMNS: Array<{
+  status: KitchenStatus;
+  title: string;
+  hint: string;
+}> = [
+  { status: "NEW", title: "New", hint: "Incoming" },
+  { status: "ACCEPTED", title: "Accepted", hint: "Queued" },
+  { status: "PREPARING", title: "Preparing", hint: "On the line" },
+  { status: "READY", title: "Ready", hint: "Pass" },
+];

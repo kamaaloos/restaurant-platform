@@ -1,0 +1,40 @@
+import type { Metadata } from "next";
+import { Anton, DM_Sans } from "next/font/google";
+import { Providers } from "@/components/providers";
+import { SiteFooter } from "@/components/site-footer";
+import "./globals.css";
+
+const display = Anton({
+  weight: "400",
+  variable: "--font-display",
+  subsets: ["latin"],
+});
+
+const body = DM_Sans({
+  variable: "--font-body",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Waiter Display",
+  description: "Live waiter orders and table service requests",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body className={`${display.variable} ${body.variable} antialiased`}>
+        <Providers>
+          <div className="flex min-h-screen flex-col">
+            <div className="flex-1">{children}</div>
+            <SiteFooter />
+          </div>
+        </Providers>
+      </body>
+    </html>
+  );
+}

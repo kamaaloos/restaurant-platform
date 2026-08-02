@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #eef2f6;
+  --surface: #f8fafc;
+  --surface-2: #e2e8f0;
+  --surface-3: #cbd5e1;
+  --ink: #0f1c2e;
+  --muted: #5b6b7c;
+  --line: #c7d2df;
+  --signal: #1d6fbf;
+  --signal-soft: #d7e8f8;
+  --signal-foreground: #f4f9ff;
+  --ok: #1f7a4d;
+  --ok-soft: #d9f0e4;
+  --danger: #b42318;
+  --danger-soft: #f8d9d6;
+}
+
+@theme inline {
+  --color-background: var(--paper);
+  --color-foreground: var(--ink);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+}
+
+body {
+  background:
+    radial-gradient(circle at 90% -8%, rgba(29, 111, 191, 0.14), transparent 34%),
+    linear-gradient(180deg, #e7edf4 0%, var(--paper) 42%, #e3eaf2 100%);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@keyframes ticket-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-ticket-in {
+  animation: ticket-in 280ms ease-out both;
+}
