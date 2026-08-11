@@ -1,1 +1,6 @@
-export { cn, shortId, formatMoney } from "@org/shared";
+export {
+  cn,
+  shortId,
+  formatMoney,
+  formatWalkInQueueCode,
+} from "@org/shared";

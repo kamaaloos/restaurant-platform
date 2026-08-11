@@ -30,10 +30,13 @@ export type Payment = {
   tipAmount?: number | string;
   refundedAmount?: number | string;
   method: string;
+  /** CASH | TERMINAL | ONLINE | COUNTER */
+  channel?: string;
   status: string;
   provider?: string | null;
   providerRef?: string | null;
   checkoutUrl?: string;
+  clientSecret?: string;
   paidAt?: string | null;
   refundedAt?: string | null;
   currency?: string;
@@ -42,6 +45,8 @@ export type Payment = {
 export type PaymentProviderConfig = {
   provider: "none" | "mock" | "stripe";
   onlineEnabled: boolean;
+  terminalEnabled?: boolean;
+  terminalLocationId?: string | null;
   publishableKey?: string | null;
 };
 

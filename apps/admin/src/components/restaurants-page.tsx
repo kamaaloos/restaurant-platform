@@ -152,14 +152,26 @@ export function RestaurantsPage() {
 
   const restaurants = restaurantsQuery.data ?? [];
   const branches = branchesQuery.data ?? [];
-  const canCreateBranch =
-    isPlatformAdmin || user?.role === "RESTAURANT_OWNER";
+  const isOwner = user?.role === "RESTAURANT_OWNER";
+  const canCreateBranch = isPlatformAdmin || isOwner;
+  const ownedRestaurantId =
+    user?.restaurantId ??
+    (restaurants.length === 1 ? restaurants[0].id : "");
+  const ownedRestaurant =
+    restaurants.find((r) => r.id === ownedRestaurantId) ?? restaurants[0];
+  const ownerBranches = ownedRestaurantId
+    ? branches.filter((b) => b.restaurantId === ownedRestaurantId)
+    : branches;
 
   React.useEffect(() => {
+    if (isOwner && ownedRestaurantId) {
+      setBranchRestaurantId(ownedRestaurantId);
+      return;
+    }
     if (!branchRestaurantId && restaurants.length > 0) {
       setBranchRestaurantId(restaurants[0].id);
     }
-  }, [restaurants, branchRestaurantId]);
+  }, [restaurants, branchRestaurantId, isOwner, ownedRestaurantId]);
 
   const inputClass =
     "h-11 rounded-md border border-[var(--line)] bg-[var(--paper)] px-3";
@@ -167,8 +179,12 @@ export function RestaurantsPage() {
   return (
     <div>
       <PageHeader
-        title="Restaurants"
-        subtitle="Platform admins can create, edit, and deactivate restaurants. Add branches after creating a restaurant."
+        title={isPlatformAdmin ? "Restaurants" : "Branches"}
+        subtitle={
+          isPlatformAdmin
+            ? "Create, edit, and deactivate restaurants. Add branches after creating a restaurant."
+            : `Add and manage branches${ownedRestaurant ? ` for ${ownedRestaurant.name}` : ""}.`
+        }
       />
 
       {isPlatformAdmin ? (
@@ -251,12 +267,7 @@ export function RestaurantsPage() {
             </p>
           ) : null}
         </form>
-      ) : (
-        <p className="mb-8 rounded-xl border border-[var(--line)] bg-[var(--surface)] p-4 text-sm text-[var(--muted)]">
-          Ask a platform admin to create or edit restaurants. You can manage the
-          one assigned to your account.
-        </p>
-      )}
+      ) : null}
 
       {canCreateBranch ? (
         <form
@@ -267,28 +278,37 @@ export function RestaurantsPage() {
           }}
         >
           <h2 className="md:col-span-2 text-lg font-semibold">New branch</h2>
-          <select
-            value={branchRestaurantId}
-            onChange={(e) => setBranchRestaurantId(e.target.value)}
-            className={inputClass}
-            required
-          >
-            {restaurants.length === 0 ? (
-              <option value="">No restaurants yet</option>
-            ) : (
-              restaurants.map((r) => (
-                <option key={r.id} value={r.id}>
-                  {r.name}
-                  {r.active === false ? " (inactive)" : ""}
-                </option>
-              ))
-            )}
-          </select>
+          {isOwner ? (
+            <p className="md:col-span-2 text-sm text-[var(--muted)]">
+              Restaurant:{" "}
+              <span className="font-medium text-[var(--ink)]">
+                {ownedRestaurant?.name ?? "—"}
+              </span>
+            </p>
+          ) : (
+            <select
+              value={branchRestaurantId}
+              onChange={(e) => setBranchRestaurantId(e.target.value)}
+              className={inputClass}
+              required
+            >
+              {restaurants.length === 0 ? (
+                <option value="">No restaurants yet</option>
+              ) : (
+                restaurants.map((r) => (
+                  <option key={r.id} value={r.id}>
+                    {r.name}
+                    {r.active === false ? " (inactive)" : ""}
+                  </option>
+                ))
+              )}
+            </select>
+          )}
           <input
             value={branchName}
             onChange={(e) => setBranchName(e.target.value)}
             placeholder="Branch name (e.g. Helsinki Downtown)"
-            className={inputClass}
+            className={`${inputClass}${isOwner ? " md:col-span-2" : ""}`}
             required
           />
           <Button
@@ -313,48 +333,50 @@ export function RestaurantsPage() {
             </p>
           ) : null}
         </form>
-      ) : null}
-
-      {restaurantsQuery.isLoading ? (
-        <p className="text-[var(--muted)]">Loading restaurants…</p>
-      ) : restaurantsQuery.isError ? (
-        <p className="text-[var(--danger)]">
-          {(restaurantsQuery.error as Error).message}
-        </p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-[var(--line)]">
-          <table className="w-full min-w-[720px] text-left text-sm">
-            <thead className="bg-[var(--surface-2)] text-[var(--muted)]">
-              <tr>
-                <th className="px-4 py-3 font-medium">Name</th>
-                <th className="px-4 py-3 font-medium">Email</th>
-                <th className="px-4 py-3 font-medium">Phone</th>
-                <th className="px-4 py-3 font-medium">Branches</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                {isPlatformAdmin ? (
+        <p className="mb-8 rounded-xl border border-[var(--line)] bg-[var(--surface)] p-4 text-sm text-[var(--muted)]">
+          Branch creation is limited to restaurant owners and platform admins.
+        </p>
+      )}
+
+      {isPlatformAdmin ? (
+        restaurantsQuery.isLoading ? (
+          <p className="text-[var(--muted)]">Loading restaurants…</p>
+        ) : restaurantsQuery.isError ? (
+          <p className="text-[var(--danger)]">
+            {(restaurantsQuery.error as Error).message}
+          </p>
+        ) : (
+          <div className="overflow-x-auto rounded-xl border border-[var(--line)]">
+            <table className="w-full min-w-[720px] text-left text-sm">
+              <thead className="bg-[var(--surface-2)] text-[var(--muted)]">
+                <tr>
+                  <th className="px-4 py-3 font-medium">Name</th>
+                  <th className="px-4 py-3 font-medium">Email</th>
+                  <th className="px-4 py-3 font-medium">Phone</th>
+                  <th className="px-4 py-3 font-medium">Branches</th>
+                  <th className="px-4 py-3 font-medium">Status</th>
                   <th className="px-4 py-3 font-medium">Actions</th>
-                ) : null}
-              </tr>
-            </thead>
-            <tbody>
-              {restaurants.map((restaurant) => {
-                const count = branches.filter(
-                  (b) => b.restaurantId === restaurant.id,
-                ).length;
-                const active = restaurant.active !== false;
-                return (
-                  <tr
-                    key={restaurant.id}
-                    className="border-t border-[var(--line)] bg-[var(--surface)]"
-                  >
-                    <td className="px-4 py-3 font-medium">{restaurant.name}</td>
-                    <td className="px-4 py-3">{restaurant.email ?? "—"}</td>
-                    <td className="px-4 py-3">{restaurant.phone ?? "—"}</td>
-                    <td className="px-4 py-3">{count}</td>
-                    <td className="px-4 py-3">
-                      {active ? "Active" : "Inactive"}
-                    </td>
-                    {isPlatformAdmin ? (
+                </tr>
+              </thead>
+              <tbody>
+                {restaurants.map((restaurant) => {
+                  const count = branches.filter(
+                    (b) => b.restaurantId === restaurant.id,
+                  ).length;
+                  const active = restaurant.active !== false;
+                  return (
+                    <tr
+                      key={restaurant.id}
+                      className="border-t border-[var(--line)] bg-[var(--surface)]"
+                    >
+                      <td className="px-4 py-3 font-medium">{restaurant.name}</td>
+                      <td className="px-4 py-3">{restaurant.email ?? "—"}</td>
+                      <td className="px-4 py-3">{restaurant.phone ?? "—"}</td>
+                      <td className="px-4 py-3">{count}</td>
+                      <td className="px-4 py-3">
+                        {active ? "Active" : "Inactive"}
+                      </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-2">
                           <Button
@@ -410,16 +432,64 @@ export function RestaurantsPage() {
                           )}
                         </div>
                       </td>
-                    ) : null}
-                  </tr>
-                );
-              })}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )
+      ) : branchesQuery.isLoading ? (
+        <p className="text-[var(--muted)]">Loading branches…</p>
+      ) : branchesQuery.isError ? (
+        <p className="text-[var(--danger)]">
+          {(branchesQuery.error as Error).message}
+        </p>
+      ) : (
+        <div className="overflow-x-auto rounded-xl border border-[var(--line)]">
+          <table className="w-full min-w-[480px] text-left text-sm">
+            <thead className="bg-[var(--surface-2)] text-[var(--muted)]">
+              <tr>
+                <th className="px-4 py-3 font-medium">Branch</th>
+                <th className="px-4 py-3 font-medium">Restaurant</th>
+                <th className="px-4 py-3 font-medium">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ownerBranches.length === 0 ? (
+                <tr className="border-t border-[var(--line)] bg-[var(--surface)]">
+                  <td
+                    colSpan={3}
+                    className="px-4 py-6 text-[var(--muted)]"
+                  >
+                    No branches yet. Create one above.
+                  </td>
+                </tr>
+              ) : (
+                ownerBranches.map((branch) => {
+                  const restaurantName =
+                    restaurants.find((r) => r.id === branch.restaurantId)
+                      ?.name ?? "—";
+                  return (
+                    <tr
+                      key={branch.id}
+                      className="border-t border-[var(--line)] bg-[var(--surface)]"
+                    >
+                      <td className="px-4 py-3 font-medium">{branch.name}</td>
+                      <td className="px-4 py-3">{restaurantName}</td>
+                      <td className="px-4 py-3">
+                        {branch.active !== false ? "Active" : "Inactive"}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
       )}
 
-      {branches.length > 0 ? (
+      {(isPlatformAdmin ? branches : ownerBranches).length > 0 ? (
         <div className="mt-10">
           <h2 className="mb-3 text-lg font-semibold">Walk-in guest links</h2>
           <p className="mb-4 text-sm text-[var(--muted)]">
@@ -427,7 +497,7 @@ export function RestaurantsPage() {
             link. Pickup TV pairing uses the same token in the path.
           </p>
           <div className="space-y-3">
-            {branches.map((branch) => {
+            {(isPlatformAdmin ? branches : ownerBranches).map((branch) => {
               const walkInUrl = `${CUSTOMER_URL}/w/${branch.walkInToken}`;
               const restaurantName =
                 restaurants.find((r) => r.id === branch.restaurantId)?.name ??

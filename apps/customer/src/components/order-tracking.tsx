@@ -3,17 +3,16 @@
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { customerApi } from "@/lib/api";
+import { LocaleControls, useCurrency } from "@/lib/currency-provider";
 import { moneyLocale, statusMessageKey } from "@/lib/i18n/helpers";
-import {
-  LanguageSwitcher,
-  useLocale,
-} from "@/lib/i18n/locale-provider";
+import { useLocale } from "@/lib/i18n/locale-provider";
 import { formatMoney } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useCustomerRealtime } from "@/hooks/use-customer-realtime";
 
 export function OrdersExperience({ token }: { token: string }) {
   const { t, locale } = useLocale();
+  const { currency, convertFromBase } = useCurrency();
   const moneyLoc = moneyLocale(locale);
   useCustomerRealtime(token);
   const ordersQuery = useQuery({
@@ -33,7 +32,7 @@ export function OrdersExperience({ token }: { token: string }) {
           {t("yourOrders")}
         </h1>
         <div className="flex items-center gap-2">
-          <LanguageSwitcher />
+          <LocaleControls />
           <Button asChild variant="ghost">
             <Link href={`/t/${token}`}>{t("menu")}</Link>
           </Button>
@@ -59,7 +58,11 @@ export function OrdersExperience({ token }: { token: string }) {
                   </p>
                 </div>
                 <p className="font-medium">
-                  {formatMoney(order.total, order.currency, moneyLoc)}
+                  {formatMoney(
+                    convertFromBase(order.total, order.currency),
+                    currency,
+                    moneyLoc,
+                  )}
                 </p>
               </div>
             </Link>

@@ -14,14 +14,18 @@ const ADMIN_ROLES = new Set([
   "BRANCH_MANAGER",
 ]);
 
-const NAV = [
-  { href: "/", label: "Overview" },
-  { href: "/restaurants", label: "Restaurants" },
-  { href: "/tables", label: "Tables" },
-  { href: "/devices", label: "Devices" },
-  { href: "/menu", label: "Menu" },
-  { href: "/users", label: "Users" },
-];
+function navForRole(role: string) {
+  const locationsLabel =
+    role === "PLATFORM_ADMIN" ? "Restaurants" : "Branches";
+  return [
+    { href: "/", label: "Overview" },
+    { href: "/restaurants", label: locationsLabel },
+    { href: "/tables", label: "Tables" },
+    { href: "/devices", label: "Devices" },
+    { href: "/menu", label: "Menu" },
+    { href: "/users", label: "Users" },
+  ];
+}
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -46,7 +50,7 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
 
   if (!ready || !user) {
     return (
-      <div className="grid min-h-screen place-items-center text-[var(--muted)]">
+      <div className="grid flex-1 place-items-center text-[var(--muted)]">
         Checking session…
       </div>
     );
@@ -64,6 +68,7 @@ function AdminShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const nav = navForRole(user.role);
 
   function logout() {
     clearSession();
@@ -71,8 +76,8 @@ function AdminShell({
   }
 
   return (
-    <div className="min-h-screen md:grid md:grid-cols-[240px_1fr]">
-      <aside className="border-b border-[var(--line)] bg-[var(--surface)] md:border-b-0 md:border-r">
+    <div className="relative flex flex-1 flex-col md:grid md:grid-cols-[240px_1fr]">
+      <aside className="border-b border-[var(--line)] bg-[var(--surface)]/88 backdrop-blur-md md:border-b-0 md:border-r">
         <div className="px-5 py-6">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
             Ops console
@@ -82,7 +87,7 @@ function AdminShell({
           </h1>
         </div>
         <nav className="flex gap-1 overflow-x-auto px-3 pb-4 md:flex-col">
-          {NAV.map((item) => {
+          {nav.map((item) => {
             const active =
               item.href === "/"
                 ? pathname === "/"
@@ -117,8 +122,8 @@ function AdminShell({
         </div>
       </aside>
 
-      <div className="flex min-h-screen flex-col">
-        <header className="flex items-center justify-between border-b border-[var(--line)] bg-[var(--surface)]/80 px-5 py-3 backdrop-blur md:hidden">
+      <div className="flex min-h-0 flex-1 flex-col">
+        <header className="flex items-center justify-between border-b border-[var(--line)] bg-[var(--surface)]/85 px-5 py-3 backdrop-blur-md md:hidden">
           <div>
             <p className="text-sm font-medium">{user.email}</p>
             <p className="text-xs text-[var(--muted)]">{user.role}</p>
@@ -127,7 +132,7 @@ function AdminShell({
             Sign out
           </Button>
         </header>
-        <main className="flex-1 p-5 md:p-8">{children}</main>
+        <main className="relative z-10 flex-1 p-5 md:p-8">{children}</main>
       </div>
     </div>
   );

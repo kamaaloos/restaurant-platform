@@ -43,7 +43,11 @@ export type Device = {
   name: string;
   deviceType: string;
   status: string;
-  token: string;
+  /** Only present on create / rotate responses. */
+  token?: string;
+  tokenPreview: string;
+  pairingCode: string | null;
+  pairingCodeExpiresAt: string | null;
   branchId: string;
   lastSeen: string | null;
   appVersion: string | null;
@@ -60,6 +64,13 @@ export type KitchenDashboard = {
   averageWaitMinutes: number;
   averagePrepTimeMinutes: number | null;
   longestWaitingMinutes: number;
+  prepP95Seconds: number | null;
+  paymentSettleP95Seconds: number | null;
+  averagePaymentSettleSeconds: number | null;
+  prepSlo: "ok" | "breach" | "insufficient_data";
+  paymentSlo: "ok" | "breach" | "insufficient_data";
+  sloPrepThresholdSeconds: number;
+  sloPaymentThresholdSeconds: number;
 };
 
 export type MenuCategory = {
@@ -77,6 +88,8 @@ export type MenuItem = {
   description: string | null;
   price: string | number;
   active: boolean;
+  /** false = sold out / finished (still listed for customers). */
+  available: boolean;
   categoryId: string;
   imageUrl: string | null;
 };

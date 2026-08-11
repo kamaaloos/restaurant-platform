@@ -1,4 +1,9 @@
-export { cn, shortId, formatMoney } from "@org/shared";
+export {
+  cn,
+  shortId,
+  formatMoney,
+  formatWalkInQueueCode,
+} from "@org/shared";
 
 /** Format server-computed ticket age (minutes). */
 export function ageMinutesLabel(ageMinutes: number) {

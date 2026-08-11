@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Space_Grotesk, IBM_Plex_Sans } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { SiteFooter } from "@/components/site-footer";
+import { CurrencyBackdrop } from "@/components/currency-backdrop";
 import "./globals.css";
 
 const display = Space_Grotesk({
@@ -29,9 +30,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${display.variable} ${body.variable} antialiased`}>
         <Providers>
-          <div className="flex min-h-screen flex-col">
-            <div className="flex-1">{children}</div>
-            <SiteFooter />
+          <div className="relative flex min-h-screen flex-col">
+            <CurrencyBackdrop />
+            <div className="relative z-10 flex min-h-screen flex-1 flex-col">
+              <div className="flex-1">{children}</div>
+              <SiteFooter />
+            </div>
           </div>
         </Providers>
       </body>

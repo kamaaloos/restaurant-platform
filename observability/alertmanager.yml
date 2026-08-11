@@ -1,0 +1,46 @@
+# Alertmanager — template. `__WEBHOOK_URL__` is substituted at container start
+# from ALERTMANAGER_WEBHOOK_URL (see docker-compose + observability/env.example).
+#
+# Slack Incoming Webhook (hooks.slack.com) uses slack_configs, not webhook_configs.
+# Discord: append /slack to the Discord webhook URL so it accepts Slack format.
+#
+# UI: http://localhost:9093
+# Compose: docker compose --env-file .env.observability --profile observability up -d
+
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: 'null'
+  group_by: [alertname, severity]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  routes:
+    - matchers:
+        - severity = page
+      receiver: slack
+      continue: false
+    - matchers:
+        - severity = warning
+      receiver: 'null'
+
+receivers:
+  - name: 'null'
+  - name: slack
+    slack_configs:
+      - api_url: '__WEBHOOK_URL__'
+        send_resolved: true
+        title: '{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }} {{ .CommonLabels.alertname }}'
+        text: >-
+          {{ range .Alerts }}
+          *{{ .Annotations.summary }}*
+          {{ .Annotations.description }}
+          {{ end }}
+
+inhibit_rules:
+  - source_matchers:
+      - severity = page
+    target_matchers:
+      - severity = warning
+    equal: [alertname]

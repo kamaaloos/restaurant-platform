@@ -20,6 +20,8 @@ export type MenuItem = {
   description: string | null;
   price: string;
   imageUrl: string | null;
+  /** false = sold out / finished — visible but not orderable. */
+  available?: boolean;
   modifierGroups: ModifierGroup[];
 };
 
@@ -67,8 +69,16 @@ export type CustomerOrder = {
     id: string;
     status: string;
     method: string;
+    channel?: string;
     amount: string;
   } | null;
+  payments?: Array<{
+    id: string;
+    status: string;
+    method: string;
+    channel?: string;
+    amount: string;
+  }>;
   items: Array<{
     id: string;
     quantity: number;
@@ -108,6 +118,21 @@ export type PickupBoard = {
   ready: PickupBoardEntry[];
 };
 
+export type Course =
+  | "APPETIZER"
+  | "DRINK"
+  | "MAIN"
+  | "DESSERT"
+  | "OTHER";
+
+export type CustomerServiceRequest = {
+  id: string;
+  type: "CALL_WAITER" | "REQUEST_BILL" | string;
+  status: "PENDING" | "ACKNOWLEDGED" | "COMPLETED" | string;
+  note: string | null;
+  createdAt: string;
+};
+
 export type CartLine = {
   key: string;
   menuItemId: string;
@@ -117,4 +142,8 @@ export type CartLine = {
   notes?: string;
   modifierOptionIds: string[];
   modifierLabels: string[];
+  /** Local key (`menu/….jpg`) or remote URL — same as MenuItem.imageUrl. */
+  imageUrl?: string | null;
+  seatNumber?: number | null;
+  course?: Course | null;
 };

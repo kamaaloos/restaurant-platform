@@ -10,6 +10,18 @@ export function shortId(value: string | null | undefined) {
   return value.length > 12 ? `${value.slice(0, 8)}…` : value;
 }
 
+/** Walk-in pickup code prefix: W0012 + 2-digit daily queue (guest 1 → W001201). */
+export const WALK_IN_QUEUE_PREFIX = "W0012";
+
+export function formatWalkInQueueCode(
+  queueNumber: number | null | undefined,
+): string | null {
+  if (queueNumber == null || !Number.isFinite(queueNumber) || queueNumber < 1) {
+    return null;
+  }
+  return `${WALK_IN_QUEUE_PREFIX}${String(Math.trunc(queueNumber)).padStart(2, "0")}`;
+}
+
 export function formatMoney(
   amount: number | string,
   currency = "USD",
@@ -183,3 +195,49 @@ export function createDeviceTokenStorage(storageKey: string) {
     },
   };
 }
+
+/** Short Admin QR codes (not UUID bearer tokens). */
+export function looksLikePairingCode(value: string) {
+  const trimmed = value.trim();
+  return /^[A-Za-z0-9]{6,12}$/.test(trimmed) && !trimmed.includes("-");
+}
+
+export type DevicePairResult = {
+  token: string;
+  device: {
+    id: string;
+    name: string;
+    deviceType: string;
+    branchId: string;
+    tokenExpiresAt: string | null;
+  };
+};
+
+/** Exchange a one-time pairing code for the long-lived device token. */
+export async function exchangeDevicePairingCode(
+  code: string,
+  baseUrl = getApiBaseUrl(),
+): Promise<DevicePairResult> {
+  const res = await fetch(`${baseUrl}/devices/pair`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ code: code.trim().toUpperCase() }),
+    cache: "no-store",
+  }).catch(() => {
+    throw new ApiError(
+      0,
+      `Cannot reach API at ${baseUrl}. Is the backend running?`,
+    );
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new ApiError(
+      res.status,
+      messageFromBody(body, `Pairing failed (${res.status})`),
+    );
+  }
+
+  return res.json() as Promise<DevicePairResult>;
+}
+

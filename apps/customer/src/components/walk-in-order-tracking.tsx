@@ -1,17 +1,25 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { customerApi } from "@/lib/api";
 import { extractApiMessage } from "@/lib/errors";
 import { moneyLocale, statusMessageKey } from "@/lib/i18n/helpers";
-import {
-  LanguageSwitcher,
-  useLocale,
-} from "@/lib/i18n/locale-provider";
-import { formatMoney } from "@/lib/utils";
+import { LocaleControls, useCurrency } from "@/lib/currency-provider";
+import { useLocale } from "@/lib/i18n/locale-provider";
+import { formatMoney, formatWalkInQueueCode } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+
+function canGuestCancel(status: string, payments?: { status: string }[]) {
+  if (status !== "PENDING_PAYMENT" && status !== "NEW") return false;
+  const settled = (payments ?? []).some(
+    (p) => p.status === "PAID" || p.status === "PARTIALLY_REFUNDED",
+  );
+  return !settled;
+}
 
 export function WalkInOrderTracking({
   branchId,
@@ -21,8 +29,10 @@ export function WalkInOrderTracking({
   orderId: string;
 }) {
   const { t, locale } = useLocale();
+  const { currency, convertFromBase } = useCurrency();
   const moneyLoc = moneyLocale(locale);
   const queryClient = useQueryClient();
+  const [confirmCancel, setConfirmCancel] = useState(false);
 
   const orderQuery = useQuery({
     queryKey: ["walk-in-order", branchId, orderId],
@@ -37,7 +47,7 @@ export function WalkInOrderTracking({
   const onlineEnabled = providerQuery.data?.onlineEnabled === true;
 
   const pay = useMutation({
-    mutationFn: (method: "CARD" | "CASH" | "ONLINE") =>
+    mutationFn: (method: "CARD_MANUAL" | "CASH" | "ONLINE") =>
       customerApi.payWalkInOrder(branchId, orderId, method),
     onSuccess: (result) => {
       if (result.payment.checkoutUrl) {
@@ -54,11 +64,22 @@ export function WalkInOrderTracking({
     },
   });
 
+  const cancel = useMutation({
+    mutationFn: () => customerApi.cancelWalkInOrder(branchId, orderId),
+    onSuccess: () => {
+      setConfirmCancel(false);
+      toast.success(t("orderCancelled"));
+      void queryClient.invalidateQueries({
+        queryKey: ["walk-in-order", branchId, orderId],
+      });
+    },
+    onError: (error) => {
+      toast.error(extractApiMessage(error, t("couldNotCancel")));
+    },
+  });
+
   function labelFor(status: string) {
     if (status === "READY") return t("statusReadyPickup");
-    if (status === "ACCEPTED" || status === "PREPARING") {
-      return t("statusPreparing");
-    }
     const key = statusMessageKey(status);
     return key ? t(key) : status;
   }
@@ -75,7 +96,7 @@ export function WalkInOrderTracking({
     return (
       <div className="mx-auto max-w-3xl px-4 py-16">
         <div className="mb-6 flex justify-end">
-          <LanguageSwitcher />
+          <LocaleControls />
         </div>
         <h1 className="font-[family-name:var(--font-display)] text-3xl">
           {t("orderNotFound")}
@@ -89,6 +110,12 @@ export function WalkInOrderTracking({
 
   const order = orderQuery.data;
   const awaitingPay = order.status === "PENDING_PAYMENT";
+  const finished =
+    order.status === "COMPLETED" || order.status === "CANCELLED";
+  const showCancel = canGuestCancel(
+    order.status,
+    order.payments ?? (order.payment ? [order.payment] : []),
+  );
   const steps = order.tracking?.steps ?? [
     "PENDING_PAYMENT",
     "NEW",
@@ -106,7 +133,7 @@ export function WalkInOrderTracking({
           {t("yourOrder")}
         </h1>
         <div className="flex items-center gap-2">
-          <LanguageSwitcher />
+          <LocaleControls />
           <Button asChild variant="ghost">
             <Link href={`/pickup/${branchId}`}>{t("tvBoard")}</Link>
           </Button>
@@ -118,8 +145,8 @@ export function WalkInOrderTracking({
           <p className="text-sm uppercase tracking-[0.2em] text-[var(--muted)]">
             {t("pickupNumber")}
           </p>
-          <p className="mt-3 font-[family-name:var(--font-display)] text-7xl tabular-nums leading-none">
-            {order.queueNumber}
+          <p className="mt-3 font-[family-name:var(--font-display)] text-5xl tabular-nums leading-none sm:text-6xl md:text-7xl">
+            {formatWalkInQueueCode(order.queueNumber) ?? "—"}
           </p>
           <p className="mt-4 text-lg">{labelFor(order.status)}</p>
         </section>
@@ -141,9 +168,9 @@ export function WalkInOrderTracking({
               <Button
                 className="flex-1"
                 disabled={pay.isPending}
-                onClick={() => pay.mutate("CARD")}
+                onClick={() => pay.mutate("CARD_MANUAL")}
               >
-                {pay.isPending ? t("sending") : t("payWithCard")}
+                {pay.isPending ? t("sending") : `${t("payWithCard")} (manual)`}
               </Button>
             )}
             <Button
@@ -159,7 +186,11 @@ export function WalkInOrderTracking({
                 className="flex-1"
                 variant="outline"
                 disabled={pay.isPending}
-                onClick={() => pay.mutate("CARD")}
+                onClick={() =>
+                  toast.message(t("payAtCounterHint"), {
+                    description: "Pay by card on the Terminal at the counter.",
+                  })
+                }
               >
                 Card at counter
               </Button>
@@ -207,8 +238,11 @@ export function WalkInOrderTracking({
               </p>
               <p>
                 {formatMoney(
-                  Number(item.price) * item.quantity,
-                  order.currency,
+                  convertFromBase(
+                    Number(item.price) * item.quantity,
+                    order.currency,
+                  ),
+                  currency,
                   moneyLoc,
                 )}
               </p>
@@ -220,13 +254,45 @@ export function WalkInOrderTracking({
       <div className="mt-6 flex items-center justify-between">
         <p className="text-[var(--muted)]">{t("total")}</p>
         <p className="text-xl font-semibold">
-          {formatMoney(order.total, order.currency, moneyLoc)}
+          {formatMoney(
+            convertFromBase(order.total, order.currency),
+            currency,
+            moneyLoc,
+          )}
         </p>
       </div>
 
-      <Button asChild className="mt-8 w-full" variant="secondary">
-        <Link href={`/w/${branchId}`}>{t("orderMore")}</Link>
-      </Button>
+      {showCancel ? (
+        <Button
+          className="mt-8 w-full"
+          variant="outline"
+          disabled={cancel.isPending}
+          onClick={() => setConfirmCancel(true)}
+        >
+          {t("cancelOrder")}
+        </Button>
+      ) : null}
+
+      {!finished ? (
+        <Button
+          asChild
+          className={`w-full ${showCancel ? "mt-3" : "mt-8"}`}
+          variant="secondary"
+        >
+          <Link href={`/w/${branchId}`}>{t("orderMore")}</Link>
+        </Button>
+      ) : null}
+
+      <ConfirmDialog
+        open={confirmCancel}
+        onOpenChange={setConfirmCancel}
+        title={t("cancelOrder")}
+        description={t("cancelOrderConfirm")}
+        confirmLabel={t("cancelOrder")}
+        cancelLabel={t("close")}
+        pending={cancel.isPending}
+        onConfirm={() => cancel.mutate()}
+      />
     </div>
   );
 }

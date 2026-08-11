@@ -25,9 +25,7 @@
 }
 
 body {
-  background:
-    radial-gradient(circle at 90% -8%, rgba(29, 111, 191, 0.14), transparent 34%),
-    linear-gradient(180deg, #e7edf4 0%, var(--paper) 42%, #e3eaf2 100%);
+  background-color: var(--paper);
   color: var(--ink);
   min-height: 100vh;
 }
@@ -49,4 +47,28 @@ body {
 
 .animate-ticket-in {
   animation: ticket-in 280ms ease-out both;
+}
+
+@keyframes waiter-bg-drift {
+  0% {
+    transform: scale(1.08) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.14) translate3d(-1.6%, -1.2%, 0);
+  }
+  100% {
+    transform: scale(1.08) translate3d(0, 0, 0);
+  }
+}
+
+.waiter-bg-drift {
+  animation: waiter-bg-drift 28s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waiter-bg-drift,
+  .animate-ticket-in {
+    animation: none !important;
+  }
 }

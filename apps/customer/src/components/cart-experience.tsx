@@ -1,26 +1,36 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ShoppingBag } from "lucide-react";
 
 import { customerApi } from "@/lib/api";
 import { extractApiMessage } from "@/lib/errors";
 import { moneyLocale } from "@/lib/i18n/helpers";
-import {
-  LanguageSwitcher,
-  useLocale,
-} from "@/lib/i18n/locale-provider";
-import { formatMoney } from "@/lib/utils";
+import { localizedMenuItemName } from "@/lib/i18n/menu-items";
+import { useLocale } from "@/lib/i18n/locale-provider";
+import { LocaleControls, useCurrency } from "@/lib/currency-provider";
+import { resolveMenuImage } from "@/lib/menu-images";
+import { formatMoney, formatWalkInQueueCode } from "@/lib/utils";
+import type { Course } from "@/lib/types";
 import {
   selectCartTotal,
   useCartStore,
 } from "@/stores/cart-store";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+
+const COURSES: Course[] = [
+  "APPETIZER",
+  "DRINK",
+  "MAIN",
+  "DESSERT",
+  "OTHER",
+];
 
 export function CartExperience({
   token,
@@ -30,6 +40,7 @@ export function CartExperience({
   branchId?: string;
 }) {
   const { t, locale } = useLocale();
+  const { currency, convertFromBase } = useCurrency();
   const moneyLoc = moneyLocale(locale);
   const walkIn = !!branchId && !token;
   const scope = token ?? `walk-in:${branchId}`;
@@ -37,9 +48,12 @@ export function CartExperience({
   const router = useRouter();
   const lines = useCartStore((s) => s.lines);
   const updateQty = useCartStore((s) => s.updateQty);
+  const updateLine = useCartStore((s) => s.updateLine);
   const clear = useCartStore((s) => s.clear);
   const total = useCartStore((s) => selectCartTotal(s.lines));
   const [name, setName] = useState("");
+  const [isRush, setIsRush] = useState(false);
+  const [isVip, setIsVip] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const submittingRef = useRef(false);
   /** Skip empty-cart redirect once after place-order (clear races with /orders nav). */
@@ -72,8 +86,22 @@ export function CartExperience({
         : customerApi.getMenu(token!),
   });
 
-  const currency = menuQuery.data?.restaurant.currency ?? "EUR";
+  const baseCurrency = menuQuery.data?.restaurant.currency ?? "EUR";
+  const money = (amount: number | string) =>
+    formatMoney(convertFromBase(amount, baseCurrency), currency, moneyLoc);
+  const seatCount = menuQuery.data?.table?.seats ?? 0;
+  const showSeats = !walkIn && seatCount > 0;
   const isEmpty = hydrated && lines.length === 0;
+
+  const imageByMenuItemId = useMemo(() => {
+    const map = new Map<string, string | null>();
+    for (const category of menuQuery.data?.categories ?? []) {
+      for (const item of category.menuItems) {
+        map.set(item.id, item.imageUrl);
+      }
+    }
+    return map;
+  }, [menuQuery.data?.categories]);
 
   const placeOrder = useMutation({
     mutationFn: async () => {
@@ -90,11 +118,15 @@ export function CartExperience({
 
       const body = {
         customerName: name.trim() || undefined,
+        isRush: isRush || undefined,
+        isVip: isVip || undefined,
         items: currentLines.map((line) => ({
           menuItemId: line.menuItemId,
           quantity: line.quantity,
           notes: line.notes,
           modifierOptionIds: line.modifierOptionIds,
+          seatNumber: line.seatNumber ?? undefined,
+          course: line.course ?? undefined,
         })),
       };
 
@@ -105,10 +137,14 @@ export function CartExperience({
     onSuccess: (order) => {
       suppressEmptyCartRedirect.current = true;
       clear();
+      setIsRush(false);
+      setIsVip(false);
       sessionStorage.setItem(`cart.ordered.${scope}`, "1");
       toast.success(
         walkIn && order.queueNumber != null
-          ? t("orderAwaitingPayment", { number: order.queueNumber })
+          ? t("orderAwaitingPayment", {
+              number: formatWalkInQueueCode(order.queueNumber) ?? order.queueNumber,
+            })
           : t("orderPlaced"),
       );
       setConfirmOpen(false);
@@ -149,7 +185,7 @@ export function CartExperience({
           {t("cartTitle")}
         </h1>
         <div className="flex items-center gap-2">
-          <LanguageSwitcher />
+          <LocaleControls />
           <Button asChild variant="ghost" disabled={busy}>
             <Link href={basePath}>{t("menu")}</Link>
           </Button>
@@ -174,34 +210,57 @@ export function CartExperience({
       ) : (
         <fieldset disabled={busy} className="min-w-0 border-0 p-0">
           <ul className="mt-8 space-y-3">
-            {lines.map((line) => (
+            {lines.map((line) => {
+              const imageUrl =
+                line.imageUrl ?? imageByMenuItemId.get(line.menuItemId) ?? null;
+              const image = resolveMenuImage(imageUrl);
+              const title = localizedMenuItemName(
+                line.name,
+                locale,
+                imageUrl,
+              );
+              return (
               <li
                 key={line.key}
                 className="rounded-2xl border border-[var(--line)] bg-[var(--surface)] px-4 py-4"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-medium">{line.name}</p>
-                    {line.modifierLabels.length > 0 ? (
-                      <p className="mt-1 text-xs text-[var(--muted)]">
-                        {line.modifierLabels.join(" · ")}
-                      </p>
-                    ) : null}
-                    {line.notes ? (
-                      <p className="mt-1 text-xs text-[var(--muted)]">
-                        {t("notePrefix")} {line.notes}
-                      </p>
-                    ) : null}
-                  </div>
-                  <p className="font-medium">
-                    {formatMoney(
-                      line.unitPrice * line.quantity,
-                      currency,
-                      moneyLoc,
+                  <div className="flex min-w-0 flex-1 items-start gap-3">
+                    {image ? (
+                      <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-full bg-[var(--surface)] shadow-sm ring-2 ring-[var(--surface)]">
+                        <Image
+                          src={image}
+                          alt=""
+                          fill
+                          className="object-cover"
+                          sizes="56px"
+                          unoptimized
+                        />
+                      </div>
+                    ) : (
+                      <div className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-[var(--surface-2)] text-sm font-medium text-[var(--muted)]">
+                        {title.slice(0, 1)}
+                      </div>
                     )}
+                    <div className="min-w-0">
+                      <p className="font-medium">{title}</p>
+                      {line.modifierLabels.length > 0 ? (
+                        <p className="mt-1 text-xs text-[var(--muted)]">
+                          {line.modifierLabels.join(" · ")}
+                        </p>
+                      ) : null}
+                      {line.notes ? (
+                        <p className="mt-1 text-xs text-[var(--muted)]">
+                          {t("notePrefix")} {line.notes}
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
+                  <p className="shrink-0 font-medium">
+                    {money(line.unitPrice * line.quantity)}
                   </p>
                 </div>
-                <div className="mt-3 flex items-center gap-2">
+                <div className="mt-3 flex flex-wrap items-center gap-2">
                   <Button
                     size="sm"
                     variant="secondary"
@@ -219,9 +278,63 @@ export function CartExperience({
                   >
                     +
                   </Button>
+                  {showSeats ? (
+                    <label className="ml-auto flex items-center gap-1.5 text-xs text-[var(--muted)]">
+                      {t("seat")}
+                      <select
+                        className="h-8 rounded-md border border-[var(--line)] bg-[var(--paper)] px-2 text-sm text-[var(--ink)]"
+                        value={line.seatNumber ?? ""}
+                        onChange={(e) =>
+                          updateLine(line.key, {
+                            seatNumber: e.target.value
+                              ? Number(e.target.value)
+                              : null,
+                          })
+                        }
+                      >
+                        <option value="">{t("seatAny")}</option>
+                        {Array.from({ length: seatCount }, (_, i) => i + 1).map(
+                          (n) => (
+                            <option key={n} value={n}>
+                              {n}
+                            </option>
+                          ),
+                        )}
+                      </select>
+                    </label>
+                  ) : null}
+                  {!walkIn ? (
+                    <label className="flex items-center gap-1.5 text-xs text-[var(--muted)]">
+                      {t("course")}
+                      <select
+                        className="h-8 rounded-md border border-[var(--line)] bg-[var(--paper)] px-2 text-sm text-[var(--ink)]"
+                        value={line.course ?? "MAIN"}
+                        onChange={(e) =>
+                          updateLine(line.key, {
+                            course: e.target.value as Course,
+                          })
+                        }
+                      >
+                        {COURSES.map((c) => (
+                          <option key={c} value={c}>
+                            {c === "APPETIZER"
+                              ? t("courseAppetizer")
+                              : c === "DRINK"
+                                ? t("courseDrink")
+                                : c === "MAIN"
+                                  ? t("courseMain")
+                                  : c === "DESSERT"
+                                    ? t("courseDessert")
+                                    : t("courseOther")}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  ) : null}
                 </div>
               </li>
-            ))}
+              );
+            })}
           </ul>
 
           <label className="mt-6 block text-sm font-medium" htmlFor="guest">
@@ -236,11 +349,30 @@ export function CartExperience({
             autoComplete="name"
           />
 
+          <div className="mt-4 flex flex-wrap gap-4 text-sm">
+            <label className="inline-flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={isRush}
+                onChange={(e) => setIsRush(e.target.checked)}
+              />
+              {t("rushOrder")}
+            </label>
+            {!walkIn ? (
+              <label className="inline-flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={isVip}
+                  onChange={(e) => setIsVip(e.target.checked)}
+                />
+                {t("vipGuest")}
+              </label>
+            ) : null}
+          </div>
+
           <div className="mt-6 flex items-center justify-between border-t border-[var(--line)] pt-4">
             <p className="text-[var(--muted)]">{t("total")}</p>
-            <p className="text-xl font-semibold">
-              {formatMoney(total, currency, moneyLoc)}
-            </p>
+            <p className="text-xl font-semibold">{money(total)}</p>
           </div>
 
           <Button

@@ -92,10 +92,12 @@ export function UsersPage() {
     queryKey: ["admin-users", scopedRestaurantId, filterBranchId],
     queryFn: () =>
       adminApi.listUsers({
-        restaurantId: isPlatformAdmin ? scopedRestaurantId || undefined : undefined,
+        // Platform admin filters explicitly; owner/manager are scoped by JWT,
+        // but still send restaurantId when known so the request is intentional.
+        restaurantId: scopedRestaurantId || undefined,
         branchId: filterBranchId || undefined,
       }),
-    enabled: canManage && (!isPlatformAdmin || !!scopedRestaurantId),
+    enabled: canManage && !!scopedRestaurantId,
   });
 
   function resetForm() {
@@ -198,6 +200,17 @@ export function UsersPage() {
         <PageHeader
           title="Users"
           subtitle="You do not have permission to manage staff accounts."
+        />
+      </div>
+    );
+  }
+
+  if (!isPlatformAdmin && !scopedRestaurantId) {
+    return (
+      <div>
+        <PageHeader
+          title="Users"
+          subtitle="Your account is not assigned to a restaurant. Ask a platform admin to fix this."
         />
       </div>
     );

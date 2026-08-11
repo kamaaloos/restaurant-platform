@@ -60,8 +60,8 @@ function CashierShell({
   }
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-[var(--line)] bg-[var(--surface)]/90 backdrop-blur">
+    <div className="relative z-10 min-h-screen">
+      <header className="cashier-shell-header no-print border-b border-[var(--line)] bg-[var(--surface)]/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted)]">
@@ -82,7 +82,9 @@ function CashierShell({
           </div>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl p-5 md:p-8">{children}</main>
+      <main className="relative z-10 mx-auto max-w-6xl p-5 md:p-8">
+        {children}
+      </main>
     </div>
   );
 }

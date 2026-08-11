@@ -25,9 +25,7 @@
 }
 
 body {
-  background:
-    radial-gradient(circle at 8% -10%, rgba(196, 92, 38, 0.12), transparent 32%),
-    linear-gradient(180deg, #e8ecef 0%, var(--paper) 40%, #e3e8ec 100%);
+  background-color: var(--paper);
   color: var(--ink);
   min-height: 100vh;
 }
@@ -49,4 +47,28 @@ body {
 
 .animate-ticket-in {
   animation: ticket-in 280ms ease-out both;
+}
+
+@keyframes kitchen-bg-drift {
+  0% {
+    transform: scale(1.08) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.14) translate3d(-1.6%, -1.2%, 0);
+  }
+  100% {
+    transform: scale(1.08) translate3d(0, 0, 0);
+  }
+}
+
+.kitchen-bg-drift {
+  animation: kitchen-bg-drift 28s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kitchen-bg-drift,
+  .animate-ticket-in {
+    animation: none !important;
+  }
 }

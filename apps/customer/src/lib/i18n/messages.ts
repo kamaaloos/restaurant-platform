@@ -13,6 +13,8 @@ export type MessageKey =
   | "noSearchResults"
   | "noCategories"
   | "tapForDetails"
+  | "soldOut"
+  | "itemUnavailable"
   | "customize"
   | "cart"
   | "items"
@@ -45,8 +47,22 @@ export type MessageKey =
   | "confirmOrderBody"
   | "confirmOrderBodyWalkIn"
   | "cancel"
+  | "cancelOrder"
+  | "cancelOrderConfirm"
+  | "orderCancelled"
+  | "couldNotCancel"
   | "customerName"
   | "customerNameOptional"
+  | "seat"
+  | "seatAny"
+  | "course"
+  | "courseAppetizer"
+  | "courseDrink"
+  | "courseMain"
+  | "courseDessert"
+  | "courseOther"
+  | "rushOrder"
+  | "vipGuest"
   | "orderPlaced"
   | "orderNumberPlaced"
   | "orderAwaitingPayment"
@@ -87,6 +103,7 @@ export type MessageKey =
   | "pickupTv"
   | "allWalkInBranches"
   | "language"
+  | "currency"
   | "loadingCart"
   | "loadingOrder"
   | "loading"
@@ -119,7 +136,16 @@ export type MessageKey =
   | "pairDevicePlaceholder"
   | "pairDeviceCta"
   | "pairing"
-  | "unpairDevice";
+  | "unpairDevice"
+  | "catShakes"
+  | "catHotDrinks"
+  | "catSoftDrinks"
+  | "catDrinks"
+  | "catDesserts"
+  | "catSalads"
+  | "catStarters"
+  | "catMainDishes"
+  | "catMains";
 
 export type Messages = Record<MessageKey, string>;
 
@@ -138,6 +164,8 @@ const en: Messages = {
   noSearchResults: "No dishes match your search.",
   noCategories: "Coming soon!",
   tapForDetails: "Tap for details",
+  soldOut: "Sold out",
+  itemUnavailable: "This item is sold out",
   customize: "Customize",
   cart: "Cart",
   items: "items",
@@ -170,11 +198,25 @@ const en: Messages = {
   confirmOrderBody: "Send this order to the kitchen?",
   confirmOrderBodyWalkIn: "Create this order? You’ll pay next, then kitchen starts.",
   cancel: "Cancel",
+  cancelOrder: "Cancel order",
+  cancelOrderConfirm: "Cancel this order? It will be removed from the kitchen.",
+  orderCancelled: "Order cancelled",
+  couldNotCancel: "Could not cancel order",
   customerName: "Your name",
   customerNameOptional: "Name (optional)",
+  seat: "Seat",
+  seatAny: "Any",
+  course: "Course",
+  courseAppetizer: "Starter",
+  courseDrink: "Drink",
+  courseMain: "Main",
+  courseDessert: "Dessert",
+  courseOther: "Other",
+  rushOrder: "Rush — prioritize kitchen",
+  vipGuest: "VIP guest",
   orderPlaced: "Order placed — kitchen is on it",
-  orderNumberPlaced: "Order #{number} placed",
-  orderAwaitingPayment: "Order #{number} created — pay to send it to the kitchen",
+  orderNumberPlaced: "Order {number} placed",
+  orderAwaitingPayment: "Order {number} created — pay to send it to the kitchen",
   couldNotPlaceOrder: "Could not place order",
   payNow: "Pay now",
   payWithCard: "Pay with card",
@@ -213,6 +255,7 @@ const en: Messages = {
   pickupTv: "Pickup TV",
   allWalkInBranches: "All walk-in branches",
   language: "Language",
+  currency: "Currency",
   loadingCart: "Loading cart…",
   loadingOrder: "Loading order…",
   loading: "Loading…",
@@ -247,6 +290,15 @@ const en: Messages = {
   pairDeviceCta: "Open pickup board",
   pairing: "Pairing…",
   unpairDevice: "Unpair device",
+  catShakes: "Shakes",
+  catHotDrinks: "Hot drinks",
+  catSoftDrinks: "Soft drinks",
+  catDrinks: "Drinks",
+  catDesserts: "Desserts",
+  catSalads: "Salads",
+  catStarters: "Starters",
+  catMainDishes: "Main dishes",
+  catMains: "Mains",
 };
 
 const fi: Messages = {
@@ -264,6 +316,8 @@ const fi: Messages = {
   noSearchResults: "Ei hakutuloksia.",
   noCategories: "Tulossa pian!",
   tapForDetails: "Napauta nähdäksesi",
+  soldOut: "Loppu",
+  itemUnavailable: "Tuote on loppu",
   customize: "Muokkaa",
   cart: "Kori",
   items: "tuotetta",
@@ -297,12 +351,26 @@ const fi: Messages = {
   confirmOrderBodyWalkIn:
     "Luodaanko tilaus? Seuraavaksi maksat, sitten keittiö aloittaa.",
   cancel: "Peruuta",
+  cancelOrder: "Peruuta tilaus",
+  cancelOrderConfirm: "Perutaanko tämä tilaus? Se poistuu keittiöstä.",
+  orderCancelled: "Tilaus peruttu",
+  couldNotCancel: "Tilausta ei voitu perua",
   customerName: "Nimesi",
   customerNameOptional: "Nimi (valinnainen)",
+  seat: "Paikka",
+  seatAny: "Mikä tahansa",
+  course: "Ruokalaji",
+  courseAppetizer: "Alkuruoka",
+  courseDrink: "Juoma",
+  courseMain: "Pääruoka",
+  courseDessert: "Jälkiruoka",
+  courseOther: "Muu",
+  rushOrder: "Kiire — priorisoi keittiö",
+  vipGuest: "VIP-vieras",
   orderPlaced: "Tilaus tehty — keittiö sai sen",
-  orderNumberPlaced: "Tilaus #{number} tehty",
+  orderNumberPlaced: "Tilaus {number} tehty",
   orderAwaitingPayment:
-    "Tilaus #{number} luotu — maksa, niin keittiö saa sen",
+    "Tilaus {number} luotu — maksa, niin keittiö saa sen",
   couldNotPlaceOrder: "Tilausta ei voitu tehdä",
   payNow: "Maksa nyt",
   payWithCard: "Maksa kortilla",
@@ -341,6 +409,7 @@ const fi: Messages = {
   pickupTv: "Nouto-TV",
   allWalkInBranches: "Kaikki walk-in-toimipisteet",
   language: "Kieli",
+  currency: "Valuutta",
   loadingCart: "Ladataan koria…",
   loadingOrder: "Ladataan tilausta…",
   loading: "Ladataan…",
@@ -375,6 +444,15 @@ const fi: Messages = {
   pairDeviceCta: "Avaa noutotaulu",
   pairing: "Yhdistetään…",
   unpairDevice: "Poista laitepari",
+  catShakes: "Pirtelöt",
+  catHotDrinks: "Kuumat juomat",
+  catSoftDrinks: "Virvoitusjuomat",
+  catDrinks: "Juomat",
+  catDesserts: "Jälkiruoat",
+  catSalads: "Salaatit",
+  catStarters: "Alkuruuat",
+  catMainDishes: "Pääruoat",
+  catMains: "Pääruoat",
 };
 
 const ar: Messages = {
@@ -390,6 +468,8 @@ const ar: Messages = {
   noSearchResults: "لا توجد أطباق مطابقة.",
   noCategories: "قريباً!",
   tapForDetails: "اضغط للتفاصيل",
+  soldOut: "نفد",
+  itemUnavailable: "هذا الصنف غير متوفر",
   customize: "تخصيص",
   cart: "السلة",
   items: "أصناف",
@@ -422,11 +502,25 @@ const ar: Messages = {
   confirmOrderBody: "إرسال هذا الطلب إلى المطبخ؟",
   confirmOrderBodyWalkIn: "إنشاء الطلب؟ ستدفع بعد ذلك ثم يبدأ المطبخ.",
   cancel: "إلغاء",
+  cancelOrder: "إلغاء الطلب",
+  cancelOrderConfirm: "هل تريد إلغاء هذا الطلب؟ سيُزال من المطبخ.",
+  orderCancelled: "تم إلغاء الطلب",
+  couldNotCancel: "تعذر إلغاء الطلب",
   customerName: "اسمك",
   customerNameOptional: "الاسم (اختياري)",
+  seat: "مقعد",
+  seatAny: "أي",
+  course: "طبق",
+  courseAppetizer: "مقبلات",
+  courseDrink: "مشروب",
+  courseMain: "رئيسي",
+  courseDessert: "حلوى",
+  courseOther: "أخرى",
+  rushOrder: "مستعجل — أولوية المطبخ",
+  vipGuest: "ضيف مميز",
   orderPlaced: "تم الطلب — المطبخ يعمل عليه",
-  orderNumberPlaced: "تم طلب رقم #{number}",
-  orderAwaitingPayment: "تم إنشاء الطلب #{number} — ادفع لإرساله للمطبخ",
+  orderNumberPlaced: "تم طلب رقم {number}",
+  orderAwaitingPayment: "تم إنشاء الطلب {number} — ادفع لإرساله للمطبخ",
   couldNotPlaceOrder: "تعذر إرسال الطلب",
   payNow: "ادفع الآن",
   payWithCard: "ادفع بالبطاقة",
@@ -465,6 +559,7 @@ const ar: Messages = {
   pickupTv: "شاشة الاستلام",
   allWalkInBranches: "كل فروع الوقوف",
   language: "اللغة",
+  currency: "العملة",
   loadingCart: "جاري تحميل السلة…",
   loadingOrder: "جاري تحميل الطلب…",
   loading: "جاري التحميل…",
@@ -499,6 +594,15 @@ const ar: Messages = {
   pairDeviceCta: "افتح لوحة الاستلام",
   pairing: "جاري الربط…",
   unpairDevice: "إلغاء ربط الجهاز",
+  catShakes: "ميلك شيك",
+  catHotDrinks: "مشروبات ساخنة",
+  catSoftDrinks: "مشروبات غازية",
+  catDrinks: "مشروبات",
+  catDesserts: "حلويات",
+  catSalads: "سلطات",
+  catStarters: "مقبلات",
+  catMainDishes: "أطباق رئيسية",
+  catMains: "أطباق رئيسية",
 };
 
 const so: Messages = {
@@ -516,6 +620,8 @@ const so: Messages = {
   noSearchResults: "Cunto kuma jirto raadintaada.",
   noCategories: "Dhawaan!",
   tapForDetails: "Taabo faahfaahinta",
+  soldOut: "Waa dhammaaday",
+  itemUnavailable: "Cuntadan waa la dhammeeyay",
   customize: "Habee",
   cart: "Shandad",
   items: "alaab",
@@ -549,12 +655,26 @@ const so: Messages = {
   confirmOrderBodyWalkIn:
     "Dalabkan ma la sameeyaa? Marka xigta ayaad bixinaysaa, ka dib jikadu way bilowdaa.",
   cancel: "Jooji",
+  cancelOrder: "Jooji dalabka",
+  cancelOrderConfirm: "Ma joojinaysaa dalabkan? Waa laga saarayaa jikada.",
+  orderCancelled: "Dalabka waa la joojiyay",
+  couldNotCancel: "Dalabka lama joojin karin",
   customerName: "Magacaaga",
   customerNameOptional: "Magaca (ikhtiyaari)",
+  seat: "Kursi",
+  seatAny: "Kasta",
+  course: "Koors",
+  courseAppetizer: "Bilow",
+  courseDrink: "Cabitaan",
+  courseMain: "Weeyn",
+  courseDessert: "Macmacaan",
+  courseOther: "Kale",
+  rushOrder: "Degdeg — mudnaanta jikada",
+  vipGuest: "Marti VIP",
   orderPlaced: "Dalabka waa la diray — jikadu waa shaqaynaysaa",
-  orderNumberPlaced: "Dalabka #{number} waa la diray",
+  orderNumberPlaced: "Dalabka {number} waa la diray",
   orderAwaitingPayment:
-    "Dalabka #{number} waa la sameeyay — bixi si jikadu u hesho",
+    "Dalabka {number} waa la sameeyay — bixi si jikadu u hesho",
   couldNotPlaceOrder: "Dalabka lama diri karin",
   payNow: "Hadda bixi",
   payWithCard: "Ku bixi kaarka",
@@ -593,6 +713,7 @@ const so: Messages = {
   pickupTv: "TV qaadista",
   allWalkInBranches: "Dhammaan laamaha walk-in",
   language: "Luqadda",
+  currency: "Lacagta",
   loadingCart: "Shandadda waa la soo rarayaa…",
   loadingOrder: "Dalabka waa la soo rarayaa…",
   loading: "Waa la soo rarayaa…",
@@ -627,6 +748,15 @@ const so: Messages = {
   pairDeviceCta: "Fur board-ka qaadista",
   pairing: "Waa la isku xidhayaa…",
   unpairDevice: "Ka fur qalabka",
+  catShakes: "Shakes",
+  catHotDrinks: "Cabitaan kulul",
+  catSoftDrinks: "Cabitaan qabow",
+  catDrinks: "Cabitaan",
+  catDesserts: "Macmacaan",
+  catSalads: "Salad",
+  catStarters: "Bilow",
+  catMainDishes: "Cuntooyinka waaweyn",
+  catMains: "Cuntooyinka waaweyn",
 };
 
 export const MESSAGES: Record<Locale, Messages> = { en, fi, ar, so };

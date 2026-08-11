@@ -23,8 +23,12 @@ services:
     ports:
       - "6379:6379"
 
-  # Optional APM: docker compose --profile observability up -d
-  # Then: OTEL_ENABLED=1 OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:4318
+  # Optional APM + SLOs:
+  #   docker compose --env-file .env.observability --profile observability up -d
+  # Copy observability/env.example → .env.observability and set ALERTMANAGER_WEBHOOK_URL.
+  # Metrics: GET http://localhost:3000/api/metrics
+  # Prometheus :9090 · Grafana :3006 · Alertmanager :9093
+  # Ops checklist: observability/OPS.md
   jaeger:
     profiles: ["observability"]
     image: jaegertracing/all-in-one:1.57
@@ -34,6 +38,60 @@ services:
     ports:
       - "16686:16686" # UI
       - "4318:4318"   # OTLP HTTP
+
+  alertmanager:
+    profiles: ["observability"]
+    image: prom/alertmanager:v0.27.0
+    container_name: restaurant-alertmanager
+    environment:
+      ALERTMANAGER_WEBHOOK_URL: ${ALERTMANAGER_WEBHOOK_URL:-http://127.0.0.1:9/alertmanager-webhook}
+    volumes:
+      - ./observability/alertmanager.yml:/etc/alertmanager/alertmanager.yml.tpl:ro
+    ports:
+      - "9093:9093"
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        set -e
+        URL="$${ALERTMANAGER_WEBHOOK_URL:-http://127.0.0.1:9/alertmanager-webhook}"
+        # Escape & for sed replacement safety
+        ESC=$$(printf '%s' "$$URL" | sed 's/[&|\\]/\\&/g')
+        sed "s|__WEBHOOK_URL__|$$ESC|g" /etc/alertmanager/alertmanager.yml.tpl > /tmp/alertmanager.yml
+        exec /bin/alertmanager --config.file=/tmp/alertmanager.yml --storage.path=/alertmanager
+
+  prometheus:
+    profiles: ["observability"]
+    image: prom/prometheus:v2.54.1
+    container_name: restaurant-prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./observability/alerts:/etc/prometheus/alerts:ro
+    ports:
+      - "9090:9090"
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-lifecycle
+    depends_on:
+      - alertmanager
+
+  grafana:
+    profiles: ["observability"]
+    image: grafana/grafana:11.2.0
+    container_name: restaurant-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    ports:
+      - "3006:3000"
+    depends_on:
+      - prometheus
 
 volumes:
   postgres_data:

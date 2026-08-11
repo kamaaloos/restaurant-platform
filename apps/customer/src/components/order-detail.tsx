@@ -1,18 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { customerApi } from "@/lib/api";
+import { extractApiMessage } from "@/lib/errors";
+import { LocaleControls, useCurrency } from "@/lib/currency-provider";
 import { moneyLocale, statusMessageKey } from "@/lib/i18n/helpers";
-import {
-  LanguageSwitcher,
-  useLocale,
-} from "@/lib/i18n/locale-provider";
+import { useLocale } from "@/lib/i18n/locale-provider";
 import { formatMoney } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { useCustomerRealtime } from "@/hooks/use-customer-realtime";
 
 const STEPS = ["NEW", "ACCEPTED", "PREPARING", "READY", "SERVED", "COMPLETED"];
+
+function canGuestCancel(status: string, payments?: { status: string }[]) {
+  if (status !== "PENDING_PAYMENT" && status !== "NEW") return false;
+  const settled = (payments ?? []).some(
+    (p) => p.status === "PAID" || p.status === "PARTIALLY_REFUNDED",
+  );
+  return !settled;
+}
 
 export function OrderTracking({
   token,
@@ -22,7 +32,10 @@ export function OrderTracking({
   orderId: string;
 }) {
   const { t, locale } = useLocale();
+  const { currency, convertFromBase } = useCurrency();
   const moneyLoc = moneyLocale(locale);
+  const queryClient = useQueryClient();
+  const [confirmCancel, setConfirmCancel] = useState(false);
   useCustomerRealtime(token);
 
   const orderQuery = useQuery({
@@ -31,9 +44,28 @@ export function OrderTracking({
     refetchInterval: 20_000,
   });
 
+  const cancel = useMutation({
+    mutationFn: () => customerApi.cancelOrder(token, orderId),
+    onSuccess: () => {
+      setConfirmCancel(false);
+      toast.success(t("orderCancelled"));
+      void queryClient.invalidateQueries({
+        queryKey: ["order", token, orderId],
+      });
+      void queryClient.invalidateQueries({ queryKey: ["orders", token] });
+    },
+    onError: (error) => {
+      toast.error(extractApiMessage(error, t("couldNotCancel")));
+    },
+  });
+
   function labelFor(status: string) {
     const key = statusMessageKey(status);
     return key ? t(key) : status;
+  }
+
+  function money(amount: number | string, base: string) {
+    return formatMoney(convertFromBase(amount, base), currency, moneyLoc);
   }
 
   if (orderQuery.isLoading) {
@@ -48,7 +80,7 @@ export function OrderTracking({
     return (
       <div className="mx-auto max-w-3xl px-4 py-16">
         <div className="mb-6 flex justify-end">
-          <LanguageSwitcher />
+          <LocaleControls />
         </div>
         <h1 className="font-[family-name:var(--font-display)] text-3xl">
           {t("orderNotFound")}
@@ -62,6 +94,12 @@ export function OrderTracking({
 
   const order = orderQuery.data;
   const currentIndex = STEPS.indexOf(order.status);
+  const finished =
+    order.status === "COMPLETED" || order.status === "CANCELLED";
+  const showCancel = canGuestCancel(
+    order.status,
+    order.payments ?? (order.payment ? [order.payment] : []),
+  );
 
   return (
     <div className="mx-auto min-h-screen max-w-3xl bg-[var(--paper)] px-4 py-6 text-[var(--ink)]">
@@ -70,7 +108,7 @@ export function OrderTracking({
           {t("orderStatus")}
         </h1>
         <div className="flex items-center gap-2">
-          <LanguageSwitcher />
+          <LocaleControls />
           <Button asChild variant="ghost">
             <Link href={`/t/${token}/orders`}>{t("allOrders")}</Link>
           </Button>
@@ -117,11 +155,7 @@ export function OrderTracking({
                 {item.quantity}× {item.menuItem.name}
               </p>
               <p>
-                {formatMoney(
-                  Number(item.price) * item.quantity,
-                  order.currency,
-                  moneyLoc,
-                )}
+                {money(Number(item.price) * item.quantity, order.currency)}
               </p>
             </div>
             {item.modifiers.length > 0 ? (
@@ -136,13 +170,41 @@ export function OrderTracking({
       <div className="mt-6 flex items-center justify-between">
         <p className="text-[var(--muted)]">{t("total")}</p>
         <p className="text-xl font-semibold">
-          {formatMoney(order.total, order.currency, moneyLoc)}
+          {money(order.total, order.currency)}
         </p>
       </div>
 
-      <Button asChild className="mt-8 w-full" variant="secondary">
-        <Link href={`/t/${token}`}>{t("orderMore")}</Link>
-      </Button>
+      {showCancel ? (
+        <Button
+          className="mt-8 w-full"
+          variant="outline"
+          disabled={cancel.isPending}
+          onClick={() => setConfirmCancel(true)}
+        >
+          {t("cancelOrder")}
+        </Button>
+      ) : null}
+
+      {!finished ? (
+        <Button
+          asChild
+          className={`w-full ${showCancel ? "mt-3" : "mt-8"}`}
+          variant="secondary"
+        >
+          <Link href={`/t/${token}`}>{t("orderMore")}</Link>
+        </Button>
+      ) : null}
+
+      <ConfirmDialog
+        open={confirmCancel}
+        onOpenChange={setConfirmCancel}
+        title={t("cancelOrder")}
+        description={t("cancelOrderConfirm")}
+        confirmLabel={t("cancelOrder")}
+        cancelLabel={t("close")}
+        pending={cancel.isPending}
+        onConfirm={() => cancel.mutate()}
+      />
     </div>
   );
 }

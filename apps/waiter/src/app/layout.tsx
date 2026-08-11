@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Anton, DM_Sans } from "next/font/google";
+import { DiningBackdrop } from "@/components/dining-backdrop";
 import { Providers } from "@/components/providers";
 import { SiteFooter } from "@/components/site-footer";
 import "./globals.css";
@@ -29,9 +30,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${display.variable} ${body.variable} antialiased`}>
         <Providers>
-          <div className="flex min-h-screen flex-col">
-            <div className="flex-1">{children}</div>
-            <SiteFooter />
+          <div className="relative flex min-h-screen flex-col">
+            <DiningBackdrop />
+            <div className="relative z-10 flex min-h-screen flex-1 flex-col">
+              <div className="flex-1">{children}</div>
+              <SiteFooter />
+            </div>
           </div>
         </Providers>
       </body>

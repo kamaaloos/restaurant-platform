@@ -18,6 +18,11 @@ export function useCashierRealtime(branchId: string | null) {
       "v1.service-request.created",
       "v1.service-request.updated",
     ],
-    invalidateKeys: branchId ? [["cashier-orders", branchId]] : [],
+    invalidateKeys: branchId
+      ? [
+          ["cashier-orders", branchId],
+          ["cashier-today-paid", branchId],
+        ]
+      : [],
   });
 }

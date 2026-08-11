@@ -14,7 +14,7 @@ import {
   type KitchenStatus,
   type KitchenTicket,
 } from "@/lib/types";
-import { cn, ageMinutesLabel } from "@/lib/utils";
+import { cn, ageMinutesLabel, formatWalkInQueueCode } from "@/lib/utils";
 import { useKitchenRealtime } from "@/hooks/use-kitchen-realtime";
 import { Button } from "@/components/ui/button";
 
@@ -109,8 +109,8 @@ export function KitchenBoard() {
   const dash = dashboardQuery.data;
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--line)] bg-[var(--surface)]/90 px-6 py-4 backdrop-blur">
+    <div className="relative z-10 flex min-h-screen flex-col">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--line)] bg-[var(--surface)]/85 px-6 py-4 backdrop-blur-md">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted)]">
             Kitchen Display
@@ -163,55 +163,57 @@ export function KitchenBoard() {
         </div>
       </header>
 
-      <main className="grid flex-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-4">
-        {BOARD_COLUMNS.map((column) => {
-          const columnTickets = tickets.filter(
-            (ticket) => ticket.status === column.status,
-          );
+      <main className="flex flex-1 items-center justify-center px-4 py-6">
+        <div className="grid w-full max-w-[1600px] grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {BOARD_COLUMNS.map((column) => {
+            const columnTickets = tickets.filter(
+              (ticket) => ticket.status === column.status,
+            );
 
-          return (
-            <section
-              key={column.status}
-              className="flex min-h-[70vh] flex-col rounded-2xl border border-[var(--line)] bg-[var(--surface)]/70"
-            >
-              <div className="flex items-end justify-between border-b border-[var(--line)] px-4 py-3">
-                <div>
-                  <h2 className="font-[family-name:var(--font-display)] text-2xl">
-                    {column.title}
-                  </h2>
-                  <p className="text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
-                    {column.hint}
-                  </p>
+            return (
+              <section
+                key={column.status}
+                className="flex h-[48vh] max-h-[520px] min-h-[280px] flex-col rounded-2xl border border-[var(--line)] bg-[var(--surface)]/88 backdrop-blur-sm"
+              >
+                <div className="flex items-end justify-between border-b border-[var(--line)] px-4 py-3">
+                  <div>
+                    <h2 className="font-[family-name:var(--font-display)] text-2xl">
+                      {column.title}
+                    </h2>
+                    <p className="text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
+                      {column.hint}
+                    </p>
+                  </div>
+                  <span className="rounded-md bg-[var(--surface-2)] px-2.5 py-1 text-sm font-semibold tabular-nums">
+                    {columnTickets.length}
+                  </span>
                 </div>
-                <span className="rounded-md bg-[var(--surface-2)] px-2.5 py-1 text-sm font-semibold tabular-nums">
-                  {columnTickets.length}
-                </span>
-              </div>
 
-              <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-3">
-                {columnTickets.length === 0 ? (
-                  <p className="px-2 py-8 text-center text-sm text-[var(--muted)]">
-                    No tickets
-                  </p>
-                ) : (
-                  columnTickets.map((ticket) => (
-                    <TicketCard
-                      key={ticket.id}
-                      ticket={ticket}
-                      busy={
-                        advance.isPending &&
-                        advance.variables?.orderId === ticket.id
-                      }
-                      onAdvance={(status) =>
-                        advance.mutate({ orderId: ticket.id, status })
-                      }
-                    />
-                  ))
-                )}
-              </div>
-            </section>
-          );
-        })}
+                <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-3">
+                  {columnTickets.length === 0 ? (
+                    <p className="m-auto px-2 py-6 text-center text-sm text-[var(--muted)]">
+                      No tickets
+                    </p>
+                  ) : (
+                    columnTickets.map((ticket) => (
+                      <TicketCard
+                        key={ticket.id}
+                        ticket={ticket}
+                        busy={
+                          advance.isPending &&
+                          advance.variables?.orderId === ticket.id
+                        }
+                        onAdvance={(status) =>
+                          advance.mutate({ orderId: ticket.id, status })
+                        }
+                      />
+                    ))
+                  )}
+                </div>
+              </section>
+            );
+          })}
+        </div>
       </main>
 
       {ticketsQuery.isError ? (
@@ -295,7 +297,7 @@ function TicketCard({
         <div>
           <p className="font-[family-name:var(--font-display)] text-3xl leading-none tracking-tight">
             {ticket.mode === "WALK_IN" || ticket.queueNumber != null
-              ? `#${ticket.queueNumber ?? "—"}`
+              ? (formatWalkInQueueCode(ticket.queueNumber) ?? "—")
               : ticket.table?.number
                 ? `T${ticket.table.number}`
                 : "Walk-in"}
@@ -303,6 +305,16 @@ function TicketCard({
           <p className="mt-1 text-sm text-[var(--muted)]">
             {ticket.mode === "WALK_IN" ? "Walk-in · " : ""}
             {ticket.customerName ?? "Guest"}
+            {ticket.isRush ? (
+              <span className="ml-2 rounded bg-[var(--heat-soft)] px-1.5 py-0.5 text-xs font-semibold text-[var(--heat)]">
+                RUSH
+              </span>
+            ) : null}
+            {ticket.isVip ? (
+              <span className="ml-2 rounded bg-[var(--surface-2)] px-1.5 py-0.5 text-xs font-semibold text-[var(--ink)]">
+                VIP
+              </span>
+            ) : null}
           </p>
         </div>
         <time

@@ -3,6 +3,10 @@
 import * as React from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminApi } from "@/lib/api";
+import {
+  LOCAL_MENU_IMAGE_OPTIONS,
+  menuImagePreviewSrc,
+} from "@/lib/menu-images";
 import type { MenuCategory, MenuItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
@@ -198,6 +202,16 @@ export function MenuPage() {
     onError: (err: Error) => setError(err.message),
   });
 
+  const toggleItemAvailable = useMutation({
+    mutationFn: (item: MenuItem) =>
+      adminApi.setItemAvailability(item.id, !(item.available !== false)),
+    onSuccess: () => {
+      setError(null);
+      invalidateMenu();
+    },
+    onError: (err: Error) => setError(err.message),
+  });
+
   function startEditItem(item: MenuItem) {
     setEditingItemId(item.id);
     setItemForm({
@@ -251,7 +265,7 @@ export function MenuPage() {
     <div>
       <PageHeader
         title="Menu"
-        subtitle="Create, edit, and remove categories and items for the customer menu."
+        subtitle="Manage catalog items. Mark sold out when finished; activate again when available."
       />
 
       <div className="mb-4 max-w-md">
@@ -387,15 +401,59 @@ export function MenuPage() {
             placeholder="Description (optional)"
             className="min-h-24 w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3 py-2"
           />
-          <input
-            value={itemForm.imageUrl}
-            onChange={(e) =>
-              setItemForm((f) => ({ ...f, imageUrl: e.target.value }))
-            }
-            placeholder="Image URL (optional)"
-            className="h-11 w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
-            type="url"
-          />
+          <div className="space-y-2">
+            <select
+              value={
+                LOCAL_MENU_IMAGE_OPTIONS.some((o) => o.key === itemForm.imageUrl)
+                  ? itemForm.imageUrl
+                  : itemForm.imageUrl
+                    ? "__custom__"
+                    : ""
+              }
+              onChange={(e) => {
+                const v = e.target.value;
+                if (v === "__custom__") {
+                  setItemForm((f) => ({
+                    ...f,
+                    imageUrl: /^https?:\/\//i.test(f.imageUrl)
+                      ? f.imageUrl
+                      : "https://",
+                  }));
+                  return;
+                }
+                setItemForm((f) => ({ ...f, imageUrl: v }));
+              }}
+              className="h-11 w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
+            >
+              <option value="">No image</option>
+              {LOCAL_MENU_IMAGE_OPTIONS.map((opt) => (
+                <option key={opt.key} value={opt.key}>
+                  {opt.label}
+                </option>
+              ))}
+              <option value="__custom__">Custom URL…</option>
+            </select>
+            {itemForm.imageUrl &&
+            !LOCAL_MENU_IMAGE_OPTIONS.some((o) => o.key === itemForm.imageUrl) ? (
+              <input
+                value={itemForm.imageUrl}
+                onChange={(e) =>
+                  setItemForm((f) => ({ ...f, imageUrl: e.target.value }))
+                }
+                placeholder="https://…"
+                className="h-11 w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
+                type="url"
+              />
+            ) : null}
+            {menuImagePreviewSrc(itemForm.imageUrl) ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={menuImagePreviewSrc(itemForm.imageUrl)!}
+                alt=""
+                className="h-20 w-20 rounded-lg object-cover"
+              />
+            ) : null}
+          </div>
           <input
             type="number"
             min="0.01"
@@ -516,10 +574,10 @@ export function MenuPage() {
                   className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
                 >
                   <div className="flex min-w-0 flex-1 items-center gap-3">
-                    {item.imageUrl ? (
+                    {menuImagePreviewSrc(item.imageUrl) ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={item.imageUrl}
+                        src={menuImagePreviewSrc(item.imageUrl)!}
                         alt=""
                         className="h-14 w-14 shrink-0 rounded-lg object-cover"
                       />
@@ -536,7 +594,8 @@ export function MenuPage() {
                         </p>
                       ) : null}
                       <p className="text-sm text-[var(--muted)]">
-                        {item.active ? "Active" : "Inactive"} ·{" "}
+                        {item.active ? "On menu" : "Hidden"} ·{" "}
+                        {item.available !== false ? "Available" : "Sold out"} ·{" "}
                         {Number(item.price).toFixed(2)}
                       </p>
                     </div>
@@ -553,11 +612,26 @@ export function MenuPage() {
                     <Button
                       type="button"
                       size="sm"
+                      variant={
+                        item.available !== false ? "outline" : "default"
+                      }
+                      disabled={
+                        toggleItemAvailable.isPending || !item.active
+                      }
+                      onClick={() => toggleItemAvailable.mutate(item)}
+                    >
+                      {item.available !== false
+                        ? "Mark sold out"
+                        : "Mark available"}
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
                       variant="ghost"
                       disabled={toggleItemActive.isPending}
                       onClick={() => toggleItemActive.mutate(item)}
                     >
-                      {item.active ? "Deactivate" : "Activate"}
+                      {item.active ? "Hide from menu" : "Show on menu"}
                     </Button>
                     <Button
                       type="button"

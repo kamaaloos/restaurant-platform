@@ -23,13 +23,61 @@
 }
 
 body {
-  background:
-    radial-gradient(circle at 100% 0%, rgba(15, 118, 110, 0.12), transparent 42%),
-    linear-gradient(180deg, #e2e8f0 0%, var(--paper) 48%, #dde3ea 100%);
+  background-color: var(--paper);
   color: var(--ink);
   min-height: 100vh;
 }
 
 * {
   box-sizing: border-box;
+}
+
+@keyframes cashier-money-drift {
+  0% {
+    transform: scale(1.08) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.14) translate3d(-1.6%, -1.2%, 0);
+  }
+  100% {
+    transform: scale(1.08) translate3d(0, 0, 0);
+  }
+}
+
+.cashier-money-drift {
+  animation: cashier-money-drift 28s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cashier-money-drift {
+    animation: none !important;
+  }
+}
+
+@media print {
+  body {
+    background: white !important;
+    min-height: auto;
+  }
+
+  .no-print,
+  .cashier-shell-header {
+    display: none !important;
+  }
+
+  .cashier-currency-backdrop {
+    display: none !important;
+  }
+
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  #receipt {
+    box-shadow: none !important;
+    border: none !important;
+  }
 }

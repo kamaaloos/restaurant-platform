@@ -6,15 +6,18 @@ import { useQuery } from "@tanstack/react-query";
 import { customerApi } from "@/lib/api";
 import { usePickupBoardRealtime } from "@/hooks/use-pickup-board-realtime";
 import type { PickupBoardEntry } from "@/lib/types";
+import { formatWalkInQueueCode } from "@/lib/utils";
 import {
   clearStoredDeviceToken,
   getStoredDeviceToken,
   setStoredDeviceToken,
 } from "@/lib/device-token";
 import {
-  LanguageSwitcher,
-  useLocale,
-} from "@/lib/i18n/locale-provider";
+  exchangeDevicePairingCode,
+  looksLikePairingCode,
+} from "@org/shared";
+import { LocaleControls } from "@/lib/currency-provider";
+import { useLocale } from "@/lib/i18n/locale-provider";
 import { Button } from "@/components/ui/button";
 
 export function PickupBoardExperience({ branchId }: { branchId: string }) {
@@ -33,11 +36,14 @@ export function PickupBoardExperience({ branchId }: { branchId: string }) {
 
   const pair = React.useCallback(
     async (raw: string) => {
-      const token = raw.trim();
-      if (!token) return;
+      const value = raw.trim();
+      if (!value) return;
       setPairing(true);
       setPairError(null);
       try {
+        const token = looksLikePairingCode(value)
+          ? (await exchangeDevicePairingCode(value)).token
+          : value;
         await customerApi.getPickupBoard(branchId, token);
         setStoredDeviceToken(token);
         setDeviceToken(token);
@@ -54,9 +60,11 @@ export function PickupBoardExperience({ branchId }: { branchId: string }) {
   );
 
   React.useEffect(() => {
-    const fromQuery = searchParams.get("token")?.trim();
-    if (!fromQuery || !hydrated) return;
-    void pair(fromQuery);
+    const fromCode = searchParams.get("code")?.trim();
+    const fromToken = searchParams.get("token")?.trim();
+    const raw = fromCode || fromToken;
+    if (!raw || !hydrated) return;
+    void pair(raw);
   }, [searchParams, hydrated, pair]);
 
   const { connected } = usePickupBoardRealtime(branchId, deviceToken);
@@ -70,7 +78,7 @@ export function PickupBoardExperience({ branchId }: { branchId: string }) {
 
   if (!hydrated) {
     return (
-      <div className="min-h-screen bg-[var(--paper)] px-6 py-8 text-[var(--muted)]">
+      <div className="min-h-screen px-6 py-8 text-[var(--muted)]">
         {t("loading")}
       </div>
     );
@@ -78,10 +86,10 @@ export function PickupBoardExperience({ branchId }: { branchId: string }) {
 
   if (!deviceToken) {
     return (
-      <div className="min-h-screen bg-[var(--paper)] px-6 py-16 text-[var(--ink)]">
-        <div className="mx-auto max-w-xl">
+      <div className="min-h-screen px-6 py-16 text-[var(--ink)]">
+        <div className="mx-auto max-w-xl rounded-3xl border border-[var(--line)] bg-[var(--surface)]/88 p-8 shadow-[var(--shadow-lift)] backdrop-blur-md">
           <div className="mb-6 flex justify-end">
-            <LanguageSwitcher />
+            <LocaleControls />
           </div>
           <p className="text-sm uppercase tracking-[0.2em] text-[var(--muted)]">
             {t("pickupBoardTitle")}
@@ -127,8 +135,8 @@ export function PickupBoardExperience({ branchId }: { branchId: string }) {
   const board = boardQuery.data;
 
   return (
-    <div className="min-h-screen bg-[var(--paper)] px-6 py-8 text-[var(--ink)]">
-      <header className="mb-10 flex flex-wrap items-end justify-between gap-4">
+    <div className="min-h-screen px-6 py-8 text-[var(--ink)]">
+      <header className="mb-10 flex flex-wrap items-end justify-between gap-4 rounded-3xl border border-[var(--line)] bg-[var(--surface)]/80 px-6 py-5 shadow-[var(--shadow-soft)] backdrop-blur-md">
         <div>
           <p className="text-sm uppercase tracking-[0.2em] text-[var(--muted)]">
             {t("pickupBoardTitle")}
@@ -141,7 +149,7 @@ export function PickupBoardExperience({ branchId }: { branchId: string }) {
           </p>
         </div>
         <div className="flex flex-col items-end gap-3">
-          <LanguageSwitcher />
+          <LocaleControls />
           <p className="text-sm text-[var(--muted)]">
             {t("live")}:{" "}
             <span className={connected ? "text-[var(--accent)]" : undefined}>
@@ -162,7 +170,7 @@ export function PickupBoardExperience({ branchId }: { branchId: string }) {
       </header>
 
       {boardQuery.isError ? (
-        <div className="space-y-4">
+        <div className="space-y-4 rounded-3xl border border-[var(--danger)] bg-[var(--surface)]/90 p-5 backdrop-blur-md">
           <p className="text-[var(--danger)]">
             {(boardQuery.error as Error).message}
           </p>
@@ -176,6 +184,10 @@ export function PickupBoardExperience({ branchId }: { branchId: string }) {
             {t("unpairDevice")}
           </Button>
         </div>
+      ) : boardQuery.isPending && !board ? (
+        <p className="rounded-3xl border border-[var(--line)] bg-[var(--surface)]/85 px-6 py-10 text-center text-lg text-[var(--muted)] backdrop-blur-md">
+          {t("loading")}
+        </p>
       ) : (
         <div className="grid gap-8 lg:grid-cols-2">
           <BoardColumn
@@ -209,10 +221,10 @@ function BoardColumn({
 }) {
   return (
     <section
-      className={`rounded-3xl border p-6 ${
+      className={`rounded-3xl border p-6 shadow-[var(--shadow-soft)] backdrop-blur-md ${
         tone === "ready"
-          ? "border-[var(--accent)] bg-[var(--accent-soft)]"
-          : "border-[var(--line)] bg-[var(--surface)]"
+          ? "border-[var(--accent)] bg-[var(--surface)]/88"
+          : "border-[var(--line)] bg-[var(--surface)]/82"
       }`}
     >
       <h2 className="font-[family-name:var(--font-display)] text-4xl">
@@ -227,13 +239,13 @@ function BoardColumn({
           {entries.map((entry) => (
             <li
               key={entry.orderId}
-              className={`flex min-h-28 items-center justify-center rounded-2xl text-center font-[family-name:var(--font-display)] text-5xl tabular-nums ${
+              className={`flex min-h-32 items-center justify-center rounded-2xl px-2 text-center font-[family-name:var(--font-display)] text-4xl font-semibold tabular-nums shadow-[var(--shadow-lift)] sm:text-5xl lg:text-6xl ${
                 tone === "ready"
-                  ? "bg-[var(--accent)] text-[var(--accent-foreground)]"
-                  : "bg-[var(--paper)] text-[var(--ink)]"
+                  ? "bg-[var(--accent)] text-[var(--ink)] ring-2 ring-[var(--accent)]"
+                  : "bg-white text-[var(--ink)] ring-1 ring-[var(--line)]"
               }`}
             >
-              {entry.queueNumber}
+              {formatWalkInQueueCode(entry.queueNumber) ?? entry.queueNumber}
             </li>
           ))}
         </ul>

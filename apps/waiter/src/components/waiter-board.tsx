@@ -13,7 +13,7 @@ import {
   type ServiceRequest,
   type WaiterOrder,
 } from "@/lib/types";
-import { cn, elapsedLabel } from "@/lib/utils";
+import { cn, elapsedLabel, formatWalkInQueueCode } from "@/lib/utils";
 import { useWaiterRealtime } from "@/hooks/use-waiter-realtime";
 import { Button } from "@/components/ui/button";
 
@@ -22,6 +22,7 @@ export function WaiterBoard() {
   const queryClient = useQueryClient();
   const [token, setToken] = React.useState<string | null>(null);
   const [now, setNow] = React.useState(() => Date.now());
+  const [actionError, setActionError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     const stored = getStoredDeviceToken();
@@ -69,19 +70,23 @@ export function WaiterBoard() {
       status: "SERVED" | "COMPLETED";
     }) => waiterApi.updateStatus(token!, orderId, status),
     onSuccess: () => {
+      setActionError(null);
       void queryClient.invalidateQueries({
         queryKey: ["waiter-orders", token],
       });
     },
+    onError: (err: Error) => setActionError(err.message),
   });
 
   const fireNext = useMutation({
     mutationFn: (orderId: string) => waiterApi.fireNext(token!, orderId),
     onSuccess: () => {
+      setActionError(null);
       void queryClient.invalidateQueries({
         queryKey: ["waiter-orders", token],
       });
     },
+    onError: (err: Error) => setActionError(err.message),
   });
 
   const acknowledge = useMutation({
@@ -139,8 +144,8 @@ export function WaiterBoard() {
   const readyCount = orders.filter((o) => o.status === "READY").length;
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="flex items-center justify-between gap-4 border-b border-[var(--line)] bg-[var(--surface)]/90 px-6 py-4 backdrop-blur">
+    <div className="relative z-10 flex min-h-screen flex-col">
+      <header className="flex items-center justify-between gap-4 border-b border-[var(--line)] bg-[var(--surface)]/85 px-6 py-4 backdrop-blur-md">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted)]">
             Waiter Display
@@ -179,8 +184,14 @@ export function WaiterBoard() {
         </div>
       </header>
 
+      {actionError ? (
+        <p className="border-b border-[var(--line)] bg-[var(--danger-soft)] px-6 py-3 text-sm text-[var(--danger)]">
+          {actionError}
+        </p>
+      ) : null}
+
       {requests.length > 0 ? (
-        <section className="border-b border-[var(--line)] bg-[var(--signal-soft)] px-4 py-4">
+        <section className="border-b border-[var(--line)] bg-[var(--signal-soft)]/85 px-4 py-4 backdrop-blur-sm">
           <div className="mb-3 flex items-end justify-between">
             <h2 className="font-[family-name:var(--font-display)] text-2xl tracking-wide">
               Table calls
@@ -210,7 +221,8 @@ export function WaiterBoard() {
         </section>
       ) : null}
 
-      <main className="grid flex-1 gap-4 p-4 lg:grid-cols-3">
+      <main className="flex flex-1 items-center justify-center px-4 py-6">
+        <div className="grid w-full max-w-[1400px] grid-cols-1 gap-4 lg:grid-cols-3">
         {ORDER_COLUMNS.map((column) => {
           const columnOrders = orders.filter((order) =>
             column.statuses.includes(order.status as never),
@@ -219,7 +231,7 @@ export function WaiterBoard() {
           return (
             <section
               key={column.key}
-              className="flex min-h-[60vh] flex-col rounded-2xl border border-[var(--line)] bg-[var(--surface)]/70"
+              className="flex h-[48vh] max-h-[520px] min-h-[280px] flex-col rounded-2xl border border-[var(--line)] bg-[var(--surface)]/88 backdrop-blur-sm"
             >
               <div className="flex items-end justify-between border-b border-[var(--line)] px-4 py-3">
                 <div>
@@ -237,7 +249,7 @@ export function WaiterBoard() {
 
               <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-3">
                 {columnOrders.length === 0 ? (
-                  <p className="px-2 py-8 text-center text-sm text-[var(--muted)]">
+                  <p className="m-auto px-2 py-6 text-center text-sm text-[var(--muted)]">
                     Nothing here
                   </p>
                 ) : (
@@ -267,6 +279,7 @@ export function WaiterBoard() {
             </section>
           );
         })}
+        </div>
       </main>
     </div>
   );
@@ -359,7 +372,7 @@ function OrderCard({
         <div>
           <p className="font-[family-name:var(--font-display)] text-3xl leading-none tracking-tight">
             {order.mode === "WALK_IN" || order.queueNumber != null
-              ? `#${order.queueNumber ?? "—"}`
+              ? (formatWalkInQueueCode(order.queueNumber) ?? "—")
               : order.table?.number
                 ? `T${order.table.number}`
                 : "Walk-in"}
@@ -367,6 +380,16 @@ function OrderCard({
           <p className="mt-1 text-sm text-[var(--muted)]">
             {order.mode === "WALK_IN" ? "Walk-in · " : ""}
             {order.customerName ?? "Guest"} · {order.status}
+            {order.isRush ? (
+              <span className="ml-2 rounded bg-[var(--signal-soft)] px-1.5 py-0.5 text-xs font-semibold text-[var(--signal)]">
+                RUSH
+              </span>
+            ) : null}
+            {order.isVip ? (
+              <span className="ml-2 rounded bg-[var(--surface-2)] px-1.5 py-0.5 text-xs font-semibold">
+                VIP
+              </span>
+            ) : null}
           </p>
         </div>
         <time
@@ -427,7 +450,11 @@ function OrderCard({
               onAdvance(order.mode === "WALK_IN" ? "COMPLETED" : "SERVED")
             }
           >
-            {busy ? "Updating…" : "Picked up"}
+            {busy
+              ? "Updating…"
+              : order.mode === "WALK_IN"
+                ? "Picked up"
+                : "Mark served"}
           </Button>
         ) : null}
 
@@ -438,8 +465,9 @@ function OrderCard({
             className="w-full"
             disabled={busy}
             onClick={() => onAdvance("COMPLETED")}
+            title="Requires full payment at cashier first"
           >
-            {busy ? "Updating…" : "Complete"}
+            {busy ? "Updating…" : "Close check"}
           </Button>
         ) : null}
       </div>

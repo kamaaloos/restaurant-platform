@@ -1,14 +1,46 @@
 import type { Locale } from "./locales";
+import type { MessageKey } from "./messages";
 
 const MONEY_LOCALES: Record<Locale, string> = {
   en: "en-US",
   fi: "fi-FI",
-  ar: "ar",
+  ar: "ar-EG",
   so: "so-SO",
 };
 
+const EASTERN_ARABIC_DIGITS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
+
 export function moneyLocale(locale: Locale) {
   return MONEY_LOCALES[locale];
+}
+
+/** Convert Western digits to Eastern Arabic digits when locale is Arabic. */
+export function localizeDigits(text: string, locale: Locale): string {
+  if (locale !== "ar") return text;
+  return text.replace(/\d/g, (d) => EASTERN_ARABIC_DIGITS[Number(d)]!);
+}
+
+/** Map free-text admin category names → i18n keys (EN DB labels). */
+export function categoryMessageKey(name: string): MessageKey | null {
+  const n = name.toLowerCase().trim();
+  if (/shake/.test(n)) return "catShakes";
+  if (/hot\s*drink/.test(n)) return "catHotDrinks";
+  if (/soft\s*drink|cold\s*drink/.test(n)) return "catSoftDrinks";
+  if (/desert|dessert|sweet/.test(n)) return "catDesserts";
+  if (/^salads?$|salata/.test(n)) return "catSalads";
+  if (/starter|appetizer|alkur|lisuk/.test(n)) return "catStarters";
+  if (/main\s*dish/.test(n)) return "catMainDishes";
+  if (/^mains?$/.test(n)) return "catMains";
+  if (/^drinks?$|^beverages?$/.test(n)) return "catDrinks";
+  return null;
+}
+
+export function localizedCategoryName(
+  name: string,
+  t: (key: MessageKey) => string,
+): string {
+  const key = categoryMessageKey(name);
+  return key ? t(key) : name;
 }
 
 export function statusMessageKey(

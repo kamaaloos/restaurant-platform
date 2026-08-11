@@ -2,7 +2,7 @@ import { LoginForm } from "@/components/login-form";
 
 export default function LoginPage() {
   return (
-    <main className="relative mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6 py-16">
+    <main className="relative z-10 mx-auto flex min-h-screen max-w-lg flex-col justify-center px-6 py-16">
       <p className="mb-2 text-sm font-semibold uppercase tracking-[0.24em] text-[var(--accent)]">
         Restaurant platform
       </p>
@@ -12,7 +12,9 @@ export default function LoginPage() {
       <p className="mb-8 text-[var(--muted)]">
         Sign in to take payments for floor orders.
       </p>
-      <LoginForm />
+      <div className="rounded-2xl border border-[var(--line)] bg-[var(--surface)]/90 p-6 shadow-sm backdrop-blur-sm">
+        <LoginForm />
+      </div>
     </main>
   );
 }

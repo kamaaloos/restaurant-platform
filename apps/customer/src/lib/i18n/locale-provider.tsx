@@ -100,3 +100,4 @@ export function LanguageSwitcher({ className = "" }: { className?: string }) {
     </label>
   );
 }
+

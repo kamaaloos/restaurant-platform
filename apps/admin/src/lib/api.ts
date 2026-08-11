@@ -125,6 +125,12 @@ export const adminApi = {
   rotateDeviceToken: (id: string) =>
     request<Device>(`/devices/${id}/rotate-token`, { method: "POST" }),
 
+  issueDevicePairingCode: (id: string) =>
+    request<Device>(`/devices/${id}/pairing-code`, { method: "POST" }),
+
+  revokeDevice: (id: string) =>
+    request<Device>(`/devices/${id}/revoke`, { method: "POST" }),
+
   listCategories: (restaurantId?: string) =>
     request<MenuCategory[]>(
       restaurantId
@@ -185,11 +191,18 @@ export const adminApi = {
       description?: string | null;
       imageUrl?: string | null;
       active?: boolean;
+      available?: boolean;
     },
   ) =>
     request<MenuItem>(`/menu/items/${id}`, {
       method: "PATCH",
       body: JSON.stringify(body),
+    }),
+
+  setItemAvailability: (id: string, available: boolean) =>
+    request<MenuItem>(`/menu/items/${id}/availability`, {
+      method: "PATCH",
+      body: JSON.stringify({ available }),
     }),
 
   deleteItem: (id: string) =>

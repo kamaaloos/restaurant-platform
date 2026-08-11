@@ -2,6 +2,7 @@ import { createHttpClient } from "@org/shared";
 import type {
   CustomerMenu,
   CustomerOrder,
+  CustomerServiceRequest,
   MenuItem,
   PickupBoard,
   WalkInBranch,
@@ -22,11 +23,15 @@ export const customerApi = {
     walkInToken: string,
     body: {
       customerName?: string;
+      isRush?: boolean;
+      isVip?: boolean;
       items: Array<{
         menuItemId: string;
         quantity: number;
         notes?: string;
         modifierOptionIds?: string[];
+        seatNumber?: number;
+        course?: string;
       }>;
     },
   ) =>
@@ -42,6 +47,12 @@ export const customerApi = {
       { auth: false },
     ),
 
+  cancelWalkInOrder: (walkInToken: string, orderId: string) =>
+    request<CustomerOrder>(
+      `/customer/walk-in/${walkInToken}/orders/${orderId}/cancel`,
+      { method: "POST", auth: false },
+    ),
+
   paymentConfig: () =>
     request<{
       provider: "none" | "mock" | "stripe";
@@ -51,7 +62,7 @@ export const customerApi = {
   payWalkInOrder: (
     walkInToken: string,
     orderId: string,
-    method: "CARD" | "CASH" | "ONLINE",
+    method: "CARD" | "CARD_MANUAL" | "CASH" | "ONLINE",
   ) =>
     request<{
       payment: {
@@ -87,11 +98,15 @@ export const customerApi = {
     token: string,
     body: {
       customerName?: string;
+      isRush?: boolean;
+      isVip?: boolean;
       items: Array<{
         menuItemId: string;
         quantity: number;
         notes?: string;
         modifierOptionIds?: string[];
+        seatNumber?: number;
+        course?: string;
       }>;
     },
   ) =>
@@ -109,6 +124,17 @@ export const customerApi = {
       auth: false,
     }),
 
+  cancelOrder: (token: string, orderId: string) =>
+    request<CustomerOrder>(`/customer/${token}/orders/${orderId}/cancel`, {
+      method: "POST",
+      auth: false,
+    }),
+
+  listServiceRequests: (token: string) =>
+    request<CustomerServiceRequest[]>(`/customer/${token}/service-requests`, {
+      auth: false,
+    }),
+
   createServiceRequest: (
     token: string,
     body: {
@@ -117,7 +143,7 @@ export const customerApi = {
       note?: string;
     },
   ) =>
-    request(`/customer/${token}/service-requests`, {
+    request<CustomerServiceRequest>(`/customer/${token}/service-requests`, {
       method: "POST",
       auth: false,
       body: JSON.stringify(body),

@@ -11,10 +11,12 @@ export function useCustomerRealtime(token: string) {
       "v1.order.status.changed",
       "v1.order.cancelled",
       "v1.service-request.updated",
+      "v1.service-request.created",
     ],
     invalidateKeys: [
       ["orders", token],
       ["order", token],
+      ["service-requests", token],
     ],
   });
 }

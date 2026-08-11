@@ -23,6 +23,8 @@ export type WaiterOrder = {
   mode?: "DINE_IN" | "WALK_IN" | string;
   queueNumber?: number | null;
   customerName: string | null;
+  isRush?: boolean;
+  isVip?: boolean;
   createdAt: string;
   updatedAt: string;
   currency: string;
@@ -57,16 +59,16 @@ export const ORDER_COLUMNS: Array<{
   statuses: WaiterOrderStatus[];
 }> = [
   {
-    key: "ready",
-    title: "Ready",
-    hint: "Pick up",
-    statuses: ["READY"],
-  },
-  {
     key: "kitchen",
     title: "In kitchen",
     hint: "Cooking",
     statuses: ["NEW", "ACCEPTED", "PREPARING"],
+  },
+  {
+    key: "ready",
+    title: "Ready",
+    hint: "Pick up",
+    statuses: ["READY"],
   },
   {
     key: "served",

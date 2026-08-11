@@ -18,6 +18,8 @@ export type KitchenTicket = {
   mode?: "DINE_IN" | "WALK_IN" | string;
   queueNumber?: number | null;
   customerName: string | null;
+  isRush?: boolean;
+  isVip?: boolean;
   createdAt: string;
   updatedAt: string;
   ageSeconds: number;
@@ -47,6 +49,13 @@ export type KitchenDashboard = {
   averageWaitMinutes: number;
   averagePrepTimeMinutes: number | null;
   longestWaitingMinutes: number;
+  prepP95Seconds?: number | null;
+  paymentSettleP95Seconds?: number | null;
+  averagePaymentSettleSeconds?: number | null;
+  prepSlo?: "ok" | "breach" | "insufficient_data";
+  paymentSlo?: "ok" | "breach" | "insufficient_data";
+  sloPrepThresholdSeconds?: number;
+  sloPaymentThresholdSeconds?: number;
 };
 
 export const NEXT_ACTIONS: Partial<

@@ -3,46 +3,101 @@
 import * as React from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { cashierApi } from "@/lib/api";
-import { formatMoney, shortId } from "@/lib/utils";
+import { collectTerminalPayment, getTerminalMode } from "@/lib/terminal";
+import { formatMoney, formatWalkInQueueCode, shortId } from "@/lib/utils";
 import type { Order, OrderItem, Payment } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
+import { TerminalReaderSettings } from "@/components/terminal-reader-settings";
+import { openReceiptWindow } from "@/components/receipt-view";
+import { openPickupTicketWindow } from "@/components/pickup-ticket-view";
+import { NewWalkInPanel } from "@/components/new-walk-in-panel";
+import { MenuAvailabilityPanel } from "@/components/menu-availability-panel";
 import {
   BranchSelect,
   useSelectedBranch,
 } from "@/hooks/use-selected-branch";
 import { useCashierRealtime } from "@/hooks/use-cashier-realtime";
+import { getStoredUser } from "@/lib/session";
 
-type PayMethod = "CASH" | "CARD" | "ONLINE";
+type PayMethod = "CASH" | "CARD" | "CARD_MANUAL" | "ONLINE";
 
 const ONLINE_ENV =
   process.env.NEXT_PUBLIC_ONLINE_PAYMENTS === "1" ||
   process.env.NEXT_PUBLIC_ONLINE_PAYMENTS === "true";
 
-function orderBalance(order: Order) {
-  if (order.balanceDue != null) return Number(order.balanceDue);
-  if (!order.payment) return Number(order.total);
-  if (
-    order.payment.status === "PENDING" ||
-    order.payment.status === "FAILED"
-  ) {
-    return Number(order.total);
-  }
-  return 0;
-}
+const TERMINAL_ENV =
+  process.env.NEXT_PUBLIC_STRIPE_TERMINAL === "1" ||
+  process.env.NEXT_PUBLIC_STRIPE_TERMINAL === "true";
 
 function orderPayments(order: Order): Payment[] {
   if (order.payments?.length) return order.payments;
   return order.payment ? [order.payment] : [];
 }
 
+/** Cover toward order.total (excludes tip). */
+function paymentCover(payment: Payment): number {
+  return Math.max(0, Number(payment.amount) - Number(payment.tipAmount ?? 0));
+}
+
+/**
+ * Settled cover (PAID / partial refund) — not PENDING holds.
+ * Refunds apply tip-first, then to order cover.
+ */
+function settledCover(order: Order): number {
+  let total = 0;
+  for (const payment of orderPayments(order)) {
+    if (
+      payment.status !== "PAID" &&
+      payment.status !== "PARTIALLY_REFUNDED"
+    ) {
+      continue;
+    }
+    const tip = Number(payment.tipAmount ?? 0);
+    const refunded = Number(payment.refundedAmount ?? 0);
+    const cover = paymentCover(payment);
+    const coverRefunded = Math.max(0, refunded - tip);
+    total += Math.max(0, cover - coverRefunded);
+  }
+  return Number(total.toFixed(2));
+}
+
+/**
+ * What the guest still owes for till display.
+ * PENDING payments reserve capacity on the API but are not "paid" yet —
+ * those tickets belong in Needs payment, not Settled.
+ */
+function amountOwed(order: Order): number {
+  return Number(Math.max(0, Number(order.total) - settledCover(order)).toFixed(2));
+}
+
+function needsPayment(order: Order): boolean {
+  if (order.status === "PENDING_PAYMENT") return true;
+  if (amountOwed(order) > 0.001) return true;
+  return orderPayments(order).some(
+    (p) => p.status === "PENDING" || p.status === "FAILED",
+  );
+}
+
+/** Remaining creatable payment room (respects PENDING holds — matches API). */
+function orderBalance(order: Order) {
+  if (order.balanceDue != null) return Number(order.balanceDue);
+  return amountOwed(order);
+}
+
+/**
+ * Items already claimed by a payment.
+ * PENDING / PAID / PARTIALLY_REFUNDED / REFUNDED own lines (full refund does not reopen).
+ * FAILED / VOIDED free lines.
+ */
 function allocatedItemIds(order: Order): Set<string> {
   const ids = new Set<string>();
   for (const payment of orderPayments(order)) {
     if (
       payment.status !== "PENDING" &&
       payment.status !== "PAID" &&
-      payment.status !== "PARTIALLY_REFUNDED"
+      payment.status !== "PARTIALLY_REFUNDED" &&
+      payment.status !== "REFUNDED"
     ) {
       continue;
     }
@@ -58,11 +113,20 @@ export function PaymentsBoard() {
   const { branchId, setBranchId, branches, isLoading: branchesLoading } =
     useSelectedBranch();
   const [error, setError] = React.useState<string | null>(null);
+  const [statusMsg, setStatusMsg] = React.useState<string | null>(null);
   const [tips, setTips] = React.useState<Record<string, string>>({});
   const [selectedItems, setSelectedItems] = React.useState<
     Record<string, string[]>
   >({});
   const { connected } = useCashierRealtime(branchId || null);
+
+  const dayRange = React.useMemo(() => {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(start);
+    end.setDate(end.getDate() + 1);
+    return { from: start.toISOString(), to: end.toISOString() };
+  }, []);
 
   const providerQuery = useQuery({
     queryKey: ["payment-provider-config"],
@@ -71,6 +135,8 @@ export function PaymentsBoard() {
 
   const onlineEnabled =
     ONLINE_ENV || providerQuery.data?.onlineEnabled === true;
+  const terminalEnabled =
+    TERMINAL_ENV || providerQuery.data?.terminalEnabled === true;
   const provider = providerQuery.data?.provider ?? "none";
 
   const ordersQuery = useQuery({
@@ -80,30 +146,90 @@ export function PaymentsBoard() {
     refetchInterval: connected ? false : 8_000,
   });
 
+  const todayPaidQuery = useQuery({
+    queryKey: ["cashier-today-paid", branchId, dayRange.from],
+    queryFn: () =>
+      cashierApi.listTodayPaid(branchId, dayRange.from, dayRange.to),
+    enabled: !!branchId,
+    refetchInterval: connected ? false : 8_000,
+  });
+
+  const invalidateTill = () => {
+    void queryClient.invalidateQueries({
+      queryKey: ["cashier-orders", branchId],
+    });
+    void queryClient.invalidateQueries({
+      queryKey: ["cashier-today-paid", branchId, dayRange.from],
+    });
+  };
+
+  const selectedBranch = branches.find((b) => b.id === branchId);
+  const branchLabel = selectedBranch?.name ?? undefined;
+  const restaurantId =
+    selectedBranch?.restaurantId ?? getStoredUser()?.restaurantId ?? null;
+
   const pay = useMutation({
-    mutationFn: (input: {
+    mutationFn: async (input: {
       orderId: string;
       method: PayMethod;
       tipAmount?: number;
       orderItemIds?: string[];
-      status: "PAID" | "PENDING";
-    }) => cashierApi.createPayment(input),
+    }) => {
+      let payment = await cashierApi.createPayment(input);
+      if (payment.clientSecret) {
+        setStatusMsg(
+          getTerminalMode() === "simulated"
+            ? "Simulated reader: presenting test card 4242… (no tap UI)"
+            : "Waiting for card on Terminal reader…",
+        );
+        await collectTerminalPayment(payment.clientSecret);
+        setStatusMsg("Waiting for Stripe webhook confirmation…");
+        payment = await cashierApi.waitForTerminalPaid(
+          input.orderId,
+          payment.id,
+        );
+        setStatusMsg("Card payment succeeded.");
+      }
+      return payment;
+    },
     onSuccess: (payment, vars) => {
       setError(null);
       setSelectedItems((prev) => ({ ...prev, [vars.orderId]: [] }));
       if (payment.checkoutUrl) {
         window.open(payment.checkoutUrl, "_blank", "noopener,noreferrer");
+      } else if (payment.status === "PAID") {
+        openReceiptWindow(vars.orderId, branchLabel);
       }
-      void queryClient.invalidateQueries({ queryKey: ["cashier-orders"] });
+      invalidateTill();
+      window.setTimeout(() => setStatusMsg(null), 2500);
+    },
+    onError: (err: Error) => {
+      setStatusMsg(null);
+      setError(err.message);
+    },
+  });
+
+  const recordPendingCash = useMutation({
+    mutationFn: (input: {
+      orderId: string;
+      tipAmount?: number;
+      orderItemIds?: string[];
+    }) => cashierApi.createPendingCash(input),
+    onSuccess: () => {
+      setError(null);
+      invalidateTill();
     },
     onError: (err: Error) => setError(err.message),
   });
 
   const markPaid = useMutation({
     mutationFn: (paymentId: string) => cashierApi.markPaid(paymentId),
-    onSuccess: () => {
+    onSuccess: (payment) => {
       setError(null);
-      void queryClient.invalidateQueries({ queryKey: ["cashier-orders"] });
+      if (payment.status === "PAID") {
+        openReceiptWindow(payment.orderId, branchLabel);
+      }
+      invalidateTill();
     },
     onError: (err: Error) => setError(err.message),
   });
@@ -112,25 +238,23 @@ export function PaymentsBoard() {
     mutationFn: (paymentId: string) => cashierApi.refundPayment(paymentId),
     onSuccess: () => {
       setError(null);
-      void queryClient.invalidateQueries({ queryKey: ["cashier-orders"] });
+      invalidateTill();
     },
     onError: (err: Error) => setError(err.message),
   });
 
   const orders = ordersQuery.data ?? [];
-  const unpaid = orders.filter((o) => orderBalance(o) > 0.001);
-  const settled = orders.filter((o) => orderBalance(o) <= 0.001);
+  const todayPaid = todayPaidQuery.data ?? [];
+  const unpaid = orders.filter((o) => needsPayment(o));
+  const settled = orders.filter((o) => !needsPayment(o));
   const currency =
-    orders[0]?.currency ?? orders[0]?.payment?.currency ?? "USD";
-  const unpaidTotal = unpaid.reduce((sum, o) => sum + orderBalance(o), 0);
-  const paidTotal = settled.reduce((sum, o) => {
-    return (
-      sum +
-      orderPayments(o)
-        .filter((p) => p.status === "PAID" || p.status === "PARTIALLY_REFUNDED")
-        .reduce((s, p) => s + Number(p.amount) - Number(p.refundedAmount ?? 0), 0)
-    );
-  }, 0);
+    orders[0]?.currency ??
+    todayPaid[0]?.currency ??
+    orders[0]?.payment?.currency ??
+    "EUR";
+  const unpaidTotal = unpaid.reduce((sum, o) => sum + amountOwed(o), 0);
+  const paidTotal = settled.reduce((sum, o) => sum + settledCover(o), 0);
+  const todaySales = todayPaid.reduce((sum, o) => sum + settledCover(o), 0);
 
   function tipFor(orderId: string) {
     const raw = tips[orderId]?.trim();
@@ -139,12 +263,20 @@ export function PaymentsBoard() {
     return Number.isFinite(n) && n >= 0 ? n : 0;
   }
 
+  function printReceipt(orderId: string) {
+    openReceiptWindow(orderId, branchLabel);
+  }
+
   return (
     <div>
       <PageHeader
         title="Payments"
-        subtitle={`Split by item · tips · refunds · ONLINE via ${provider}.`}
+        subtitle={`Split by item · tips · refunds · ONLINE via ${provider}${
+          terminalEnabled ? " · CARD via Terminal" : ""
+        }.`}
       />
+
+      <TerminalReaderSettings enabled={terminalEnabled} />
 
       <div className="mb-4 flex flex-wrap items-end justify-between gap-4">
         <div className="max-w-md flex-1">
@@ -163,7 +295,18 @@ export function PaymentsBoard() {
         </p>
       </div>
 
-      <div className="mb-6 grid gap-3 sm:grid-cols-3">
+      {branchId ? (
+        <>
+          <NewWalkInPanel
+            branchId={branchId}
+            branchName={branchLabel}
+            restaurantId={restaurantId}
+          />
+          <MenuAvailabilityPanel restaurantId={restaurantId} />
+        </>
+      ) : null}
+
+      <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Stat
           label="Open unpaid"
           value={formatMoney(unpaidTotal, currency)}
@@ -175,6 +318,11 @@ export function PaymentsBoard() {
           hint={`${settled.length} orders`}
         />
         <Stat
+          label="Today's paid"
+          value={formatMoney(todaySales, currency)}
+          hint={`${todayPaid.length} closed`}
+        />
+        <Stat
           label="Till total"
           value={formatMoney(unpaidTotal + paidTotal, currency)}
           hint="Active tickets"
@@ -184,6 +332,12 @@ export function PaymentsBoard() {
       {error ? (
         <p className="mb-4 rounded-md bg-[var(--danger-soft)] px-3 py-2 text-sm text-[var(--danger)]">
           {error}
+        </p>
+      ) : null}
+
+      {statusMsg ? (
+        <p className="mb-4 rounded-md border border-[var(--line)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--ink)]">
+          {statusMsg}
         </p>
       ) : null}
 
@@ -209,11 +363,16 @@ export function PaymentsBoard() {
                   const pending = orderPayments(order).find(
                     (p) => p.status === "PENDING",
                   );
+                  const canCreatePayment = orderBalance(order) > 0.001;
                   return (
                     <OrderCard
                       key={order.id}
                       order={order}
-                      busy={pay.isPending || markPaid.isPending}
+                      busy={
+                        pay.isPending ||
+                        markPaid.isPending ||
+                        recordPendingCash.isPending
+                      }
                       tipValue={tips[order.id] ?? ""}
                       selectedIds={selectedItems[order.id] ?? []}
                       onTipChange={(value) =>
@@ -228,33 +387,73 @@ export function PaymentsBoard() {
                           return { ...prev, [order.id]: next };
                         })
                       }
-                      onPay={(method) => {
-                        const ids = selectedItems[order.id] ?? [];
-                        pay.mutate({
-                          orderId: order.id,
-                          method,
-                          tipAmount: tipFor(order.id) || undefined,
-                          orderItemIds: ids.length ? ids : undefined,
-                          status: method === "ONLINE" ? "PENDING" : "PAID",
-                        });
-                      }}
-                      onPend={() =>
-                        pay.mutate({
-                          orderId: order.id,
-                          method: "CASH",
-                          tipAmount: tipFor(order.id) || undefined,
-                          orderItemIds: (selectedItems[order.id] ?? []).length
-                            ? selectedItems[order.id]
-                            : undefined,
-                          status: "PENDING",
-                        })
+                      onPay={
+                        canCreatePayment
+                          ? (method) => {
+                              const ids = selectedItems[order.id] ?? [];
+                              pay.mutate({
+                                orderId: order.id,
+                                method,
+                                tipAmount: tipFor(order.id) || undefined,
+                                orderItemIds: ids.length ? ids : undefined,
+                              });
+                            }
+                          : undefined
+                      }
+                      onPend={
+                        canCreatePayment
+                          ? () => {
+                              const ids = selectedItems[order.id] ?? [];
+                              recordPendingCash.mutate({
+                                orderId: order.id,
+                                tipAmount: tipFor(order.id) || undefined,
+                                orderItemIds: ids.length ? ids : undefined,
+                              });
+                            }
+                          : undefined
                       }
                       onMarkPaid={
-                        pending && pending.provider !== "stripe"
+                        pending &&
+                        (pending.method === "CASH" ||
+                          pending.method === "CARD_MANUAL") &&
+                        pending.provider !== "stripe"
                           ? () => markPaid.mutate(pending.id)
                           : undefined
                       }
+                      onReconcileTerminal={
+                        pending?.provider === "stripe" &&
+                        pending.method === "CARD"
+                          ? () => {
+                              setStatusMsg(
+                                "Checking Stripe PaymentIntent status…",
+                              );
+                              void cashierApi
+                                .confirmTerminal(pending.id)
+                                .then((payment) => {
+                                  setStatusMsg(null);
+                                  if (payment.status === "PAID") {
+                                    openReceiptWindow(
+                                      payment.orderId,
+                                      branchLabel,
+                                    );
+                                  }
+                                  invalidateTill();
+                                })
+                                .catch((err: Error) => {
+                                  setStatusMsg(null);
+                                  setError(err.message);
+                                });
+                            }
+                          : undefined
+                      }
+                      onPrintTicket={
+                        order.mode === "WALK_IN" || order.queueNumber != null
+                          ? () =>
+                              openPickupTicketWindow(order.id, branchLabel)
+                          : undefined
+                      }
                       onlineEnabled={onlineEnabled}
+                      terminalEnabled={terminalEnabled}
                     />
                   );
                 })}
@@ -280,6 +479,54 @@ export function PaymentsBoard() {
                       key={order.id}
                       order={order}
                       busy={refund.isPending}
+                      onPrintReceipt={() => printReceipt(order.id)}
+                      onRefund={
+                        refundable
+                          ? () => {
+                              if (
+                                window.confirm(
+                                  `Refund remaining balance for ${shortId(order.id)}?`,
+                                )
+                              ) {
+                                refund.mutate(refundable.id);
+                              }
+                            }
+                          : undefined
+                      }
+                    />
+                  );
+                })}
+              </div>
+            )}
+          </section>
+
+          <section>
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
+              Today&apos;s paid ({todayPaid.length})
+            </h2>
+            {todayPaidQuery.isLoading ? (
+              <p className="text-[var(--muted)]">Loading today&apos;s paid…</p>
+            ) : todayPaidQuery.isError ? (
+              <p className="text-[var(--danger)]">
+                {(todayPaidQuery.error as Error).message}
+              </p>
+            ) : todayPaid.length === 0 ? (
+              <p className="text-[var(--muted)]">
+                No closed paid orders yet today.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {todayPaid.map((order) => {
+                  const refundable = orderPayments(order).find(
+                    (p) =>
+                      p.status === "PAID" || p.status === "PARTIALLY_REFUNDED",
+                  );
+                  return (
+                    <OrderCard
+                      key={order.id}
+                      order={order}
+                      busy={refund.isPending}
+                      onPrintReceipt={() => printReceipt(order.id)}
                       onRefund={
                         refundable
                           ? () => {
@@ -337,8 +584,12 @@ function OrderCard({
   onPay,
   onPend,
   onMarkPaid,
+  onReconcileTerminal,
   onRefund,
+  onPrintReceipt,
+  onPrintTicket,
   onlineEnabled,
+  terminalEnabled,
 }: {
   order: Order;
   busy: boolean;
@@ -349,12 +600,16 @@ function OrderCard({
   onPay?: (method: PayMethod) => void;
   onPend?: () => void;
   onMarkPaid?: () => void;
+  onReconcileTerminal?: () => void;
   onRefund?: () => void;
+  onPrintReceipt?: () => void;
+  onPrintTicket?: () => void;
   onlineEnabled?: boolean;
+  terminalEnabled?: boolean;
 }) {
   const currency = order.currency ?? order.payment?.currency ?? "USD";
   const total = Number(order.total);
-  const due = orderBalance(order);
+  const due = amountOwed(order);
   const tip = Number(tipValue || 0) || 0;
   const allocated = allocatedItemIds(order);
   const selected = (selectedIds ?? [])
@@ -374,7 +629,7 @@ function OrderCard({
         <div>
           <p className="text-lg font-semibold">
             {order.mode === "WALK_IN" || order.queueNumber != null
-              ? `#${order.queueNumber ?? "—"}`
+              ? (formatWalkInQueueCode(order.queueNumber) ?? "—")
               : `Table ${order.table?.number ?? "—"}`}{" "}
             · {order.status}
             {order.mode === "WALK_IN" ? " · Walk-in" : ""}
@@ -459,23 +714,44 @@ function OrderCard({
             className="mt-1 h-10 w-full max-w-[10rem] rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
             placeholder="0.00"
           />
+          <span className="mt-1 block text-xs text-[var(--muted)]">
+            Split is by whole line items (not per unit of quantity).
+          </span>
         </label>
       ) : null}
 
-      {(onPay || onPend || onMarkPaid || onRefund) && (
+      {(onPay ||
+        onPend ||
+        onMarkPaid ||
+        onReconcileTerminal ||
+        onRefund ||
+        onPrintReceipt ||
+        onPrintTicket) && (
         <div className="mt-4 flex flex-wrap gap-2">
           {onPay ? (
             <>
               <Button size="sm" disabled={busy} onClick={() => onPay("CASH")}>
                 {selected.length ? "Pay selected cash" : "Pay cash"}
               </Button>
+              {terminalEnabled ? (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  disabled={busy}
+                  onClick={() => onPay("CARD")}
+                >
+                  {selected.length
+                    ? "Pay selected (Terminal)"
+                    : "Pay card (Terminal)"}
+                </Button>
+              ) : null}
               <Button
                 size="sm"
-                variant="secondary"
+                variant="outline"
                 disabled={busy}
-                onClick={() => onPay("CARD")}
+                onClick={() => onPay("CARD_MANUAL")}
               >
-                {selected.length ? "Pay selected card" : "Pay card"}
+                {selected.length ? "Pay selected (manual card)" : "Card manual"}
               </Button>
               {onlineEnabled ? (
                 <Button
@@ -497,6 +773,36 @@ function OrderCard({
           {onMarkPaid ? (
             <Button size="sm" disabled={busy} onClick={onMarkPaid}>
               Mark paid
+            </Button>
+          ) : null}
+          {onReconcileTerminal ? (
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={busy}
+              onClick={onReconcileTerminal}
+            >
+              Check Stripe
+            </Button>
+          ) : null}
+          {onPrintTicket ? (
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={busy}
+              onClick={onPrintTicket}
+            >
+              Print ticket
+            </Button>
+          ) : null}
+          {onPrintReceipt ? (
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={busy}
+              onClick={onPrintReceipt}
+            >
+              Print receipt
             </Button>
           ) : null}
           {onRefund ? (

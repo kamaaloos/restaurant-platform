@@ -1,4 +1,9 @@
-export { cn, shortId, formatMoney } from "@org/shared";
+export {
+  cn,
+  shortId,
+  formatMoney,
+  formatWalkInQueueCode,
+} from "@org/shared";
 
 export function elapsedLabel(value: string | Date, now = Date.now()) {
   const timestamp = new Date(value).getTime();

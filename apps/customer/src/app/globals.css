@@ -127,3 +127,50 @@ html[dir="rtl"] body {
   background: var(--gold);
   flex-shrink: 0;
 }
+
+@keyframes pickup-fire-drift {
+  0% {
+    transform: scale(1.1) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.18) translate3d(-2%, -1.4%, 0);
+  }
+  100% {
+    transform: scale(1.1) translate3d(0, 0, 0);
+  }
+}
+
+@keyframes pickup-fire-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  40% {
+    opacity: 0.85;
+  }
+  70% {
+    opacity: 0.65;
+  }
+}
+
+.pickup-fire-drift {
+  animation: pickup-fire-drift 26s ease-in-out infinite;
+  will-change: transform;
+}
+
+.pickup-fire-glow {
+  background: radial-gradient(
+    ellipse 70% 45% at 50% 85%,
+    rgba(255, 110, 30, 0.35),
+    transparent 70%
+  );
+  animation: pickup-fire-glow 4.5s ease-in-out infinite;
+  mix-blend-mode: soft-light;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pickup-fire-drift,
+  .pickup-fire-glow {
+    animation: none !important;
+  }
+}

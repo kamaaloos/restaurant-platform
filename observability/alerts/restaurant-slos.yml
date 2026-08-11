@@ -1,0 +1,62 @@
+groups:
+  - name: restaurant-slos
+    rules:
+      - alert: PrepLatencyHigh
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum(rate(restaurant_prep_duration_seconds_bucket[15m])) by (le)
+          ) > 900
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Kitchen prep p95 above SLO (15m)
+          description: >
+            Prep PREPARING→READY p95 is {{ $value | humanizeDuration }}
+            (threshold 15m). Check KDS backlog and staffing.
+
+      - alert: PrepLatencyCritical
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum(rate(restaurant_prep_duration_seconds_bucket[15m])) by (le)
+          ) > 1800
+        for: 5m
+        labels:
+          severity: page
+        annotations:
+          summary: Kitchen prep p95 critically above SLO (30m)
+          description: >
+            Prep PREPARING→READY p95 is {{ $value | humanizeDuration }}
+            (page threshold 30m). Page on-call kitchen lead.
+
+      - alert: PaymentSettleLatencyHigh
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum(rate(restaurant_payment_settle_duration_seconds_bucket[15m])) by (le)
+          ) > 120
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Payment settle p95 above SLO (2m)
+          description: >
+            Payment created→paid p95 is {{ $value | humanizeDuration }}
+            (threshold 2m). Check PSP / ONLINE checkout.
+
+      - alert: PaymentSettleLatencyCritical
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum(rate(restaurant_payment_settle_duration_seconds_bucket[15m])) by (le)
+          ) > 300
+        for: 3m
+        labels:
+          severity: page
+        annotations:
+          summary: Payment settle p95 critically above SLO (5m)
+          description: >
+            Payment created→paid p95 is {{ $value | humanizeDuration }}
+            (page threshold 5m). Check PSP / Terminal.

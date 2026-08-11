@@ -3,10 +3,8 @@
 import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { customerApi } from "@/lib/api";
-import {
-  LanguageSwitcher,
-  useLocale,
-} from "@/lib/i18n/locale-provider";
+import { LocaleControls } from "@/lib/currency-provider";
+import { useLocale } from "@/lib/i18n/locale-provider";
 
 export default function HomePage() {
   const { t } = useLocale();
@@ -22,7 +20,7 @@ export default function HomePage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-4 py-16 text-[var(--ink)]">
       <div className="mb-6 flex justify-end">
-        <LanguageSwitcher />
+        <LocaleControls />
       </div>
       <p className="text-sm uppercase tracking-[0.2em] text-[var(--muted)]">
         {t("homeEyebrow")}

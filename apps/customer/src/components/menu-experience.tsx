@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type ButtonHTMLAttributes, type ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Dialog from "@radix-ui/react-dialog";
 import { toast } from "sonner";
 import {
@@ -11,11 +11,18 @@ import {
   Bell,
   Cake,
   Coffee,
+  CupSoda,
+  Fish,
+  IceCreamCone,
   Info,
+  LayoutGrid,
   Leaf,
+  Pizza,
   Receipt,
+  Salad,
   Search,
   ShoppingBag,
+  Soup,
   UtensilsCrossed,
   Wine,
   X,
@@ -23,11 +30,16 @@ import {
 
 import { customerApi } from "@/lib/api";
 import { extractApiMessage } from "@/lib/errors";
-import { moneyLocale } from "@/lib/i18n/helpers";
+import { resolveMenuImage } from "@/lib/menu-images";
+import { localizedCategoryName, moneyLocale } from "@/lib/i18n/helpers";
 import {
-  LanguageSwitcher,
-  useLocale,
-} from "@/lib/i18n/locale-provider";
+  formatMenuIndex,
+  localizedMenuItemDescription,
+  localizedMenuItemName,
+} from "@/lib/i18n/menu-items";
+import type { Locale } from "@/lib/i18n/locales";
+import { useLocale } from "@/lib/i18n/locale-provider";
+import { LocaleControls, useCurrency } from "@/lib/currency-provider";
 import { formatMoney } from "@/lib/utils";
 import {
   selectCartCount,
@@ -35,6 +47,7 @@ import {
   useCartStore,
 } from "@/stores/cart-store";
 import { Button } from "@/components/ui/button";
+import { FruitsBackdrop } from "@/components/fruits-backdrop";
 import type { MenuItem, ModifierGroup } from "@/lib/types";
 import { useCustomerRealtime } from "@/hooks/use-customer-realtime";
 
@@ -46,6 +59,8 @@ export function MenuExperience({
   branchId?: string;
 }) {
   const { t, locale } = useLocale();
+  const { currency, convertFromBase } = useCurrency();
+  const queryClient = useQueryClient();
   const walkIn = !!branchId && !token;
   const scope = token ?? `walk-in:${branchId}`;
   const basePath = walkIn ? `/w/${branchId}` : `/t/${token}`;
@@ -64,7 +79,22 @@ export function MenuExperience({
         ? customerApi.getWalkInMenu(branchId!)
         : customerApi.getMenu(token!),
     enabled: !!scope,
+    refetchInterval: 20_000,
   });
+
+  const serviceRequestsQuery = useQuery({
+    queryKey: ["service-requests", token],
+    queryFn: () => customerApi.listServiceRequests(token!),
+    enabled: !!token && !walkIn,
+    refetchInterval: 15_000,
+  });
+
+  const openCallWaiter = (serviceRequestsQuery.data ?? []).some(
+    (r) => r.type === "CALL_WAITER",
+  );
+  const openRequestBill = (serviceRequestsQuery.data ?? []).some(
+    (r) => r.type === "REQUEST_BILL",
+  );
 
   useEffect(() => {
     setToken(scope);
@@ -79,8 +109,15 @@ export function MenuExperience({
   const searchRef = useRef<HTMLInputElement>(null);
 
   const categories = menuQuery.data?.categories ?? [];
-  const currency = menuQuery.data?.restaurant.currency ?? "EUR";
+  const baseCurrency = menuQuery.data?.restaurant.currency ?? "EUR";
   const capabilities = menuQuery.data?.capabilities;
+  const money = (amount: number | string) =>
+    formatMoney(convertFromBase(amount, baseCurrency), currency, moneyLoc);
+
+  const invalidateServiceRequests = () =>
+    void queryClient.invalidateQueries({
+      queryKey: ["service-requests", token],
+    });
 
   const callWaiter = useMutation({
     mutationFn: () =>
@@ -88,17 +125,27 @@ export function MenuExperience({
         type: "CALL_WAITER",
         note: t("assistanceNote"),
       }),
-    onSuccess: () => toast.success(t("waiterNotified")),
-    onError: (err) =>
-      toast.error(extractApiMessage(err, t("somethingWentWrong"))),
+    onSuccess: () => {
+      toast.success(t("waiterNotified"));
+      invalidateServiceRequests();
+    },
+    onError: (err) => {
+      invalidateServiceRequests();
+      toast.error(extractApiMessage(err, t("somethingWentWrong")));
+    },
   });
 
   const requestBill = useMutation({
     mutationFn: () =>
       customerApi.createServiceRequest(token!, { type: "REQUEST_BILL" }),
-    onSuccess: () => toast.success(t("billRequested")),
-    onError: (err) =>
-      toast.error(extractApiMessage(err, t("somethingWentWrong"))),
+    onSuccess: () => {
+      toast.success(t("billRequested"));
+      invalidateServiceRequests();
+    },
+    onError: (err) => {
+      invalidateServiceRequests();
+      toast.error(extractApiMessage(err, t("somethingWentWrong")));
+    },
   });
 
   const selectedModifierOptions = useMemo(() => {
@@ -124,8 +171,23 @@ export function MenuExperience({
         ...category,
         menuItems: category.menuItems.filter((item) => {
           if (!q) return true;
+          const localized = localizedMenuItemName(
+            item.name,
+            locale,
+            item.imageUrl,
+          ).toLowerCase();
+          const localizedDesc = (
+            localizedMenuItemDescription(
+              item.name,
+              locale,
+              item.imageUrl,
+              item.description,
+            ) ?? ""
+          ).toLowerCase();
           return (
             item.name.toLowerCase().includes(q) ||
+            localized.includes(q) ||
+            localizedDesc.includes(q) ||
             (item.description?.toLowerCase().includes(q) ?? false)
           );
         }),
@@ -134,14 +196,23 @@ export function MenuExperience({
         if (activeCategory === "all") return true;
         return category.id === activeCategory;
       });
-  }, [categories, activeCategory, search]);
+  }, [categories, activeCategory, search, locale]);
 
-  const heroImage =
-    menuQuery.data?.restaurant.logoUrl ??
-    categories
-      .flatMap((c) => c.menuItems)
-      .find((item) => !!item.imageUrl)?.imageUrl ??
-    null;
+  const heroImages = useMemo(() => {
+    const seen = new Set<string>();
+    const urls: string[] = [];
+    for (const item of categories.flatMap((c) => c.menuItems)) {
+      const url = resolveMenuImage(item.imageUrl);
+      if (!url || seen.has(url)) continue;
+      seen.add(url);
+      urls.push(url);
+    }
+    return urls;
+  }, [categories]);
+
+  const selectedImage = selected
+    ? resolveMenuImage(selected.imageUrl)
+    : null;
 
   function openItem(item: MenuItem) {
     setSelected(item);
@@ -183,6 +254,10 @@ export function MenuExperience({
 
   function addSelected() {
     if (!selected) return;
+    if (selected.available === false) {
+      toast.error(t("itemUnavailable"));
+      return;
+    }
 
     for (const group of selected.modifierGroups) {
       const count = selectedOptions.filter((id) =>
@@ -205,32 +280,48 @@ export function MenuExperience({
       notes: notes.trim() || undefined,
       modifierOptionIds: selectedOptions,
       modifierLabels: selectedModifierOptions.map((o) => o.name),
+      imageUrl: selected.imageUrl,
     });
-    toast.success(t("addedToCart", { qty: quantity, name: selected.name }));
+    toast.success(
+      t("addedToCart", {
+        qty: quantity,
+        name: localizedMenuItemName(
+          selected.name,
+          locale,
+          selected.imageUrl,
+        ),
+      }),
+    );
     closeItem();
   }
 
   if (menuQuery.isLoading) {
     return (
-      <div className="min-h-screen bg-[var(--paper)] px-4 py-10">
-        <div className="mx-auto h-10 w-48 animate-pulse rounded bg-[var(--surface-2)]" />
-        <div className="mx-auto mt-8 h-40 max-w-3xl animate-pulse rounded-[28px] bg-[var(--surface-2)]" />
+      <div className="relative min-h-screen px-4 py-10">
+        <FruitsBackdrop />
+        <div className="relative z-10">
+          <div className="mx-auto h-10 w-48 animate-pulse rounded bg-[var(--surface-2)]" />
+          <div className="mx-auto mt-8 h-40 max-w-3xl animate-pulse rounded-[28px] bg-[var(--surface-2)]" />
+        </div>
       </div>
     );
   }
 
   if (menuQuery.isError || !menuQuery.data) {
     return (
-      <div className="mx-auto max-w-3xl px-4 py-16">
-        <div className="mb-6 flex justify-end">
-          <LanguageSwitcher />
+      <div className="relative min-h-screen">
+        <FruitsBackdrop />
+        <div className="relative z-10 mx-auto max-w-3xl px-4 py-16">
+          <div className="mb-6 flex justify-end">
+            <LocaleControls />
+          </div>
+          <h1 className="font-[family-name:var(--font-display)] text-4xl text-[var(--forest)]">
+            {t("tableNotFound")}
+          </h1>
+          <p className="mt-2 text-[var(--muted)]">
+            {(menuQuery.error as Error)?.message ?? t("invalidQr")}
+          </p>
         </div>
-        <h1 className="font-[family-name:var(--font-display)] text-4xl text-[var(--forest)]">
-          {t("tableNotFound")}
-        </h1>
-        <p className="mt-2 text-[var(--muted)]">
-          {(menuQuery.error as Error)?.message ?? t("invalidQr")}
-        </p>
       </div>
     );
   }
@@ -245,7 +336,9 @@ export function MenuExperience({
   let itemIndex = 0;
 
   return (
-    <div className="min-h-screen bg-[var(--paper)] text-[var(--ink)]">
+    <div className="relative min-h-screen text-[var(--ink)]">
+      <FruitsBackdrop />
+      <div className="relative z-10">
       <header className="relative mx-auto max-w-3xl px-4 pt-5">
         <BotanicalAccent className="pointer-events-none absolute left-0 top-2 h-28 w-20 opacity-[0.14] text-[var(--forest)]" />
         <BotanicalAccent className="pointer-events-none absolute right-0 top-2 h-28 w-20 scale-x-[-1] opacity-[0.14] text-[var(--forest)]" />
@@ -258,12 +351,15 @@ export function MenuExperience({
             <Search className="h-4 w-4" strokeWidth={1.75} />
           </IconCircle>
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <LanguageSwitcher />
+            <LocaleControls />
             {canCall ? (
               <IconCircle
                 aria-label={t("callWaiter")}
-                onClick={() => callWaiter.mutate()}
+                onClick={() => {
+                  if (!openCallWaiter) callWaiter.mutate();
+                }}
                 disabled={callWaiter.isPending}
+                active={openCallWaiter}
               >
                 <Bell className="h-4 w-4" strokeWidth={1.75} />
               </IconCircle>
@@ -271,8 +367,11 @@ export function MenuExperience({
             {canBill ? (
               <IconCircle
                 aria-label={t("requestBill")}
-                onClick={() => requestBill.mutate()}
+                onClick={() => {
+                  if (!openRequestBill) requestBill.mutate();
+                }}
                 disabled={requestBill.isPending}
+                active={openRequestBill}
               >
                 <Receipt className="h-4 w-4" strokeWidth={1.75} />
               </IconCircle>
@@ -280,9 +379,11 @@ export function MenuExperience({
             <Link
               href={`${basePath}/cart`}
               aria-label={t("cart")}
-              className="grid h-10 w-10 place-items-center rounded-full border border-[var(--forest)]/20 bg-white text-[var(--forest)] shadow-[var(--shadow-soft)] transition hover:border-[var(--gold)]"
+              title={t("cart")}
+              className="group relative grid h-10 w-10 place-items-center rounded-full border border-[var(--forest)]/20 bg-white text-[var(--forest)] shadow-[var(--shadow-soft)] transition hover:border-[var(--gold)]"
             >
               <ShoppingBag className="h-4 w-4" strokeWidth={1.75} />
+              <HeaderTooltip label={t("cart")} />
             </Link>
           </div>
         </div>
@@ -328,19 +429,8 @@ export function MenuExperience({
               ) : null}
             </div>
           </div>
-          <div className="relative h-28 w-28 shrink-0 overflow-hidden rounded-full border-2 border-[var(--gold)]/55 bg-[var(--surface-2)] shadow-[var(--shadow-soft)] sm:h-32 sm:w-32">
-            {heroImage ? (
-              <Image
-                src={heroImage}
-                alt=""
-                fill
-                className="object-cover"
-                sizes="128px"
-                unoptimized
-              />
-            ) : (
-              <HeroPlateFallback />
-            )}
+          <div className="relative h-40 w-40 shrink-0 overflow-hidden rounded-full border-2 border-[var(--gold)]/55 bg-[var(--surface-2)] shadow-[var(--shadow-soft)] sm:h-48 sm:w-48">
+            <RotatingHeroImage images={heroImages} />
           </div>
         </section>
 
@@ -368,15 +458,15 @@ export function MenuExperience({
               active={activeCategory === "all"}
               onClick={() => setActiveCategory("all")}
               label={t("allCategories")}
-              icon={<Leaf className="h-3.5 w-3.5" />}
+              icon={<LayoutGrid className="h-3.5 w-3.5" />}
             />
-            {categories.map((c, index) => (
+            {categories.map((c) => (
               <CategoryPill
                 key={c.id}
                 active={activeCategory === c.id}
                 onClick={() => setActiveCategory(c.id)}
-                label={c.name}
-                icon={categoryIcon(c.name, index)}
+                label={localizedCategoryName(c.name, t)}
+                icon={categoryIcon(c.name)}
               />
             ))}
           </nav>
@@ -389,23 +479,26 @@ export function MenuExperience({
             <div className="mt-8 space-y-12">
               {filteredCategories.map((category) => (
                 <section key={category.id} className="animate-menu-fade-up">
-                  <CategoryHeading title={category.name} />
+                  <CategoryHeading
+                    title={localizedCategoryName(category.name, t)}
+                  />
                   {category.menuItems.length === 0 ? (
                     <p className="mt-8 text-center font-[family-name:var(--font-display)] text-2xl text-[var(--muted)]">
                       {search.trim() ? t("noSearchResults") : t("comingSoon")}
                     </p>
                   ) : (
-                    <ul className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5">
+                    <ul className="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 sm:grid-cols-3 sm:gap-x-5 sm:gap-y-12">
                       {category.menuItems.map((item) => {
                         itemIndex += 1;
                         return (
-                          <li key={item.id}>
+                          <li key={item.id} className="pt-16 sm:pt-20">
                             <MenuItemCard
                               index={itemIndex}
                               item={item}
-                              currency={currency}
-                              moneyLoc={moneyLoc}
+                              locale={locale}
+                              priceLabel={money(item.price)}
                               tapForDetails={t("tapForDetails")}
+                              soldOutLabel={t("soldOut")}
                               onOpen={() => openItem(item)}
                             />
                           </li>
@@ -437,7 +530,7 @@ export function MenuExperience({
             </div>
             <div className="hidden h-8 w-px border-l border-dashed border-[var(--gold)]/70 sm:block" />
             <p className="hidden shrink-0 text-base font-semibold tracking-wide text-[var(--forest)] sm:block">
-              {formatMoney(cartTotal, currency, moneyLoc)}{" "}
+              {money(cartTotal)}{" "}
               <span className="text-xs tracking-[0.14em] text-[var(--muted)] uppercase">
                 {t("total")}
               </span>
@@ -463,10 +556,10 @@ export function MenuExperience({
           <Dialog.Content className="animate-menu-soft-in fixed inset-x-0 bottom-0 z-50 max-h-[92vh] overflow-y-auto rounded-t-[28px] border border-[var(--gold)]/40 bg-[var(--paper)] outline-none sm:inset-auto sm:left-1/2 sm:top-1/2 sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[28px]">
             {selected ? (
               <>
-                {selected.imageUrl ? (
+                {selectedImage ? (
                   <div className="relative h-56 w-full overflow-hidden sm:h-64">
                     <Image
-                      src={selected.imageUrl}
+                      src={selectedImage}
                       alt=""
                       fill
                       className="object-cover"
@@ -483,14 +576,28 @@ export function MenuExperience({
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <Dialog.Title className="font-[family-name:var(--font-display)] text-4xl font-semibold text-[var(--forest)]">
-                        {selected.name}
+                        {localizedMenuItemName(
+                          selected.name,
+                          locale,
+                          selected.imageUrl,
+                        )}
                       </Dialog.Title>
                       <Dialog.Description className="mt-2 text-base leading-relaxed text-[var(--muted)]">
-                        {selected.description ?? t("customizeDish")}
+                        {localizedMenuItemDescription(
+                          selected.name,
+                          locale,
+                          selected.imageUrl,
+                          selected.description,
+                        ) ?? t("customizeDish")}
                       </Dialog.Description>
                       <p className="mt-3 font-[family-name:var(--font-display)] text-3xl text-[var(--forest)]">
-                        {formatMoney(selected.price, currency, moneyLoc)}
+                        {money(selected.price)}
                       </p>
+                      {selected.available === false ? (
+                        <p className="mt-2 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--danger)]">
+                          {t("soldOut")}
+                        </p>
+                      ) : null}
                     </div>
                     <Dialog.Close asChild>
                       <button
@@ -555,11 +662,7 @@ export function MenuExperience({
                                 {Number(option.priceDelta) > 0 ? (
                                   <span className="text-base text-[var(--muted)]">
                                     +
-                                    {formatMoney(
-                                      option.priceDelta,
-                                      currency,
-                                      moneyLoc,
-                                    )}
+                                    {money(option.priceDelta)}
                                   </span>
                                 ) : null}
                               </label>
@@ -610,16 +713,62 @@ export function MenuExperience({
                     </div>
                   </div>
 
-                  <Button className="mt-8 w-full" size="lg" onClick={addSelected}>
-                    {t("add")} {formatMoney(lineTotal, currency, moneyLoc)}
-                  </Button>
+                  {selected.available === false ? (
+                    <Button className="mt-8 w-full" size="lg" disabled>
+                      {t("soldOut")}
+                    </Button>
+                  ) : (
+                    <Button className="mt-8 w-full" size="lg" onClick={addSelected}>
+                      {t("add")} {money(lineTotal)}
+                    </Button>
+                  )}
                 </div>
               </>
             ) : null}
           </Dialog.Content>
         </Dialog.Portal>
       </Dialog.Root>
+      </div>
     </div>
+  );
+}
+
+const HERO_ROTATE_MS = 7_000;
+
+function RotatingHeroImage({ images }: { images: string[] }) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    setIndex(0);
+  }, [images]);
+
+  useEffect(() => {
+    if (images.length <= 1) return;
+    const id = window.setInterval(() => {
+      setIndex((i) => (i + 1) % images.length);
+    }, HERO_ROTATE_MS);
+    return () => window.clearInterval(id);
+  }, [images]);
+
+  if (images.length === 0) return <HeroPlateFallback />;
+
+  return (
+    <>
+      {images.map((src, i) => (
+        <Image
+          key={src}
+          src={src}
+          alt=""
+          fill
+          className={`object-cover transition-opacity duration-1000 ease-out ${
+            i === index ? "opacity-100" : "opacity-0"
+          }`}
+          sizes="192px"
+          unoptimized
+          priority={i === 0}
+        />
+      ))}
+    </>
   );
 }
 
@@ -642,38 +791,82 @@ function HeroPlateFallback() {
   );
 }
 
-function categoryIcon(name: string, index: number) {
-  const n = name.toLowerCase();
-  if (/start|alkur|appet|side|lisuk/.test(n)) return <Leaf className="h-3.5 w-3.5" />;
-  if (/main|meal|course|pizza|burg/.test(n))
-    return <UtensilsCrossed className="h-3.5 w-3.5" />;
-  if (/dessert|sweet|cake|ice/.test(n)) return <Cake className="h-3.5 w-3.5" />;
-  if (/drink|beverage|juice|coffee|tea/.test(n))
-    return <Coffee className="h-3.5 w-3.5" />;
-  if (/wine|bar|alcohol/.test(n)) return <Wine className="h-3.5 w-3.5" />;
-  const icons = [
-    <Leaf key="l" className="h-3.5 w-3.5" />,
-    <UtensilsCrossed key="u" className="h-3.5 w-3.5" />,
-    <Cake key="c" className="h-3.5 w-3.5" />,
-    <Coffee key="f" className="h-3.5 w-3.5" />,
-  ];
-  return icons[index % icons.length];
+function categoryIcon(name: string) {
+  const n = name.toLowerCase().trim();
+  const cls = "h-3.5 w-3.5";
+
+  // Most specific matches first — never rotate icons by index.
+  if (/salad|salata/.test(n)) return <Salad className={cls} />;
+  if (/shake|smoothie|milkshake/.test(n)) return <IceCreamCone className={cls} />;
+  if (/soft\s*drink|soda|cola|fanta|juice|cold\s*drink/.test(n)) {
+    return <CupSoda className={cls} />;
+  }
+  if (
+    /hot\s*drink|coffee|tea|espresso|cappuccino|latte|chocolate|shaah/.test(n)
+  ) {
+    return <Coffee className={cls} />;
+  }
+  if (/wine|beer|alcohol|cocktail|\bbar\b/.test(n)) {
+    return <Wine className={cls} />;
+  }
+  if (/drink|beverage/.test(n)) return <CupSoda className={cls} />;
+  if (/desert|dessert|sweet|cake|ice\s*cream|tiramisu/.test(n)) {
+    return <Cake className={cls} />;
+  }
+  if (/soup|maraq/.test(n)) return <Soup className={cls} />;
+  if (/fish|seafood|salmon|tuna/.test(n)) return <Fish className={cls} />;
+  if (/pizza/.test(n)) return <Pizza className={cls} />;
+  if (/start|alkur|appet|starter|lisuk/.test(n)) {
+    return <Leaf className={cls} />;
+  }
+  if (
+    /main|meal|dish|soor|bariis|suqaar|\bbur\b|pasta|lasagna|mains/.test(n)
+  ) {
+    return <UtensilsCrossed className={cls} />;
+  }
+
+  return <UtensilsCrossed className={cls} />;
+}
+
+function HeaderTooltip({ label }: { label: string }) {
+  return (
+    <span
+      role="tooltip"
+      className="pointer-events-none absolute start-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-full border border-[var(--gold)]/40 bg-[var(--forest)] px-2.5 py-1 text-[11px] font-medium tracking-wide text-white opacity-0 shadow-[var(--shadow-soft)] transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+    >
+      {label}
+    </span>
+  );
 }
 
 function IconCircle({
   children,
   className = "",
+  active = false,
+  "aria-label": ariaLabel,
+  title,
   ...props
 }: ButtonHTMLAttributes<HTMLButtonElement> & {
   children: ReactNode;
+  /** Open service request — stay red until waiter marks done. */
+  active?: boolean;
 }) {
+  const label = title ?? (typeof ariaLabel === "string" ? ariaLabel : undefined);
   return (
     <button
       type="button"
-      className={`grid h-10 w-10 place-items-center rounded-full border border-[var(--forest)]/20 bg-white text-[var(--forest)] shadow-[var(--shadow-soft)] transition hover:border-[var(--gold)] disabled:opacity-50 ${className}`}
+      aria-label={ariaLabel}
+      aria-pressed={active}
+      title={label}
+      className={`group relative grid h-10 w-10 place-items-center rounded-full border shadow-[var(--shadow-soft)] transition disabled:opacity-50 ${
+        active
+          ? "border-[var(--danger)] bg-[var(--danger)] text-white hover:border-[var(--danger)]"
+          : "border-[var(--forest)]/20 bg-white text-[var(--forest)] hover:border-[var(--gold)]"
+      } ${className}`}
       {...props}
     >
       {children}
+      {label ? <HeaderTooltip label={label} /> : null}
     </button>
   );
 }
@@ -773,63 +966,85 @@ function CategoryPill({
 function MenuItemCard({
   index,
   item,
-  currency,
-  moneyLoc,
+  locale,
+  priceLabel,
   tapForDetails,
+  soldOutLabel,
   onOpen,
 }: {
   index: number;
   item: MenuItem;
-  currency: string;
-  moneyLoc: string;
+  locale: Locale;
+  priceLabel: string;
   tapForDetails: string;
+  soldOutLabel: string;
   onOpen: () => void;
 }) {
+  const image = resolveMenuImage(item.imageUrl);
+  const title = localizedMenuItemName(item.name, locale, item.imageUrl);
+  const description = localizedMenuItemDescription(
+    item.name,
+    locale,
+    item.imageUrl,
+    item.description,
+  );
+  const indexLabel = formatMenuIndex(index, locale);
+  const soldOut = item.available === false;
   return (
     <button
       type="button"
       onClick={onOpen}
-      className="group flex h-full w-full flex-col overflow-hidden rounded-[24px] border border-[var(--gold)]/55 bg-[var(--surface)] p-3 text-start shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)]"
+      aria-disabled={soldOut}
+      className={`group relative flex h-full w-full flex-col overflow-visible rounded-[24px] border border-[var(--gold)]/55 bg-[var(--surface)] px-3 pb-3 pt-16 text-start shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] sm:pt-20 ${
+        soldOut ? "opacity-70" : ""
+      }`}
     >
-      <div className="relative mx-auto mt-1 h-28 w-28 sm:h-32 sm:w-32">
-        {item.imageUrl ? (
-          <div className="relative h-full w-full overflow-hidden rounded-full border border-[var(--gold)]/40 bg-[var(--surface-2)]">
+      {soldOut ? (
+        <span className="absolute start-3 top-3 z-20 rounded-full bg-[var(--forest)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+          {soldOutLabel}
+        </span>
+      ) : null}
+      <div className="pointer-events-none absolute left-1/2 top-0 z-10 h-36 w-36 -translate-x-1/2 -translate-y-1/2 sm:h-40 sm:w-40">
+        {image ? (
+          <div className="relative h-full w-full overflow-hidden rounded-full bg-[var(--surface)] shadow-[0_10px_28px_rgba(0,0,0,0.18)] ring-[3px] ring-[var(--surface)]">
             <Image
-              src={item.imageUrl}
+              src={image}
               alt=""
               fill
-              className="object-cover"
-              sizes="128px"
+              className={`object-cover ${soldOut ? "grayscale" : ""}`}
+              sizes="160px"
               unoptimized
             />
           </div>
         ) : (
-          <div className="flex h-full w-full items-center justify-center rounded-full border border-[var(--gold)]/40 bg-[var(--surface-2)]">
+          <div className="flex h-full w-full items-center justify-center rounded-full bg-[var(--surface)] shadow-[0_10px_28px_rgba(0,0,0,0.12)] ring-[3px] ring-[var(--surface)]">
             <span className="font-[family-name:var(--font-display)] text-3xl text-[var(--forest)]/25">
-              {item.name.slice(0, 1)}
+              {title.slice(0, 1)}
             </span>
           </div>
         )}
-        <span className="absolute end-0 top-0 grid h-6 w-6 place-items-center rounded-full border border-[var(--gold)]/50 bg-white text-[var(--forest)] shadow-sm">
+        <span className="pointer-events-none absolute end-0 top-0 grid h-6 w-6 place-items-center rounded-full border border-[var(--gold)]/50 bg-[var(--surface)] text-[var(--forest)] shadow-sm">
           <Info className="h-3 w-3" strokeWidth={1.75} />
         </span>
       </div>
 
-      <div className="mt-3 flex flex-1 flex-col px-0.5">
+      <div className="mt-2 flex flex-1 flex-col px-0.5">
         <h3 className="font-[family-name:var(--font-display)] text-lg font-semibold leading-snug text-[var(--forest)] sm:text-xl">
-          {index}. {item.name}
+          {indexLabel}. {title}
         </h3>
-        {item.description ? (
+        {description ? (
           <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-[var(--muted)]">
-            {item.description}
+            {description}
           </p>
         ) : (
-          <p className="mt-1 text-sm text-[var(--muted)]">{tapForDetails}</p>
+          <p className="mt-1 text-sm text-[var(--muted)]">
+            {soldOut ? soldOutLabel : tapForDetails}
+          </p>
         )}
         <div className="mt-auto pt-3 text-center">
           <GoldFlourish />
           <p className="mt-2 font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--forest)]">
-            {formatMoney(item.price, currency, moneyLoc)}
+            {soldOut ? soldOutLabel : priceLabel}
           </p>
         </div>
       </div>

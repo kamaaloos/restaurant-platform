@@ -10,11 +10,11 @@
     "test:e2e": "playwright test",
     "test:e2e:install": "playwright install chromium"
   },
-
   "dependencies": {
     "@org/realtime": "^0.0.1",
     "@org/shared": "*",
     "@radix-ui/react-slot": "^1.3.3",
+    "@stripe/terminal-js": "^0.24.0",
     "@tanstack/react-query": "^5.101.4",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -29,7 +29,6 @@
     "@eslint/eslintrc": "^3",
     "@playwright/test": "^1.54.2",
     "@tailwindcss/postcss": "^4",
-
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
