@@ -239,7 +239,11 @@ function BoardColumn({
           {entries.map((entry) => (
             <li
               key={entry.orderId}
+<<<<<<< HEAD
               className={`flex min-h-32 items-center justify-center rounded-2xl px-2 text-center font-[family-name:var(--font-display)] text-4xl font-semibold tabular-nums shadow-[var(--shadow-lift)] sm:text-5xl lg:text-6xl ${
+=======
+              className={`flex min-h-32 items-center justify-center rounded-2xl text-center font-[family-name:var(--font-display)] text-6xl font-semibold tabular-nums shadow-[var(--shadow-lift)] ${
+>>>>>>> Update restaurant platform apps and backend
                 tone === "ready"
                   ? "bg-[var(--accent)] text-[var(--ink)] ring-2 ring-[var(--accent)]"
                   : "bg-white text-[var(--ink)] ring-1 ring-[var(--line)]"

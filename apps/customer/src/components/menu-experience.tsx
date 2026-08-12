@@ -197,6 +197,7 @@ export function MenuExperience({
         return category.id === activeCategory;
       });
   }, [categories, activeCategory, search, locale]);
+<<<<<<< HEAD
 
   const heroImages = useMemo(() => {
     const seen = new Set<string>();
@@ -210,6 +211,21 @@ export function MenuExperience({
     return urls;
   }, [categories]);
 
+=======
+
+  const heroImages = useMemo(() => {
+    const seen = new Set<string>();
+    const urls: string[] = [];
+    for (const item of categories.flatMap((c) => c.menuItems)) {
+      const url = resolveMenuImage(item.imageUrl);
+      if (!url || seen.has(url)) continue;
+      seen.add(url);
+      urls.push(url);
+    }
+    return urls;
+  }, [categories]);
+
+>>>>>>> Update restaurant platform apps and backend
   const selectedImage = selected
     ? resolveMenuImage(selected.imageUrl)
     : null;
@@ -713,6 +729,7 @@ export function MenuExperience({
                     </div>
                   </div>
 
+<<<<<<< HEAD
                   {selected.available === false ? (
                     <Button className="mt-8 w-full" size="lg" disabled>
                       {t("soldOut")}
@@ -722,6 +739,11 @@ export function MenuExperience({
                       {t("add")} {money(lineTotal)}
                     </Button>
                   )}
+=======
+                  <Button className="mt-8 w-full" size="lg" onClick={addSelected}>
+                    {t("add")} {money(lineTotal)}
+                  </Button>
+>>>>>>> Update restaurant platform apps and backend
                 </div>
               </>
             ) : null}
@@ -989,11 +1011,15 @@ function MenuItemCard({
     item.description,
   );
   const indexLabel = formatMenuIndex(index, locale);
+<<<<<<< HEAD
   const soldOut = item.available === false;
+=======
+>>>>>>> Update restaurant platform apps and backend
   return (
     <button
       type="button"
       onClick={onOpen}
+<<<<<<< HEAD
       aria-disabled={soldOut}
       className={`group relative flex h-full w-full flex-col overflow-visible rounded-[24px] border border-[var(--gold)]/55 bg-[var(--surface)] px-3 pb-3 pt-16 text-start shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] sm:pt-20 ${
         soldOut ? "opacity-70" : ""
@@ -1004,6 +1030,10 @@ function MenuItemCard({
           {soldOutLabel}
         </span>
       ) : null}
+=======
+      className="group relative flex h-full w-full flex-col overflow-visible rounded-[24px] border border-[var(--gold)]/55 bg-[var(--surface)] px-3 pb-3 pt-16 text-start shadow-[var(--shadow-soft)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-lift)] sm:pt-20"
+    >
+>>>>>>> Update restaurant platform apps and backend
       <div className="pointer-events-none absolute left-1/2 top-0 z-10 h-36 w-36 -translate-x-1/2 -translate-y-1/2 sm:h-40 sm:w-40">
         {image ? (
           <div className="relative h-full w-full overflow-hidden rounded-full bg-[var(--surface)] shadow-[0_10px_28px_rgba(0,0,0,0.18)] ring-[3px] ring-[var(--surface)]">
@@ -1011,7 +1041,11 @@ function MenuItemCard({
               src={image}
               alt=""
               fill
+<<<<<<< HEAD
               className={`object-cover ${soldOut ? "grayscale" : ""}`}
+=======
+              className="object-cover"
+>>>>>>> Update restaurant platform apps and backend
               sizes="160px"
               unoptimized
             />
@@ -1044,7 +1078,11 @@ function MenuItemCard({
         <div className="mt-auto pt-3 text-center">
           <GoldFlourish />
           <p className="mt-2 font-[family-name:var(--font-display)] text-xl font-semibold text-[var(--forest)]">
+<<<<<<< HEAD
             {soldOut ? soldOutLabel : priceLabel}
+=======
+            {priceLabel}
+>>>>>>> Update restaurant platform apps and backend
           </p>
         </div>
       </div>

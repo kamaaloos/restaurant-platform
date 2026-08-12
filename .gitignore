@@ -94,3 +94,6 @@ docker-data/
 # Next.js
 .next
 out
+
+# Observability secrets (Slack webhook etc.)
+.env.observability

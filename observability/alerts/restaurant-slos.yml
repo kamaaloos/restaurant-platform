@@ -16,6 +16,7 @@ groups:
             Prep PREPARING→READY p95 is {{ $value | humanizeDuration }}
             (threshold 15m). Check KDS backlog and staffing.
 
+<<<<<<< HEAD
       - alert: PrepLatencyCritical
         expr: |
           histogram_quantile(
@@ -31,6 +32,8 @@ groups:
             Prep PREPARING→READY p95 is {{ $value | humanizeDuration }}
             (page threshold 30m). Page on-call kitchen lead.
 
+=======
+>>>>>>> Update restaurant platform apps and backend
       - alert: PaymentSettleLatencyHigh
         expr: |
           histogram_quantile(
@@ -45,6 +48,7 @@ groups:
           description: >
             Payment created→paid p95 is {{ $value | humanizeDuration }}
             (threshold 2m). Check PSP / ONLINE checkout.
+<<<<<<< HEAD
 
       - alert: PaymentSettleLatencyCritical
         expr: |
@@ -60,3 +64,5 @@ groups:
           description: >
             Payment created→paid p95 is {{ $value | humanizeDuration }}
             (page threshold 5m). Check PSP / Terminal.
+=======
+>>>>>>> Update restaurant platform apps and backend

@@ -15,7 +15,11 @@ import { localizedMenuItemName } from "@/lib/i18n/menu-items";
 import { useLocale } from "@/lib/i18n/locale-provider";
 import { LocaleControls, useCurrency } from "@/lib/currency-provider";
 import { resolveMenuImage } from "@/lib/menu-images";
+<<<<<<< HEAD
 import { formatMoney, formatWalkInQueueCode } from "@/lib/utils";
+=======
+import { formatMoney } from "@/lib/utils";
+>>>>>>> Update restaurant platform apps and backend
 import type { Course } from "@/lib/types";
 import {
   selectCartTotal,

@@ -9,7 +9,11 @@ import { extractApiMessage } from "@/lib/errors";
 import { moneyLocale, statusMessageKey } from "@/lib/i18n/helpers";
 import { LocaleControls, useCurrency } from "@/lib/currency-provider";
 import { useLocale } from "@/lib/i18n/locale-provider";
+<<<<<<< HEAD
 import { formatMoney, formatWalkInQueueCode } from "@/lib/utils";
+=======
+import { formatMoney } from "@/lib/utils";
+>>>>>>> Update restaurant platform apps and backend
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 

@@ -5,7 +5,10 @@ import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { customerApi } from "@/lib/api";
+<<<<<<< HEAD
 import { extractApiMessage } from "@/lib/errors";
+=======
+>>>>>>> Update restaurant platform apps and backend
 import { LocaleControls, useCurrency } from "@/lib/currency-provider";
 import { moneyLocale, statusMessageKey } from "@/lib/i18n/helpers";
 import { useLocale } from "@/lib/i18n/locale-provider";

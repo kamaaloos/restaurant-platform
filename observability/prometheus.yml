@@ -5,11 +5,14 @@ global:
 rule_files:
   - /etc/prometheus/alerts/*.yml
 
+<<<<<<< HEAD
 alerting:
   alertmanagers:
     - static_configs:
         - targets: ['alertmanager:9093']
 
+=======
+>>>>>>> Update restaurant platform apps and backend
 scrape_configs:
   - job_name: restaurant-api
     metrics_path: /api/metrics

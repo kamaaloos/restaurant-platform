@@ -124,12 +124,15 @@ export const customerApi = {
       auth: false,
     }),
 
+<<<<<<< HEAD
   cancelOrder: (token: string, orderId: string) =>
     request<CustomerOrder>(`/customer/${token}/orders/${orderId}/cancel`, {
       method: "POST",
       auth: false,
     }),
 
+=======
+>>>>>>> Update restaurant platform apps and backend
   listServiceRequests: (token: string) =>
     request<CustomerServiceRequest[]>(`/customer/${token}/service-requests`, {
       auth: false,

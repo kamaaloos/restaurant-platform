@@ -49,6 +49,7 @@ export const cashierApi = {
 
   getOrder: (orderId: string) => request<Order>(`/orders/${orderId}`),
 
+<<<<<<< HEAD
   listMenuItems: (restaurantId?: string) =>
     request<
       Array<{
@@ -90,6 +91,8 @@ export const cashierApi = {
       }),
     }),
 
+=======
+>>>>>>> Update restaurant platform apps and backend
   paymentConfig: () =>
     request<PaymentProviderConfig>("/payments/config"),
 
