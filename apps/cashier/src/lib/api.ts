@@ -49,6 +49,12 @@ export const cashierApi = {
 
   getOrder: (orderId: string) => request<Order>(`/orders/${orderId}`),
 
+  cancelOrder: (orderId: string) =>
+    request<Order>(`/orders/${orderId}/status`, {
+      method: "PATCH",
+      body: JSON.stringify({ status: "CANCELLED" }),
+    }),
+
   listMenuItems: (restaurantId?: string) =>
     request<
       Array<{

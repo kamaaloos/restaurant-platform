@@ -222,6 +222,17 @@ export function PaymentsBoard() {
     onError: (err: Error) => setError(err.message),
   });
 
+  const cancelOrder = useMutation({
+    mutationFn: (orderId: string) => cashierApi.cancelOrder(orderId),
+    onSuccess: () => {
+      setError(null);
+      setStatusMsg("Order cancelled.");
+      invalidateTill();
+      window.setTimeout(() => setStatusMsg(null), 2500);
+    },
+    onError: (err: Error) => setError(err.message),
+  });
+
   const markPaid = useMutation({
     mutationFn: (paymentId: string) => cashierApi.markPaid(paymentId),
     onSuccess: (payment) => {
@@ -364,6 +375,17 @@ export function PaymentsBoard() {
                     (p) => p.status === "PENDING",
                   );
                   const canCreatePayment = orderBalance(order) > 0.001;
+                  const canCancel =
+                    order.status === "PENDING_PAYMENT" ||
+                    order.status === "NEW" ||
+                    order.status === "ACCEPTED" ||
+                    order.status === "PREPARING" ||
+                    order.status === "READY";
+                  const queueLabel =
+                    order.mode === "WALK_IN" || order.queueNumber != null
+                      ? (formatWalkInQueueCode(order.queueNumber) ??
+                        shortId(order.id))
+                      : `Table ${order.table?.number ?? "—"}`;
                   return (
                     <OrderCard
                       key={order.id}
@@ -371,7 +393,8 @@ export function PaymentsBoard() {
                       busy={
                         pay.isPending ||
                         markPaid.isPending ||
-                        recordPendingCash.isPending
+                        recordPendingCash.isPending ||
+                        cancelOrder.isPending
                       }
                       tipValue={tips[order.id] ?? ""}
                       selectedIds={selectedItems[order.id] ?? []}
@@ -409,6 +432,21 @@ export function PaymentsBoard() {
                                 tipAmount: tipFor(order.id) || undefined,
                                 orderItemIds: ids.length ? ids : undefined,
                               });
+                            }
+                          : undefined
+                      }
+                      onCancel={
+                        canCancel
+                          ? () => {
+                              const ok = window.confirm(
+                                `Cancel order ${queueLabel}?\n\nThis cannot be undone. Pending payments will be voided.`,
+                              );
+                              if (!ok) return;
+                              const sure = window.confirm(
+                                `Confirm cancel ${queueLabel}?`,
+                              );
+                              if (!sure) return;
+                              cancelOrder.mutate(order.id);
                             }
                           : undefined
                       }
@@ -583,6 +621,7 @@ function OrderCard({
   onToggleItem,
   onPay,
   onPend,
+  onCancel,
   onMarkPaid,
   onReconcileTerminal,
   onRefund,
@@ -599,6 +638,7 @@ function OrderCard({
   onToggleItem?: (itemId: string) => void;
   onPay?: (method: PayMethod) => void;
   onPend?: () => void;
+  onCancel?: () => void;
   onMarkPaid?: () => void;
   onReconcileTerminal?: () => void;
   onRefund?: () => void;
@@ -722,6 +762,7 @@ function OrderCard({
 
       {(onPay ||
         onPend ||
+        onCancel ||
         onMarkPaid ||
         onReconcileTerminal ||
         onRefund ||
@@ -813,6 +854,17 @@ function OrderCard({
               onClick={onRefund}
             >
               Refund
+            </Button>
+          ) : null}
+          {onCancel ? (
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={busy}
+              onClick={onCancel}
+              className="border-[var(--danger)] text-[var(--danger)] hover:bg-[var(--danger-soft)]"
+            >
+              Cancel order
             </Button>
           ) : null}
         </div>
