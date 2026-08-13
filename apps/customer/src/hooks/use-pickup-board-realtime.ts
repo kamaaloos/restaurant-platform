@@ -8,7 +8,7 @@ export function usePickupBoardRealtime(
 ) {
   return useRealtimeSocket({
     enabled: !!branchId && !!deviceToken,
-    auth: { deviceToken: deviceToken ?? undefined },
+    auth: deviceToken ? { deviceToken } : {},
     events: ["v1.pickup.board", "v1.order.status.changed", "v1.order.cancelled"],
     invalidateKeys: [["pickup-board", branchId]],
   });
