@@ -1,8 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-<<<<<<< HEAD
 import { formatWalkInQueueCode } from "@org/shared";
-=======
->>>>>>> Update restaurant platform apps and backend
 
 /**
  * Cross-app walk-in path:
@@ -34,7 +31,6 @@ const WALK_IN_TOKEN =
   process.env.WALK_IN_E2E_TOKEN?.trim() ||
   "e2e00000-0004-4000-8000-000000000001";
 
-<<<<<<< HEAD
 function queueCode(queueNumber: number) {
   return formatWalkInQueueCode(queueNumber) ?? String(queueNumber);
 }
@@ -43,11 +39,6 @@ function ticketForQueue(page: Page, queueNumber: number) {
   const code = queueCode(queueNumber);
   return page.locator("article").filter({
     has: page.locator("p", { hasText: new RegExp(`^${code}$`) }),
-=======
-function ticketForQueue(page: Page, queueNumber: number) {
-  return page.locator("article").filter({
-    has: page.locator("p", { hasText: new RegExp(`^#${queueNumber}$`) }),
->>>>>>> Update restaurant platform apps and backend
   });
 }
 
@@ -153,11 +144,7 @@ test("walk-in flow: pay → kitchen → ready → waiter pickup → completed", 
     pickup.getByText(/pickup|preparing|ready|live/i).first(),
   ).toBeVisible({ timeout: 30_000 });
   await expect(
-<<<<<<< HEAD
     pickup.getByText(queueCode(order.queueNumber), { exact: true }).first(),
-=======
-    pickup.getByText(String(order.queueNumber), { exact: true }).first(),
->>>>>>> Update restaurant platform apps and backend
   ).toBeVisible({ timeout: 45_000 });
 
   const waiter = await context.newPage();
@@ -176,10 +163,6 @@ test("walk-in flow: pay → kitchen → ready → waiter pickup → completed", 
 
   await pickup.reload();
   await expect(
-<<<<<<< HEAD
     pickup.getByText(queueCode(order.queueNumber), { exact: true }),
-=======
-    pickup.getByText(String(order.queueNumber), { exact: true }),
->>>>>>> Update restaurant platform apps and backend
   ).toHaveCount(0, { timeout: 45_000 });
 });

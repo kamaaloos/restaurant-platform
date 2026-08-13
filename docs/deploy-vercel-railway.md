@@ -40,7 +40,7 @@ Default admin login after seed: `admin@restaurant.local` / `admin123`.
 
 ### Build
 
-Nixpacks will run `npm install` (triggers `prisma generate` via `postinstall`) and `npm run build`.
+Nixpacks installs with **devDependencies** (`backend/nixpacks.toml`) so `@nestjs/cli` is available for `npm run build`. `postinstall` runs `prisma generate` (needs `DATABASE_URL`).
 
 ### Variables
 
@@ -57,6 +57,9 @@ Copy from `backend/.env.example`. Minimum for production:
 | `CASHIER_APP_URL` | `https://your-cashier.vercel.app` |
 
 Optional: `PAYMENT_PROVIDER`, Stripe keys, Redis (see `.env.example`).
+
+For a **single-replica** first deploy without Redis, set `REDIS_OPTIONAL=1`.
+For multi-instance / reliable realtime, add a Railway Redis plugin and set `REDIS_URL`.
 
 `PORT` is injected by Railway — do not hardcode.
 

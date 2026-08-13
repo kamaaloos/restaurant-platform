@@ -1,11 +1,7 @@
 "use client";
 
 import * as React from "react";
-<<<<<<< HEAD
 import { formatMoney, formatWalkInQueueCode, shortId } from "@/lib/utils";
-=======
-import { formatMoney, shortId } from "@/lib/utils";
->>>>>>> Update restaurant platform apps and backend
 import type { Order, Payment } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 
@@ -61,11 +57,7 @@ export function ReceiptView({
 
   const title =
     order.mode === "WALK_IN" || order.queueNumber != null
-<<<<<<< HEAD
       ? `${formatWalkInQueueCode(order.queueNumber) ?? "—"} · Walk-in`
-=======
-      ? `#${order.queueNumber ?? "—"} · Walk-in`
->>>>>>> Update restaurant platform apps and backend
       : `Table ${order.table?.number ?? "—"}`;
 
   React.useEffect(() => {
