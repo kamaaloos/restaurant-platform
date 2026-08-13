@@ -212,22 +212,26 @@ export function TablesPage() {
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-2">
                       {table.qrToken ? (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => void copyQrLink(table.qrToken!)}
-                        >
-                          {copied === table.qrToken ? "Copied" : "Copy QR link"}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() =>
-                            void printTableQr(table.number, table.qrToken!)
-                          }
-                        >
-                          Print QR
-                        </Button>
+                        <>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => void copyQrLink(table.qrToken!)}
+                          >
+                            {copied === table.qrToken
+                              ? "Copied"
+                              : "Copy QR link"}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() =>
+                              void printTableQr(table.number, table.qrToken!)
+                            }
+                          >
+                            Print QR
+                          </Button>
+                        </>
                       ) : null}
                       <Button
                         size="sm"
