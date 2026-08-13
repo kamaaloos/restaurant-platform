@@ -3,12 +3,47 @@
 import * as React from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { cashierApi } from "@/lib/api";
+import { resolveMenuImage } from "@/lib/menu-images";
 import { formatMoney, formatWalkInQueueCode } from "@/lib/utils";
 import type { Order } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { openPickupTicketWindow } from "@/components/pickup-ticket-view";
 
 type CartLine = { menuItemId: string; quantity: number };
+
+type MenuItemRow = Awaited<
+  ReturnType<typeof cashierApi.listMenuItems>
+>[number];
+
+function groupByCategory(items: MenuItemRow[]) {
+  const map = new Map<
+    string,
+    { id: string; name: string; order: number; items: MenuItemRow[] }
+  >();
+
+  for (const item of items) {
+    const id = item.category?.id ?? item.categoryId ?? "other";
+    const name = item.category?.name ?? "Other";
+    const order = item.category?.displayOrder ?? 999;
+    const group = map.get(id) ?? { id, name, order, items: [] };
+    group.items.push(item);
+    map.set(id, group);
+  }
+
+  return [...map.values()]
+    .sort(
+      (a, b) =>
+        a.order - b.order || a.name.localeCompare(b.name, undefined, {
+          sensitivity: "base",
+        }),
+    )
+    .map((group) => ({
+      ...group,
+      items: [...group.items].sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, { sensitivity: "base" }),
+      ),
+    }));
+}
 
 export function NewWalkInPanel({
   branchId,
@@ -61,6 +96,7 @@ export function NewWalkInPanel({
   const items = (menuQuery.data ?? []).filter(
     (item) => item.active && item.available !== false,
   );
+  const categories = React.useMemo(() => groupByCategory(items), [items]);
   const currency = "EUR";
   const lines = items.filter((item) => (cart[item.id] ?? 0) > 0);
   const total = lines.reduce(
@@ -110,9 +146,7 @@ export function NewWalkInPanel({
         <div className="mt-4 flex flex-wrap gap-2">
           <Button
             type="button"
-            onClick={() =>
-              openPickupTicketWindow(created.id, branchName)
-            }
+            onClick={() => openPickupTicketWindow(created.id, branchName)}
           >
             Print pickup ticket
           </Button>
@@ -185,48 +219,73 @@ export function NewWalkInPanel({
       ) : items.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">No active menu items.</p>
       ) : (
-        <div className="max-h-72 space-y-1 overflow-y-auto rounded-md border border-[var(--line)] bg-[var(--paper)] p-2">
-          {items.map((item) => {
-            const qty = cart[item.id] ?? 0;
-            return (
-              <div
-                key={item.id}
-                className="flex items-center justify-between gap-3 rounded-md px-2 py-1.5 hover:bg-[var(--surface)]"
-              >
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{item.name}</p>
-                  <p className="text-xs text-[var(--muted)]">
-                    {item.category?.name ? `${item.category.name} · ` : ""}
-                    {formatMoney(Number(item.price), currency)}
-                  </p>
-                </div>
-                <div className="flex shrink-0 items-center gap-1.5">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    disabled={qty === 0}
-                    onClick={() => setQty(item.id, qty - 1)}
-                    aria-label={`Decrease ${item.name}`}
-                  >
-                    −
-                  </Button>
-                  <span className="w-6 text-center text-sm tabular-nums">
-                    {qty}
-                  </span>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() => setQty(item.id, qty + 1)}
-                    aria-label={`Increase ${item.name}`}
-                  >
-                    +
-                  </Button>
-                </div>
-              </div>
-            );
-          })}
+        <div className="max-h-[28rem] space-y-4 overflow-y-auto rounded-md border border-[var(--line)] bg-[var(--paper)] p-3">
+          {categories.map((category) => (
+            <section key={category.id}>
+              <h3 className="sticky top-0 z-10 mb-2 bg-[var(--paper)] py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
+                {category.name}
+              </h3>
+              <ul className="space-y-1.5">
+                {category.items.map((item) => {
+                  const qty = cart[item.id] ?? 0;
+                  const image = resolveMenuImage(item.imageUrl);
+                  return (
+                    <li
+                      key={item.id}
+                      className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-[var(--surface)]"
+                    >
+                      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md bg-[var(--surface-2)]">
+                        {image ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img
+                            src={image}
+                            alt=""
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          <span className="grid h-full w-full place-items-center text-sm font-semibold text-[var(--muted)]">
+                            {item.name.slice(0, 1)}
+                          </span>
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-medium">
+                          {item.name}
+                        </p>
+                        <p className="text-xs text-[var(--muted)]">
+                          {formatMoney(Number(item.price), currency)}
+                        </p>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-1.5">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          disabled={qty === 0}
+                          onClick={() => setQty(item.id, qty - 1)}
+                          aria-label={`Decrease ${item.name}`}
+                        >
+                          −
+                        </Button>
+                        <span className="w-6 text-center text-sm tabular-nums">
+                          {qty}
+                        </span>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setQty(item.id, qty + 1)}
+                          aria-label={`Increase ${item.name}`}
+                        >
+                          +
+                        </Button>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ))}
         </div>
       )}
 

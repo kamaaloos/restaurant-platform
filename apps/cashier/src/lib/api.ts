@@ -55,10 +55,15 @@ export const cashierApi = {
         id: string;
         name: string;
         price: number | string;
+        imageUrl?: string | null;
         active: boolean;
         available?: boolean;
         categoryId: string;
-        category?: { id: string; name: string } | null;
+        category?: {
+          id: string;
+          name: string;
+          displayOrder?: number;
+        } | null;
       }>
     >(
       restaurantId
