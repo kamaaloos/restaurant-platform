@@ -221,14 +221,17 @@ export function NewWalkInPanel({
       ) : (
         <div className="max-h-[28rem] space-y-4 overflow-y-auto rounded-md border border-[var(--line)] bg-[var(--paper)] p-3">
           {categories.map((category) => (
-            <section key={category.id}>
-              <h3 className="sticky top-0 z-10 mb-2 bg-[var(--paper)] py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
+            <section key={category.id} className="space-y-2">
+              <h3 className="sticky top-0 z-10 -mx-1 rounded-md bg-[var(--surface-2)] px-2 py-2 text-sm font-semibold tracking-wide text-[var(--ink)]">
                 {category.name}
+                <span className="ms-2 text-xs font-normal text-[var(--muted)]">
+                  {category.items.length}
+                </span>
               </h3>
               <ul className="space-y-1.5">
                 {category.items.map((item) => {
                   const qty = cart[item.id] ?? 0;
-                  const image = resolveMenuImage(item.imageUrl);
+                  const image = resolveMenuImage(item.imageUrl, item.name);
                   return (
                     <li
                       key={item.id}
