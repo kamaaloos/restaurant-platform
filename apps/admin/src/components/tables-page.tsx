@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import QRCode from "qrcode";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminApi } from "@/lib/api";
 import { shortId } from "@/lib/utils";
@@ -17,6 +18,14 @@ import {
 
 const CUSTOMER_URL =
   process.env.NEXT_PUBLIC_CUSTOMER_URL ?? "http://localhost:3001";
+
+function escapeHtml(value: string) {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
 
 export function TablesPage() {
   const queryClient = useQueryClient();
@@ -64,11 +73,52 @@ export function TablesPage() {
     onError: (err: Error) => setError(err.message),
   });
 
+  const restaurantName =
+    restaurants.find((r) => r.id === restaurantId)?.name ?? "Restaurant";
+  const branchName = branches.find((b) => b.id === branchId)?.name ?? "";
+
   async function copyQrLink(token: string) {
     const url = `${CUSTOMER_URL}/t/${token}`;
     await navigator.clipboard.writeText(url);
     setCopied(token);
     window.setTimeout(() => setCopied(null), 2000);
+  }
+
+  async function printTableQr(tableNumber: string, token: string) {
+    const url = `${CUSTOMER_URL}/t/${token}`;
+    const qr = await QRCode.toDataURL(url, {
+      width: 512,
+      margin: 2,
+      color: { dark: "#111111", light: "#ffffff" },
+    });
+    const w = window.open(
+      "",
+      "_blank",
+      "noopener,noreferrer,width=480,height=720",
+    );
+    if (!w) return;
+    w.document.write(`<!DOCTYPE html>
+<html>
+<head>
+  <title>Table ${escapeHtml(tableNumber)} QR</title>
+  <style>
+    body { font-family: Georgia, serif; text-align: center; padding: 32px; color: #111; }
+    h1 { font-size: 28px; margin: 0 0 4px; }
+    p { margin: 4px 0; color: #444; }
+    img { width: 280px; height: 280px; margin: 24px 0; }
+    .hint { font-size: 13px; }
+    @media print { button { display: none; } }
+  </style>
+</head>
+<body>
+  <h1>Table ${escapeHtml(tableNumber)}</h1>
+  <p>${escapeHtml(restaurantName)}${branchName ? ` · ${escapeHtml(branchName)}` : ""}</p>
+  <img src="${qr}" alt="Table ${escapeHtml(tableNumber)} QR" />
+  <p class="hint">Scan to order</p>
+  <button onclick="window.print()">Print</button>
+</body>
+</html>`);
+    w.document.close();
   }
 
   return (
@@ -168,6 +218,15 @@ export function TablesPage() {
                           onClick={() => void copyQrLink(table.qrToken!)}
                         >
                           {copied === table.qrToken ? "Copied" : "Copy QR link"}
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() =>
+                            void printTableQr(table.number, table.qrToken!)
+                          }
+                        >
+                          Print QR
                         </Button>
                       ) : null}
                       <Button
