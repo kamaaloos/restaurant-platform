@@ -553,172 +553,181 @@ export function MenuExperience({
       >
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-40 bg-[color-mix(in_oklab,var(--forest)_45%,black)]/50" />
-          <Dialog.Content className="animate-menu-soft-in fixed inset-x-0 bottom-0 z-50 max-h-[92vh] overflow-y-auto rounded-t-[28px] border border-[var(--gold)]/40 bg-[var(--paper)] outline-none sm:inset-auto sm:left-1/2 sm:top-1/2 sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[28px]">
+          <Dialog.Content className="animate-menu-soft-in fixed inset-x-0 bottom-0 z-50 flex max-h-[92vh] w-full flex-col overflow-hidden rounded-t-[28px] border border-[var(--gold)]/40 bg-[var(--paper)] outline-none sm:inset-auto sm:left-1/2 sm:top-1/2 sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[28px]">
             {selected ? (
               <>
-                {selectedImage ? (
-                  <div className="relative h-56 w-full overflow-hidden sm:h-64">
-                    <Image
-                      src={selectedImage}
-                      alt=""
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 640px) 100vw, 512px"
-                      unoptimized
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--paper)] via-transparent to-transparent" />
-                  </div>
-                ) : (
-                  <div className="h-8" />
-                )}
-
-                <div className="px-5 pb-6 pt-2">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <Dialog.Title className="font-[family-name:var(--font-display)] text-4xl font-semibold text-[var(--forest)]">
-                        {localizedMenuItemName(
-                          selected.name,
-                          locale,
-                          selected.imageUrl,
-                        )}
-                      </Dialog.Title>
-                      <Dialog.Description className="mt-2 text-base leading-relaxed text-[var(--muted)]">
-                        {localizedMenuItemDescription(
-                          selected.name,
-                          locale,
-                          selected.imageUrl,
-                          selected.description,
-                        ) ?? t("customizeDish")}
-                      </Dialog.Description>
-                      <p className="mt-3 font-[family-name:var(--font-display)] text-3xl text-[var(--forest)]">
-                        {money(selected.price)}
-                      </p>
-                      {selected.available === false ? (
-                        <p className="mt-2 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--danger)]">
-                          {t("soldOut")}
-                        </p>
-                      ) : null}
+                <div className="hide-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain">
+                  {selectedImage ? (
+                    <div className="relative h-56 w-full overflow-hidden sm:h-64">
+                      <Image
+                        src={selectedImage}
+                        alt=""
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 100vw, 512px"
+                        unoptimized
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[var(--paper)] via-transparent to-transparent" />
                     </div>
-                    <Dialog.Close asChild>
-                      <button
-                        type="button"
-                        aria-label={t("close")}
-                        className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[var(--gold)]/40 text-[var(--forest)] hover:bg-[var(--surface-2)]"
-                      >
-                        <X className="h-4 w-4" strokeWidth={1.75} />
-                      </button>
-                    </Dialog.Close>
-                  </div>
+                  ) : (
+                    <div className="h-8" />
+                  )}
 
-                  <div className="mt-6 space-y-6">
-                    {selected.modifierGroups.map((group) => (
-                      <div key={group.id}>
-                        <p className="font-[family-name:var(--font-display)] text-2xl text-[var(--forest)]">
-                          {group.name}
-                          {group.required ? (
-                            <span className="ms-2 font-[family-name:var(--font-body)] text-sm tracking-wide text-[var(--gold)] uppercase">
-                              {t("required")}
-                            </span>
-                          ) : null}
+                  <div className="px-5 pb-4 pt-2">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <Dialog.Title className="font-[family-name:var(--font-display)] text-4xl font-semibold text-[var(--forest)]">
+                          {localizedMenuItemName(
+                            selected.name,
+                            locale,
+                            selected.imageUrl,
+                          )}
+                        </Dialog.Title>
+                        <Dialog.Description className="mt-2 text-base leading-relaxed text-[var(--muted)]">
+                          {localizedMenuItemDescription(
+                            selected.name,
+                            locale,
+                            selected.imageUrl,
+                            selected.description,
+                          ) ?? t("customizeDish")}
+                        </Dialog.Description>
+                        <p className="mt-3 font-[family-name:var(--font-display)] text-3xl text-[var(--forest)]">
+                          {money(selected.price)}
                         </p>
-                        <div className="mt-3 space-y-2">
-                          {group.options.map((option) => {
-                            const checked = selectedOptions.includes(option.id);
-                            return (
-                              <label
-                                key={option.id}
-                                className={`flex cursor-pointer items-center justify-between rounded-[24px] border px-4 py-3 transition ${
-                                  checked
-                                    ? "border-[var(--forest)] bg-[var(--gold-soft)]"
-                                    : "border-[var(--gold)]/35 bg-white"
-                                }`}
-                              >
-                                <span className="flex items-center gap-3 text-base">
-                                  <span
-                                    className={`grid h-4 w-4 place-items-center rounded-full border ${
-                                      checked
-                                        ? "border-[var(--forest)]"
-                                        : "border-[var(--muted)]"
-                                    }`}
-                                    aria-hidden
-                                  >
-                                    {checked ? (
-                                      <span className="h-2 w-2 rounded-full bg-[var(--forest)]" />
-                                    ) : null}
+                        {selected.available === false ? (
+                          <p className="mt-2 text-sm font-semibold uppercase tracking-[0.14em] text-[var(--danger)]">
+                            {t("soldOut")}
+                          </p>
+                        ) : null}
+                      </div>
+                      <Dialog.Close asChild>
+                        <button
+                          type="button"
+                          aria-label={t("close")}
+                          className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[var(--gold)]/40 text-[var(--forest)] hover:bg-[var(--surface-2)]"
+                        >
+                          <X className="h-4 w-4" strokeWidth={1.75} />
+                        </button>
+                      </Dialog.Close>
+                    </div>
+
+                    <div className="mt-6 space-y-6">
+                      {selected.modifierGroups.map((group) => (
+                        <div key={group.id}>
+                          <p className="font-[family-name:var(--font-display)] text-2xl text-[var(--forest)]">
+                            {group.name}
+                            {group.required ? (
+                              <span className="ms-2 font-[family-name:var(--font-body)] text-sm tracking-wide text-[var(--gold)] uppercase">
+                                {t("required")}
+                              </span>
+                            ) : null}
+                          </p>
+                          <div className="mt-3 space-y-2">
+                            {group.options.map((option) => {
+                              const checked = selectedOptions.includes(
+                                option.id,
+                              );
+                              return (
+                                <label
+                                  key={option.id}
+                                  className={`flex cursor-pointer items-center justify-between rounded-[24px] border px-4 py-3 transition ${
+                                    checked
+                                      ? "border-[var(--forest)] bg-[var(--gold-soft)]"
+                                      : "border-[var(--gold)]/35 bg-white"
+                                  }`}
+                                >
+                                  <span className="flex items-center gap-3 text-base">
+                                    <span
+                                      className={`grid h-4 w-4 place-items-center rounded-full border ${
+                                        checked
+                                          ? "border-[var(--forest)]"
+                                          : "border-[var(--muted)]"
+                                      }`}
+                                      aria-hidden
+                                    >
+                                      {checked ? (
+                                        <span className="h-2 w-2 rounded-full bg-[var(--forest)]" />
+                                      ) : null}
+                                    </span>
+                                    <input
+                                      type={
+                                        group.maxSelect <= 1
+                                          ? "radio"
+                                          : "checkbox"
+                                      }
+                                      name={group.id}
+                                      checked={checked}
+                                      onChange={() =>
+                                        toggleOption(group, option.id)
+                                      }
+                                      className="sr-only"
+                                    />
+                                    {option.name}
                                   </span>
-                                  <input
-                                    type={
-                                      group.maxSelect <= 1 ? "radio" : "checkbox"
-                                    }
-                                    name={group.id}
-                                    checked={checked}
-                                    onChange={() =>
-                                      toggleOption(group, option.id)
-                                    }
-                                    className="sr-only"
-                                  />
-                                  {option.name}
-                                </span>
-                                {Number(option.priceDelta) > 0 ? (
-                                  <span className="text-base text-[var(--muted)]">
-                                    +
-                                    {money(option.priceDelta)}
-                                  </span>
-                                ) : null}
-                              </label>
-                            );
-                          })}
+                                  {Number(option.priceDelta) > 0 ? (
+                                    <span className="text-base text-[var(--muted)]">
+                                      +{money(option.priceDelta)}
+                                    </span>
+                                  ) : null}
+                                </label>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+
+                      <div>
+                        <p className="font-[family-name:var(--font-display)] text-2xl text-[var(--forest)]">
+                          {t("specialRequests")}
+                        </p>
+                        <textarea
+                          value={notes}
+                          onChange={(e) => setNotes(e.target.value)}
+                          className="mt-3 w-full rounded-[24px] border border-[var(--gold)]/35 bg-white px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[var(--gold)]"
+                          rows={2}
+                          placeholder={t("specialRequestsPlaceholder")}
+                        />
+                      </div>
+
+                      <div className="flex items-center justify-between gap-4">
+                        <p className="font-[family-name:var(--font-display)] text-2xl text-[var(--forest)]">
+                          {t("quantity")}
+                        </p>
+                        <div className="flex items-center gap-3 rounded-full border border-[var(--gold)]/40 bg-white px-2 py-1">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setQuantity((q) => Math.max(1, q - 1))
+                            }
+                            aria-label={t("quantity")}
+                            className="grid h-9 w-9 place-items-center rounded-full text-[var(--forest)] hover:bg-[var(--surface-2)]"
+                          >
+                            −
+                          </button>
+                          <span className="w-6 text-center text-base font-semibold">
+                            {quantity}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setQuantity((q) => q + 1)}
+                            aria-label={t("quantity")}
+                            className="grid h-9 w-9 place-items-center rounded-full text-[var(--forest)] hover:bg-[var(--surface-2)]"
+                          >
+                            +
+                          </button>
                         </div>
                       </div>
-                    ))}
-
-                    <div>
-                      <p className="font-[family-name:var(--font-display)] text-2xl text-[var(--forest)]">
-                        {t("specialRequests")}
-                      </p>
-                      <textarea
-                        value={notes}
-                        onChange={(e) => setNotes(e.target.value)}
-                        className="mt-3 w-full rounded-[24px] border border-[var(--gold)]/35 bg-white px-4 py-3 text-base outline-none focus:ring-2 focus:ring-[var(--gold)]"
-                        rows={2}
-                        placeholder={t("specialRequestsPlaceholder")}
-                      />
-                    </div>
-
-                    <div className="flex items-center justify-between gap-4">
-                      <p className="font-[family-name:var(--font-display)] text-2xl text-[var(--forest)]">
-                        {t("quantity")}
-                      </p>
-                      <div className="flex items-center gap-3 rounded-full border border-[var(--gold)]/40 bg-white px-2 py-1">
-                        <button
-                          type="button"
-                          onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                          aria-label={t("quantity")}
-                          className="grid h-9 w-9 place-items-center rounded-full text-[var(--forest)] hover:bg-[var(--surface-2)]"
-                        >
-                          −
-                        </button>
-                        <span className="w-6 text-center text-base font-semibold">
-                          {quantity}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setQuantity((q) => q + 1)}
-                          aria-label={t("quantity")}
-                          className="grid h-9 w-9 place-items-center rounded-full text-[var(--forest)] hover:bg-[var(--surface-2)]"
-                        >
-                          +
-                        </button>
-                      </div>
                     </div>
                   </div>
+                </div>
 
+                <div className="shrink-0 border-t border-[var(--gold)]/25 bg-[var(--paper)] px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
                   {selected.available === false ? (
-                    <Button className="mt-8 w-full" size="lg" disabled>
+                    <Button className="w-full" size="lg" disabled>
                       {t("soldOut")}
                     </Button>
                   ) : (
-                    <Button className="mt-8 w-full" size="lg" onClick={addSelected}>
+                    <Button className="w-full" size="lg" onClick={addSelected}>
                       {t("add")} {money(lineTotal)}
                     </Button>
                   )}

@@ -179,7 +179,7 @@ export function CartExperience({
   }
 
   return (
-    <div className="mx-auto min-h-screen max-w-3xl bg-[var(--paper)] px-4 py-6 text-[var(--ink)]">
+    <div className="mx-auto min-h-screen max-w-3xl bg-[var(--paper)] px-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-6 text-[var(--ink)]">
       <div className="flex items-center justify-between gap-3">
         <h1 className="font-[family-name:var(--font-display)] text-3xl">
           {t("cartTitle")}
@@ -370,20 +370,21 @@ export function CartExperience({
             ) : null}
           </div>
 
-          <div className="mt-6 flex items-center justify-between border-t border-[var(--line)] pt-4">
-            <p className="text-[var(--muted)]">{t("total")}</p>
-            <p className="text-xl font-semibold">{money(total)}</p>
+          <div className="sticky bottom-0 z-10 -mx-4 mt-6 border-t border-[var(--line)] bg-[var(--paper)]/95 px-4 py-4 backdrop-blur-md">
+            <div className="flex items-center justify-between">
+              <p className="text-[var(--muted)]">{t("total")}</p>
+              <p className="text-xl font-semibold">{money(total)}</p>
+            </div>
+            <Button
+              className="mt-3 w-full"
+              size="lg"
+              type="button"
+              disabled={busy || lines.length === 0}
+              onClick={requestCheckout}
+            >
+              {busy ? t("sending") : t("placeOrder")}
+            </Button>
           </div>
-
-          <Button
-            className="mt-4 w-full"
-            size="lg"
-            type="button"
-            disabled={busy || lines.length === 0}
-            onClick={requestCheckout}
-          >
-            {busy ? t("sending") : t("placeOrder")}
-          </Button>
         </fieldset>
       )}
 
