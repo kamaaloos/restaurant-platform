@@ -96,7 +96,7 @@ async function ensureReader(terminal: Terminal) {
       simulated: false,
       ...(location ? { location } : {}),
     });
-    if (discovery.error) {
+    if ("error" in discovery) {
       throw new Error(discovery.error.message);
     }
     const readers = discovery.discoveredReaders ?? [];
@@ -112,14 +112,14 @@ async function ensureReader(terminal: Terminal) {
       );
     }
     const result = await terminal.connectReader(reader);
-    if (result.error) {
+    if ("error" in result) {
       throw new Error(result.error.message);
     }
     return result.reader ?? reader;
   }
 
   const discovery = await terminal.discoverReaders({ simulated: true });
-  if (discovery.error) {
+  if ("error" in discovery) {
     throw new Error(discovery.error.message);
   }
   const reader = discovery.discoveredReaders?.[0];
@@ -127,7 +127,7 @@ async function ensureReader(terminal: Terminal) {
     throw new Error("No simulated Stripe Terminal reader found");
   }
   const result = await terminal.connectReader(reader);
-  if (result.error) {
+  if ("error" in result) {
     throw new Error(result.error.message);
   }
   return result.reader ?? reader;
@@ -169,7 +169,7 @@ export async function collectTerminalPayment(clientSecret: string) {
   }
 
   const collected = await terminal.collectPaymentMethod(clientSecret);
-  if (collected.error) {
+  if ("error" in collected) {
     throw new Error(collected.error.message);
   }
   if (!collected.paymentIntent) {
@@ -177,7 +177,7 @@ export async function collectTerminalPayment(clientSecret: string) {
   }
 
   const processed = await terminal.processPayment(collected.paymentIntent);
-  if (processed.error) {
+  if ("error" in processed) {
     throw new Error(processed.error.message);
   }
   return processed.paymentIntent;
