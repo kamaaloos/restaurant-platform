@@ -231,7 +231,7 @@ export function WaiterBoard() {
           return (
             <section
               key={column.key}
-              className="flex h-[48vh] max-h-[520px] min-h-[280px] flex-col rounded-2xl border border-[var(--line)] bg-[var(--surface)]/88 backdrop-blur-sm"
+              className="flex h-[48vh] max-h-[520px] min-h-[280px] flex-col rounded-2xl border border-white/25 bg-[var(--surface)]/55 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] backdrop-blur-md"
             >
               <div className="flex items-end justify-between border-b border-[var(--line)] px-4 py-3">
                 <div>

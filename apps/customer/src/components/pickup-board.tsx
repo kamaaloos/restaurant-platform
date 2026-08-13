@@ -221,10 +221,10 @@ function BoardColumn({
 }) {
   return (
     <section
-      className={`rounded-3xl border p-6 shadow-[var(--shadow-soft)] backdrop-blur-md ${
+      className={`rounded-3xl border border-white/25 p-6 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] backdrop-blur-md ${
         tone === "ready"
-          ? "border-[var(--accent)] bg-[var(--surface)]/88"
-          : "border-[var(--line)] bg-[var(--surface)]/82"
+          ? "bg-[var(--surface)]/55 ring-1 ring-[var(--accent)]/40"
+          : "bg-[var(--surface)]/55"
       }`}
     >
       <h2 className="font-[family-name:var(--font-display)] text-4xl">
