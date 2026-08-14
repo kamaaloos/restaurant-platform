@@ -53,7 +53,12 @@ body {
       color-mix(in oklab, var(--forest) 5%, transparent),
       transparent 70%
     ),
-    linear-gradient(180deg, #faf7f1 0%, var(--paper) 45%, #f4efe7 100%);
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--paper) 92%, white) 0%,
+      var(--paper) 45%,
+      color-mix(in oklab, var(--paper) 94%, #2d2d2d) 100%
+    );
   color: var(--ink);
   min-height: 100vh;
   font-family: var(--font-body), "Inter", system-ui, sans-serif;

@@ -64,6 +64,10 @@ export const adminApi = {
     email: string;
     phone: string;
     address?: string;
+    logoUrl?: string | null;
+    brandAccent?: string | null;
+    brandButton?: string | null;
+    brandPaper?: string | null;
   }) =>
     request<Restaurant>("/restaurants", {
       method: "POST",
@@ -78,6 +82,10 @@ export const adminApi = {
       phone?: string;
       address?: string;
       active?: boolean;
+      logoUrl?: string | null;
+      brandAccent?: string | null;
+      brandButton?: string | null;
+      brandPaper?: string | null;
     },
   ) =>
     request<Restaurant>(`/restaurants/${id}`, {

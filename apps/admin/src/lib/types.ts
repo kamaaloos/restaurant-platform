@@ -22,6 +22,10 @@ export type Restaurant = {
   phone?: string | null;
   address?: string | null;
   currency?: string;
+  logoUrl?: string | null;
+  brandAccent?: string | null;
+  brandButton?: string | null;
+  brandPaper?: string | null;
   active?: boolean;
 };
 

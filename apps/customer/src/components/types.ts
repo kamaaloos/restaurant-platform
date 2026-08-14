@@ -36,6 +36,9 @@ export type CustomerMenu = {
     name: string;
     logoUrl: string | null;
     currency: string;
+    brandAccent?: string | null;
+    brandButton?: string | null;
+    brandPaper?: string | null;
   };
   branch: { id: string; name: string };
   table: {

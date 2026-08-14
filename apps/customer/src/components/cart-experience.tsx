@@ -15,6 +15,7 @@ import { localizedMenuItemName } from "@/lib/i18n/menu-items";
 import { useLocale } from "@/lib/i18n/locale-provider";
 import { LocaleControls, useCurrency } from "@/lib/currency-provider";
 import { resolveMenuImage } from "@/lib/menu-images";
+import { useRestaurantBrand } from "@/lib/restaurant-brand";
 import { formatMoney, formatWalkInQueueCode } from "@/lib/utils";
 import type { Course } from "@/lib/types";
 import {
@@ -85,6 +86,8 @@ export function CartExperience({
         ? customerApi.getWalkInMenu(branchId!)
         : customerApi.getMenu(token!),
   });
+
+  useRestaurantBrand(menuQuery.data?.restaurant);
 
   const baseCurrency = menuQuery.data?.restaurant.currency ?? "EUR";
   const money = (amount: number | string) =>

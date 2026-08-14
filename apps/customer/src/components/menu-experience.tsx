@@ -32,6 +32,7 @@ import { customerApi } from "@/lib/api";
 import { extractApiMessage } from "@/lib/errors";
 import { resolveMenuImage } from "@/lib/menu-images";
 import { localizedCategoryName, moneyLocale } from "@/lib/i18n/helpers";
+import { useRestaurantBrand } from "@/lib/restaurant-brand";
 import {
   formatMenuIndex,
   localizedMenuItemDescription,
@@ -81,6 +82,8 @@ export function MenuExperience({
     enabled: !!scope,
     refetchInterval: 20_000,
   });
+
+  useRestaurantBrand(menuQuery.data?.restaurant);
 
   const serviceRequestsQuery = useQuery({
     queryKey: ["service-requests", token],
@@ -389,6 +392,16 @@ export function MenuExperience({
         </div>
 
         <div className="relative z-10 mt-2 text-center">
+          {menu.restaurant.logoUrl ? (
+            <div className="mx-auto mb-4 flex justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={menu.restaurant.logoUrl}
+                alt=""
+                className="h-16 w-16 rounded-full object-cover ring-2 ring-[var(--gold)]/50"
+              />
+            </div>
+          ) : null}
           <h1 className="font-[family-name:var(--font-display)] text-4xl font-semibold tracking-tight text-[var(--forest)] md:text-5xl">
             {menu.restaurant.name}
           </h1>

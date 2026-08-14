@@ -18,6 +18,7 @@ import {
 } from "@org/shared";
 import { LocaleControls } from "@/lib/currency-provider";
 import { useLocale } from "@/lib/i18n/locale-provider";
+import { useRestaurantBrand } from "@/lib/restaurant-brand";
 import { Button } from "@/components/ui/button";
 
 export function PickupBoardExperience({ branchId }: { branchId: string }) {
@@ -75,6 +76,8 @@ export function PickupBoardExperience({ branchId }: { branchId: string }) {
     enabled: !!deviceToken,
     refetchInterval: connected ? 30_000 : 8_000,
   });
+
+  useRestaurantBrand(boardQuery.data?.restaurant);
 
   if (!hydrated) {
     return (
@@ -144,6 +147,14 @@ export function PickupBoardExperience({ branchId }: { branchId: string }) {
           <h1 className="mt-2 font-[family-name:var(--font-display)] text-5xl leading-none">
             {board?.restaurant.name ?? t("yourOrder")}
           </h1>
+          {board?.restaurant.logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={board.restaurant.logoUrl}
+              alt=""
+              className="mt-4 h-14 w-14 rounded-full object-cover ring-2 ring-[var(--accent)]/40"
+            />
+          ) : null}
           <p className="mt-2 text-[var(--muted)]">
             {board?.branch.name ?? t("loading")}
           </p>

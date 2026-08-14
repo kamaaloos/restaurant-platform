@@ -11,11 +11,21 @@ import { PageHeader } from "@/components/page-header";
 const CUSTOMER_URL =
   process.env.NEXT_PUBLIC_CUSTOMER_URL ?? "http://localhost:3001";
 
+const DEFAULT_BRAND = {
+  accent: "#c9a86a",
+  button: "#234128",
+  paper: "#f8f5ef",
+} as const;
+
 type RestaurantFormState = {
   name: string;
   email: string;
   phone: string;
   address: string;
+  logoUrl: string;
+  brandAccent: string;
+  brandButton: string;
+  brandPaper: string;
   active: boolean;
 };
 
@@ -24,8 +34,24 @@ const emptyForm: RestaurantFormState = {
   email: "",
   phone: "",
   address: "",
+  logoUrl: "",
+  brandAccent: DEFAULT_BRAND.accent,
+  brandButton: DEFAULT_BRAND.button,
+  brandPaper: DEFAULT_BRAND.paper,
   active: true,
 };
+
+function brandFieldsFromRestaurant(restaurant: Restaurant): Pick<
+  RestaurantFormState,
+  "logoUrl" | "brandAccent" | "brandButton" | "brandPaper"
+> {
+  return {
+    logoUrl: restaurant.logoUrl ?? "",
+    brandAccent: restaurant.brandAccent ?? DEFAULT_BRAND.accent,
+    brandButton: restaurant.brandButton ?? DEFAULT_BRAND.button,
+    brandPaper: restaurant.brandPaper ?? DEFAULT_BRAND.paper,
+  };
+}
 
 export function RestaurantsPage() {
   const queryClient = useQueryClient();
@@ -66,6 +92,7 @@ export function RestaurantsPage() {
       phone: restaurant.phone ?? "",
       address: restaurant.address ?? "",
       active: restaurant.active !== false,
+      ...brandFieldsFromRestaurant(restaurant),
     });
     setError(null);
     setSuccess(null);
@@ -79,6 +106,10 @@ export function RestaurantsPage() {
         email: form.email.trim(),
         phone: form.phone.trim(),
         address: form.address.trim() || undefined,
+        logoUrl: form.logoUrl.trim() || null,
+        brandAccent: form.brandAccent.trim() || null,
+        brandButton: form.brandButton.trim() || null,
+        brandPaper: form.brandPaper.trim() || null,
       };
       if (editingId) {
         return adminApi.updateRestaurant(editingId, {
@@ -150,6 +181,15 @@ export function RestaurantsPage() {
     onError: (err: Error) => setBranchError(err.message),
   });
 
+  const [ownerBrand, setOwnerBrand] = React.useState({
+    logoUrl: "",
+    brandAccent: DEFAULT_BRAND.accent,
+    brandButton: DEFAULT_BRAND.button,
+    brandPaper: DEFAULT_BRAND.paper,
+  });
+  const [brandError, setBrandError] = React.useState<string | null>(null);
+  const [brandSuccess, setBrandSuccess] = React.useState<string | null>(null);
+
   const restaurants = restaurantsQuery.data ?? [];
   const branches = branchesQuery.data ?? [];
   const isOwner = user?.role === "RESTAURANT_OWNER";
@@ -162,6 +202,38 @@ export function RestaurantsPage() {
   const ownerBranches = ownedRestaurantId
     ? branches.filter((b) => b.restaurantId === ownedRestaurantId)
     : branches;
+
+  React.useEffect(() => {
+    if (!ownedRestaurant) return;
+    setOwnerBrand(brandFieldsFromRestaurant(ownedRestaurant));
+  }, [
+    ownedRestaurant?.id,
+    ownedRestaurant?.logoUrl,
+    ownedRestaurant?.brandAccent,
+    ownedRestaurant?.brandButton,
+    ownedRestaurant?.brandPaper,
+  ]);
+
+  const saveOwnerBrand = useMutation({
+    mutationFn: () => {
+      if (!ownedRestaurantId) throw new Error("No restaurant assigned");
+      return adminApi.updateRestaurant(ownedRestaurantId, {
+        logoUrl: ownerBrand.logoUrl.trim() || null,
+        brandAccent: ownerBrand.brandAccent.trim() || null,
+        brandButton: ownerBrand.brandButton.trim() || null,
+        brandPaper: ownerBrand.brandPaper.trim() || null,
+      });
+    },
+    onSuccess: () => {
+      setBrandError(null);
+      setBrandSuccess("Customer brand saved.");
+      void queryClient.invalidateQueries({ queryKey: ["admin-restaurants"] });
+    },
+    onError: (err: Error) => {
+      setBrandSuccess(null);
+      setBrandError(err.message);
+    },
+  });
 
   React.useEffect(() => {
     if (isOwner && ownedRestaurantId) {
@@ -235,6 +307,82 @@ export function RestaurantsPage() {
             placeholder="Address (optional)"
             className={`${inputClass} md:col-span-2`}
           />
+          <input
+            value={form.logoUrl}
+            onChange={(e) =>
+              setForm((f) => ({ ...f, logoUrl: e.target.value }))
+            }
+            placeholder="Logo URL (optional)"
+            className={`${inputClass} md:col-span-2`}
+          />
+          <div className="md:col-span-2 grid gap-3 sm:grid-cols-3">
+            <label className="space-y-1.5 text-sm">
+              <span className="font-medium text-[var(--muted)]">Accent</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={form.brandAccent}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, brandAccent: e.target.value }))
+                  }
+                  className="h-10 w-12 cursor-pointer rounded border border-[var(--line)] bg-transparent p-1"
+                />
+                <input
+                  value={form.brandAccent}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, brandAccent: e.target.value }))
+                  }
+                  className={inputClass}
+                  pattern="^#[0-9A-Fa-f]{6}$"
+                  placeholder="#c9a86a"
+                />
+              </div>
+            </label>
+            <label className="space-y-1.5 text-sm">
+              <span className="font-medium text-[var(--muted)]">Button</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={form.brandButton}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, brandButton: e.target.value }))
+                  }
+                  className="h-10 w-12 cursor-pointer rounded border border-[var(--line)] bg-transparent p-1"
+                />
+                <input
+                  value={form.brandButton}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, brandButton: e.target.value }))
+                  }
+                  className={inputClass}
+                  pattern="^#[0-9A-Fa-f]{6}$"
+                  placeholder="#234128"
+                />
+              </div>
+            </label>
+            <label className="space-y-1.5 text-sm">
+              <span className="font-medium text-[var(--muted)]">Paper</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={form.brandPaper}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, brandPaper: e.target.value }))
+                  }
+                  className="h-10 w-12 cursor-pointer rounded border border-[var(--line)] bg-transparent p-1"
+                />
+                <input
+                  value={form.brandPaper}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, brandPaper: e.target.value }))
+                  }
+                  className={inputClass}
+                  pattern="^#[0-9A-Fa-f]{6}$"
+                  placeholder="#f8f5ef"
+                />
+              </div>
+            </label>
+          </div>
           {editingId ? (
             <label className="md:col-span-2 flex items-center gap-2 text-sm">
               <input
@@ -264,6 +412,131 @@ export function RestaurantsPage() {
           {success ? (
             <p className="md:col-span-2 text-sm text-[var(--accent)]">
               {success}
+            </p>
+          ) : null}
+        </form>
+      ) : null}
+
+      {isOwner && ownedRestaurantId ? (
+        <form
+          className="mb-8 grid gap-3 rounded-xl border border-[var(--line)] bg-[var(--surface)] p-4 md:grid-cols-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            saveOwnerBrand.mutate();
+          }}
+        >
+          <h2 className="md:col-span-2 text-lg font-semibold">
+            Customer brand
+          </h2>
+          <p className="md:col-span-2 text-sm text-[var(--muted)]">
+            Logo and colors for the guest menu, cart, and pickup TV.
+          </p>
+          <input
+            value={ownerBrand.logoUrl}
+            onChange={(e) =>
+              setOwnerBrand((b) => ({ ...b, logoUrl: e.target.value }))
+            }
+            placeholder="Logo URL (optional)"
+            className={`${inputClass} md:col-span-2`}
+          />
+          <div className="md:col-span-2 grid gap-3 sm:grid-cols-3">
+            <label className="space-y-1.5 text-sm">
+              <span className="font-medium text-[var(--muted)]">Accent</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={ownerBrand.brandAccent}
+                  onChange={(e) =>
+                    setOwnerBrand((b) => ({
+                      ...b,
+                      brandAccent: e.target.value,
+                    }))
+                  }
+                  className="h-10 w-12 cursor-pointer rounded border border-[var(--line)] bg-transparent p-1"
+                />
+                <input
+                  value={ownerBrand.brandAccent}
+                  onChange={(e) =>
+                    setOwnerBrand((b) => ({
+                      ...b,
+                      brandAccent: e.target.value,
+                    }))
+                  }
+                  className={inputClass}
+                  pattern="^#[0-9A-Fa-f]{6}$"
+                />
+              </div>
+            </label>
+            <label className="space-y-1.5 text-sm">
+              <span className="font-medium text-[var(--muted)]">Button</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={ownerBrand.brandButton}
+                  onChange={(e) =>
+                    setOwnerBrand((b) => ({
+                      ...b,
+                      brandButton: e.target.value,
+                    }))
+                  }
+                  className="h-10 w-12 cursor-pointer rounded border border-[var(--line)] bg-transparent p-1"
+                />
+                <input
+                  value={ownerBrand.brandButton}
+                  onChange={(e) =>
+                    setOwnerBrand((b) => ({
+                      ...b,
+                      brandButton: e.target.value,
+                    }))
+                  }
+                  className={inputClass}
+                  pattern="^#[0-9A-Fa-f]{6}$"
+                />
+              </div>
+            </label>
+            <label className="space-y-1.5 text-sm">
+              <span className="font-medium text-[var(--muted)]">Paper</span>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={ownerBrand.brandPaper}
+                  onChange={(e) =>
+                    setOwnerBrand((b) => ({
+                      ...b,
+                      brandPaper: e.target.value,
+                    }))
+                  }
+                  className="h-10 w-12 cursor-pointer rounded border border-[var(--line)] bg-transparent p-1"
+                />
+                <input
+                  value={ownerBrand.brandPaper}
+                  onChange={(e) =>
+                    setOwnerBrand((b) => ({
+                      ...b,
+                      brandPaper: e.target.value,
+                    }))
+                  }
+                  className={inputClass}
+                  pattern="^#[0-9A-Fa-f]{6}$"
+                />
+              </div>
+            </label>
+          </div>
+          <Button
+            type="submit"
+            className="md:col-span-2"
+            disabled={saveOwnerBrand.isPending}
+          >
+            {saveOwnerBrand.isPending ? "Saving…" : "Save brand"}
+          </Button>
+          {brandError ? (
+            <p className="md:col-span-2 text-sm text-[var(--danger)]">
+              {brandError}
+            </p>
+          ) : null}
+          {brandSuccess ? (
+            <p className="md:col-span-2 text-sm text-[var(--accent)]">
+              {brandSuccess}
             </p>
           ) : null}
         </form>
