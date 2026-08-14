@@ -181,7 +181,12 @@ export function RestaurantsPage() {
     onError: (err: Error) => setBranchError(err.message),
   });
 
-  const [ownerBrand, setOwnerBrand] = React.useState({
+  const [ownerBrand, setOwnerBrand] = React.useState<{
+    logoUrl: string;
+    brandAccent: string;
+    brandButton: string;
+    brandPaper: string;
+  }>({
     logoUrl: "",
     brandAccent: DEFAULT_BRAND.accent,
     brandButton: DEFAULT_BRAND.button,
