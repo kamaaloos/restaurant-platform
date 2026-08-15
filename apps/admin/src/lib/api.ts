@@ -68,6 +68,7 @@ export const adminApi = {
     brandAccent?: string | null;
     brandButton?: string | null;
     brandPaper?: string | null;
+    brandBackgroundUrl?: string | null;
   }) =>
     request<Restaurant>("/restaurants", {
       method: "POST",
@@ -86,6 +87,7 @@ export const adminApi = {
       brandAccent?: string | null;
       brandButton?: string | null;
       brandPaper?: string | null;
+      brandBackgroundUrl?: string | null;
     },
   ) =>
     request<Restaurant>(`/restaurants/${id}`, {
@@ -265,4 +267,39 @@ export const adminApi = {
         ? `/orders/kitchen/dashboard?branchId=${branchId}`
         : "/orders/kitchen/dashboard",
     ),
+
+  uploadImage: async (file: File) => {
+    const token = getAccessToken();
+    const body = new FormData();
+    body.append("file", file);
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      body,
+    }).catch(() => {
+      throw new ApiError(0, "Cannot reach upload endpoint");
+    });
+    if (res.status === 401) {
+      clearSession();
+      if (
+        typeof window !== "undefined" &&
+        !window.location.pathname.startsWith("/login")
+      ) {
+        window.location.href = "/login";
+      }
+    }
+    if (!res.ok) {
+      const errBody = await res.json().catch(() => ({}));
+      const message =
+        typeof (errBody as { message?: unknown }).message === "string"
+          ? (errBody as { message: string }).message
+          : `Upload failed (${res.status})`;
+      throw new ApiError(res.status, message);
+    }
+    return res.json() as Promise<{
+      url: string;
+      path: string;
+      filename: string;
+    }>;
+  },
 };

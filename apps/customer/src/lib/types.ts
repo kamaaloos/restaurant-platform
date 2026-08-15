@@ -41,6 +41,7 @@ export type CustomerMenu = {
     brandAccent?: string | null;
     brandButton?: string | null;
     brandPaper?: string | null;
+    brandBackgroundUrl?: string | null;
   };
   branch: { id: string; name: string };
   table: {
@@ -123,6 +124,7 @@ export type PickupBoard = {
     brandAccent?: string | null;
     brandButton?: string | null;
     brandPaper?: string | null;
+    brandBackgroundUrl?: string | null;
   };
   preparing: PickupBoardEntry[];
   ready: PickupBoardEntry[];

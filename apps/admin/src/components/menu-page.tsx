@@ -10,6 +10,7 @@ import {
 import type { MenuCategory, MenuItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
+import { ImageUploadButton } from "@/components/image-upload-button";
 import {
   RestaurantSelect,
   useSelectedRestaurant,
@@ -445,6 +446,12 @@ export function MenuPage() {
                 type="url"
               />
             ) : null}
+            <ImageUploadButton
+              label="Upload menu photo"
+              onUploaded={(url) =>
+                setItemForm((f) => ({ ...f, imageUrl: url }))
+              }
+            />
             {menuImagePreviewSrc(itemForm.imageUrl) ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img

@@ -5,6 +5,7 @@ export type RestaurantBrand = {
   brandAccent?: string | null;
   brandButton?: string | null;
   brandPaper?: string | null;
+  brandBackgroundUrl?: string | null;
 };
 
 const BRAND_KEYS = [
@@ -108,5 +109,6 @@ export function useRestaurantBrand(brand?: RestaurantBrand | null) {
     brand?.brandAccent,
     brand?.brandButton,
     brand?.brandPaper,
+    brand?.brandBackgroundUrl,
   ]);
 }

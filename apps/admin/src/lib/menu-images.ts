@@ -122,6 +122,11 @@ export function resolveMenuImage(
     return toPublicPath(asMenuKey);
   }
 
+  if (raw.startsWith("/uploads/")) {
+    const api = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/api\/?$/, "");
+    return api ? `${api}${raw}` : raw;
+  }
+
   if (raw.startsWith("/")) return raw;
   return null;
 }

@@ -107,6 +107,7 @@ Each app includes a `vercel.json` that installs dependencies from the monorepo r
 | `NEXT_PUBLIC_CUSTOMER_URL` | QR / table links |
 | `NEXT_PUBLIC_KITCHEN_URL` | Kitchen device pairing links |
 | `NEXT_PUBLIC_WAITER_URL` | Waiter device pairing links |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob — menu / brand image uploads (Storage → Blob → token) |
 
 ### Cashier only (Stripe)
 
