@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useSearchParams } from "next/navigation";
 import { cashierApi } from "@/lib/api";
+import { getStoredUser } from "@/lib/session";
 import { ReceiptView } from "@/components/receipt-view";
 
 function ReceiptPageInner() {
@@ -12,7 +13,13 @@ function ReceiptPageInner() {
   const search = useSearchParams();
   const orderId = params.orderId;
   const branchName = search.get("branchName");
+  const receivedByParam = search.get("receivedBy");
   const autoPrint = search.get("print") !== "0";
+  const sessionUser = getStoredUser();
+  const receivedByFallback =
+    receivedByParam?.trim() ||
+    sessionUser?.email ||
+    null;
 
   const orderQuery = useQuery({
     queryKey: ["cashier-order", orderId],
@@ -41,6 +48,7 @@ function ReceiptPageInner() {
     <ReceiptView
       order={orderQuery.data}
       branchName={branchName}
+      receivedByFallback={receivedByFallback}
       autoPrint={autoPrint}
     />
   );

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { formatMoney, formatWalkInQueueCode, shortId } from "@/lib/utils";
+import { getStoredUser } from "@/lib/session";
 import type { Order, Payment } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 
@@ -37,20 +38,42 @@ function cashierLabel(payments: Payment[]): string | null {
   return null;
 }
 
-export function openReceiptWindow(orderId: string, branchName?: string) {
-  const qs = branchName
-    ? `?branchName=${encodeURIComponent(branchName)}`
-    : "";
+function formatStaffLabel(user: {
+  email?: string | null;
+  firstName?: string | null;
+  lastName?: string | null;
+} | null | undefined): string | null {
+  if (!user) return null;
+  const name = [user.firstName, user.lastName].filter(Boolean).join(" ").trim();
+  if (name) return name;
+  return user.email?.trim() || null;
+}
+
+export function openReceiptWindow(
+  orderId: string,
+  branchName?: string,
+  receivedBy?: string | null,
+) {
+  const params = new URLSearchParams();
+  if (branchName) params.set("branchName", branchName);
+  const fromArg = receivedBy?.trim();
+  const fromSession = formatStaffLabel(getStoredUser());
+  const staff = fromArg || fromSession;
+  if (staff) params.set("receivedBy", staff);
+  const qs = params.toString() ? `?${params.toString()}` : "";
   window.open(`/receipt/${orderId}${qs}`, "_blank", "noopener,noreferrer");
 }
 
 export function ReceiptView({
   order,
   branchName,
+  receivedByFallback = null,
   autoPrint = false,
 }: {
   order: Order;
   branchName?: string | null;
+  /** Used when payment.receivedBy is missing (session / query). */
+  receivedByFallback?: string | null;
   autoPrint?: boolean;
 }) {
   const currency = order.currency ?? order.payment?.currency ?? "EUR";
@@ -58,7 +81,8 @@ export function ReceiptView({
     (p) => p.status === "PAID" || p.status === "PARTIALLY_REFUNDED",
   );
   const tips = tipTotal(payments);
-  const cashier = cashierLabel(payments);
+  const receivedBy =
+    cashierLabel(payments) || receivedByFallback?.trim() || null;
   const { net, vat, gross } = vatBreakdown(Number(order.total));
   const paidAt =
     payments
@@ -120,12 +144,10 @@ export function ReceiptView({
             <dt className="text-[var(--muted)]">Paid</dt>
             <dd>{new Date(paidAt!).toLocaleString()}</dd>
           </div>
-          {cashier ? (
-            <div className="flex justify-between gap-3">
-              <dt className="text-[var(--muted)]">Cashier</dt>
-              <dd>{cashier}</dd>
-            </div>
-          ) : null}
+          <div className="flex justify-between gap-3">
+            <dt className="text-[var(--muted)]">Received by</dt>
+            <dd>{receivedBy || "—"}</dd>
+          </div>
         </dl>
 
         <ul className="mt-3 space-y-2 text-sm">
