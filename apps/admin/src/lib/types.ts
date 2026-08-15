@@ -27,6 +27,7 @@ export type Restaurant = {
   brandButton?: string | null;
   brandPaper?: string | null;
   brandBackgroundUrl?: string | null;
+  brandBackgroundUrls?: string[];
   active?: boolean;
 };
 

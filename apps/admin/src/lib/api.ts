@@ -69,6 +69,7 @@ export const adminApi = {
     brandButton?: string | null;
     brandPaper?: string | null;
     brandBackgroundUrl?: string | null;
+    brandBackgroundUrls?: string[] | null;
   }) =>
     request<Restaurant>("/restaurants", {
       method: "POST",
@@ -88,6 +89,7 @@ export const adminApi = {
       brandButton?: string | null;
       brandPaper?: string | null;
       brandBackgroundUrl?: string | null;
+      brandBackgroundUrls?: string[] | null;
     },
   ) =>
     request<Restaurant>(`/restaurants/${id}`, {

@@ -303,6 +303,7 @@ export function MenuExperience({
       <div className="relative min-h-screen px-4 py-10">
         <FruitsBackdrop
           imageUrl={menuQuery.data?.restaurant.brandBackgroundUrl}
+          imageUrls={menuQuery.data?.restaurant.brandBackgroundUrls}
         />
         <div className="relative z-10">
           <div className="mx-auto h-10 w-48 animate-pulse rounded bg-[var(--surface-2)]" />
@@ -342,7 +343,10 @@ export function MenuExperience({
 
   return (
     <div className="relative min-h-screen text-[var(--ink)]">
-      <FruitsBackdrop imageUrl={menu.restaurant.brandBackgroundUrl} />
+      <FruitsBackdrop
+        imageUrl={menu.restaurant.brandBackgroundUrl}
+        imageUrls={menu.restaurant.brandBackgroundUrls}
+      />
       <div className="relative z-10">
       <header className="relative mx-auto max-w-3xl px-4 pt-5">
         <BotanicalAccent className="pointer-events-none absolute left-0 top-2 h-28 w-20 opacity-[0.14] text-[var(--forest)]" />

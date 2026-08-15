@@ -8,10 +8,7 @@ import type { Restaurant } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import { ImageUploadButton } from "@/components/image-upload-button";
-import {
-  BRAND_BACKGROUND_PRESETS,
-  brandBackgroundPreviewSrc,
-} from "@/lib/brand-backgrounds";
+import { BrandBackgroundGallery } from "@/components/brand-background-gallery";
 
 const CUSTOMER_URL =
   process.env.NEXT_PUBLIC_CUSTOMER_URL ?? "http://localhost:3001";
@@ -31,7 +28,7 @@ type RestaurantFormState = {
   brandAccent: string;
   brandButton: string;
   brandPaper: string;
-  brandBackgroundUrl: string;
+  brandBackgroundUrls: string[];
   active: boolean;
 };
 
@@ -44,9 +41,15 @@ const emptyForm: RestaurantFormState = {
   brandAccent: DEFAULT_BRAND.accent,
   brandButton: DEFAULT_BRAND.button,
   brandPaper: DEFAULT_BRAND.paper,
-  brandBackgroundUrl: "",
+  brandBackgroundUrls: [],
   active: true,
 };
+
+function backgroundUrlsFromRestaurant(restaurant: Restaurant): string[] {
+  const gallery = (restaurant.brandBackgroundUrls ?? []).filter(Boolean);
+  if (gallery.length) return gallery;
+  return restaurant.brandBackgroundUrl ? [restaurant.brandBackgroundUrl] : [];
+}
 
 function brandFieldsFromRestaurant(restaurant: Restaurant): Pick<
   RestaurantFormState,
@@ -54,14 +57,14 @@ function brandFieldsFromRestaurant(restaurant: Restaurant): Pick<
   | "brandAccent"
   | "brandButton"
   | "brandPaper"
-  | "brandBackgroundUrl"
+  | "brandBackgroundUrls"
 > {
   return {
     logoUrl: restaurant.logoUrl ?? "",
     brandAccent: restaurant.brandAccent ?? DEFAULT_BRAND.accent,
     brandButton: restaurant.brandButton ?? DEFAULT_BRAND.button,
     brandPaper: restaurant.brandPaper ?? DEFAULT_BRAND.paper,
-    brandBackgroundUrl: restaurant.brandBackgroundUrl ?? "",
+    brandBackgroundUrls: backgroundUrlsFromRestaurant(restaurant),
   };
 }
 
@@ -122,7 +125,8 @@ export function RestaurantsPage() {
         brandAccent: form.brandAccent.trim() || null,
         brandButton: form.brandButton.trim() || null,
         brandPaper: form.brandPaper.trim() || null,
-        brandBackgroundUrl: form.brandBackgroundUrl.trim() || null,
+        brandBackgroundUrls: form.brandBackgroundUrls,
+        brandBackgroundUrl: form.brandBackgroundUrls[0] ?? null,
       };
       if (editingId) {
         return adminApi.updateRestaurant(editingId, {
@@ -199,13 +203,13 @@ export function RestaurantsPage() {
     brandAccent: string;
     brandButton: string;
     brandPaper: string;
-    brandBackgroundUrl: string;
+    brandBackgroundUrls: string[];
   }>({
     logoUrl: "",
     brandAccent: DEFAULT_BRAND.accent,
     brandButton: DEFAULT_BRAND.button,
     brandPaper: DEFAULT_BRAND.paper,
-    brandBackgroundUrl: "",
+    brandBackgroundUrls: [],
   });
   const [brandError, setBrandError] = React.useState<string | null>(null);
   const [brandSuccess, setBrandSuccess] = React.useState<string | null>(null);
@@ -233,6 +237,7 @@ export function RestaurantsPage() {
     ownedRestaurant?.brandButton,
     ownedRestaurant?.brandPaper,
     ownedRestaurant?.brandBackgroundUrl,
+    ownedRestaurant?.brandBackgroundUrls,
   ]);
 
   const saveOwnerBrand = useMutation({
@@ -243,7 +248,8 @@ export function RestaurantsPage() {
         brandAccent: ownerBrand.brandAccent.trim() || null,
         brandButton: ownerBrand.brandButton.trim() || null,
         brandPaper: ownerBrand.brandPaper.trim() || null,
-        brandBackgroundUrl: ownerBrand.brandBackgroundUrl.trim() || null,
+        brandBackgroundUrls: ownerBrand.brandBackgroundUrls,
+        brandBackgroundUrl: ownerBrand.brandBackgroundUrls[0] ?? null,
       });
     },
     onSuccess: () => {
@@ -329,14 +335,31 @@ export function RestaurantsPage() {
             placeholder="Address (optional)"
             className={`${inputClass} md:col-span-2`}
           />
-          <input
-            value={form.logoUrl}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, logoUrl: e.target.value }))
-            }
-            placeholder="Logo URL (optional)"
-            className={`${inputClass} md:col-span-2`}
-          />
+          <div className="md:col-span-2 space-y-2">
+            <span className="text-sm font-medium text-[var(--muted)]">Logo</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <ImageUploadButton
+                label="Upload logo"
+                onUploaded={(url) => setForm((f) => ({ ...f, logoUrl: url }))}
+              />
+              <input
+                value={form.logoUrl}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, logoUrl: e.target.value }))
+                }
+                placeholder="Or paste logo URL"
+                className={`${inputClass} min-w-[12rem] flex-1`}
+              />
+            </div>
+            {form.logoUrl.trim() ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={form.logoUrl.trim()}
+                alt=""
+                className="h-16 w-16 rounded-full object-cover ring-2 ring-[var(--accent)]/40"
+              />
+            ) : null}
+          </div>
           <div className="md:col-span-2 grid gap-3 sm:grid-cols-3">
             <label className="space-y-1.5 text-sm">
               <span className="font-medium text-[var(--muted)]">Accent</span>
@@ -405,86 +428,13 @@ export function RestaurantsPage() {
               </div>
             </label>
           </div>
-          <div className="md:col-span-2 space-y-2">
-            <p className="text-sm font-medium text-[var(--muted)]">
-              Menu background
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() =>
-                  setForm((f) => ({ ...f, brandBackgroundUrl: "" }))
-                }
-                className={`rounded-lg border px-3 py-2 text-sm ${
-                  !form.brandBackgroundUrl
-                    ? "border-[var(--accent)] bg-[var(--accent-soft)]"
-                    : "border-[var(--line)]"
-                }`}
-              >
-                Default
-              </button>
-              {BRAND_BACKGROUND_PRESETS.map((preset) => (
-                <button
-                  key={preset.path}
-                  type="button"
-                  onClick={() =>
-                    setForm((f) => ({
-                      ...f,
-                      brandBackgroundUrl: preset.path,
-                    }))
-                  }
-                  className={`overflow-hidden rounded-lg border ${
-                    form.brandBackgroundUrl === preset.path
-                      ? "border-[var(--accent)] ring-2 ring-[var(--accent)]/40"
-                      : "border-[var(--line)]"
-                  }`}
-                  title={preset.label}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={brandBackgroundPreviewSrc(preset.path, CUSTOMER_URL)!}
-                    alt={preset.label}
-                    className="h-14 w-20 object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <ImageUploadButton
-                label="Upload background"
-                onUploaded={(url) =>
-                  setForm((f) => ({ ...f, brandBackgroundUrl: url }))
-                }
-              />
-              <input
-                value={form.brandBackgroundUrl}
-                onChange={(e) =>
-                  setForm((f) => ({
-                    ...f,
-                    brandBackgroundUrl: e.target.value,
-                  }))
-                }
-                placeholder="Or paste image URL / path"
-                className={`${inputClass} min-w-[12rem] flex-1`}
-              />
-            </div>
-            {brandBackgroundPreviewSrc(
-              form.brandBackgroundUrl,
-              CUSTOMER_URL,
-            ) ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={
-                  brandBackgroundPreviewSrc(
-                    form.brandBackgroundUrl,
-                    CUSTOMER_URL,
-                  )!
-                }
-                alt=""
-                className="h-24 w-full max-w-md rounded-lg object-cover"
-              />
-            ) : null}
-          </div>
+          <BrandBackgroundGallery
+            urls={form.brandBackgroundUrls}
+            onChange={(brandBackgroundUrls) =>
+              setForm((f) => ({ ...f, brandBackgroundUrls }))
+            }
+            inputClass={inputClass}
+          />
           {editingId ? (
             <label className="md:col-span-2 flex items-center gap-2 text-sm">
               <input
@@ -531,16 +481,35 @@ export function RestaurantsPage() {
             Customer brand
           </h2>
           <p className="md:col-span-2 text-sm text-[var(--muted)]">
-            Logo and colors for the guest menu, cart, and pickup TV.
+            Logo, colors, and cinematic background reel for the guest menu.
           </p>
-          <input
-            value={ownerBrand.logoUrl}
-            onChange={(e) =>
-              setOwnerBrand((b) => ({ ...b, logoUrl: e.target.value }))
-            }
-            placeholder="Logo URL (optional)"
-            className={`${inputClass} md:col-span-2`}
-          />
+          <div className="md:col-span-2 space-y-2">
+            <span className="text-sm font-medium text-[var(--muted)]">Logo</span>
+            <div className="flex flex-wrap items-center gap-2">
+              <ImageUploadButton
+                label="Upload logo"
+                onUploaded={(url) =>
+                  setOwnerBrand((b) => ({ ...b, logoUrl: url }))
+                }
+              />
+              <input
+                value={ownerBrand.logoUrl}
+                onChange={(e) =>
+                  setOwnerBrand((b) => ({ ...b, logoUrl: e.target.value }))
+                }
+                placeholder="Or paste logo URL"
+                className={`${inputClass} min-w-[12rem] flex-1`}
+              />
+            </div>
+            {ownerBrand.logoUrl.trim() ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={ownerBrand.logoUrl.trim()}
+                alt=""
+                className="h-16 w-16 rounded-full object-cover ring-2 ring-[var(--accent)]/40"
+              />
+            ) : null}
+          </div>
           <div className="md:col-span-2 grid gap-3 sm:grid-cols-3">
             <label className="space-y-1.5 text-sm">
               <span className="font-medium text-[var(--muted)]">Accent</span>
@@ -624,86 +593,13 @@ export function RestaurantsPage() {
               </div>
             </label>
           </div>
-          <div className="md:col-span-2 space-y-2">
-            <p className="text-sm font-medium text-[var(--muted)]">
-              Menu background
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() =>
-                  setOwnerBrand((b) => ({ ...b, brandBackgroundUrl: "" }))
-                }
-                className={`rounded-lg border px-3 py-2 text-sm ${
-                  !ownerBrand.brandBackgroundUrl
-                    ? "border-[var(--accent)] bg-[var(--accent-soft)]"
-                    : "border-[var(--line)]"
-                }`}
-              >
-                Default
-              </button>
-              {BRAND_BACKGROUND_PRESETS.map((preset) => (
-                <button
-                  key={preset.path}
-                  type="button"
-                  onClick={() =>
-                    setOwnerBrand((b) => ({
-                      ...b,
-                      brandBackgroundUrl: preset.path,
-                    }))
-                  }
-                  className={`overflow-hidden rounded-lg border ${
-                    ownerBrand.brandBackgroundUrl === preset.path
-                      ? "border-[var(--accent)] ring-2 ring-[var(--accent)]/40"
-                      : "border-[var(--line)]"
-                  }`}
-                  title={preset.label}
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={brandBackgroundPreviewSrc(preset.path, CUSTOMER_URL)!}
-                    alt={preset.label}
-                    className="h-14 w-20 object-cover"
-                  />
-                </button>
-              ))}
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <ImageUploadButton
-                label="Upload background"
-                onUploaded={(url) =>
-                  setOwnerBrand((b) => ({ ...b, brandBackgroundUrl: url }))
-                }
-              />
-              <input
-                value={ownerBrand.brandBackgroundUrl}
-                onChange={(e) =>
-                  setOwnerBrand((b) => ({
-                    ...b,
-                    brandBackgroundUrl: e.target.value,
-                  }))
-                }
-                placeholder="Or paste image URL / path"
-                className={`${inputClass} min-w-[12rem] flex-1`}
-              />
-            </div>
-            {brandBackgroundPreviewSrc(
-              ownerBrand.brandBackgroundUrl,
-              CUSTOMER_URL,
-            ) ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={
-                  brandBackgroundPreviewSrc(
-                    ownerBrand.brandBackgroundUrl,
-                    CUSTOMER_URL,
-                  )!
-                }
-                alt=""
-                className="h-24 w-full max-w-md rounded-lg object-cover"
-              />
-            ) : null}
-          </div>
+          <BrandBackgroundGallery
+            urls={ownerBrand.brandBackgroundUrls}
+            onChange={(brandBackgroundUrls) =>
+              setOwnerBrand((b) => ({ ...b, brandBackgroundUrls }))
+            }
+            inputClass={inputClass}
+          />
           <Button
             type="submit"
             className="md:col-span-2"
