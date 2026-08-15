@@ -26,6 +26,17 @@ function tipTotal(payments: Payment[]): number {
     .reduce((sum, p) => sum + Number(p.tipAmount ?? 0), 0);
 }
 
+function cashierLabel(payments: Payment[]): string | null {
+  for (const p of [...payments].reverse()) {
+    const u = p.receivedBy;
+    if (!u) continue;
+    const name = [u.firstName, u.lastName].filter(Boolean).join(" ").trim();
+    if (name) return name;
+    if (u.email) return u.email;
+  }
+  return null;
+}
+
 export function openReceiptWindow(orderId: string, branchName?: string) {
   const qs = branchName
     ? `?branchName=${encodeURIComponent(branchName)}`
@@ -47,6 +58,7 @@ export function ReceiptView({
     (p) => p.status === "PAID" || p.status === "PARTIALLY_REFUNDED",
   );
   const tips = tipTotal(payments);
+  const cashier = cashierLabel(payments);
   const { net, vat, gross } = vatBreakdown(Number(order.total));
   const paidAt =
     payments
@@ -108,6 +120,12 @@ export function ReceiptView({
             <dt className="text-[var(--muted)]">Paid</dt>
             <dd>{new Date(paidAt!).toLocaleString()}</dd>
           </div>
+          {cashier ? (
+            <div className="flex justify-between gap-3">
+              <dt className="text-[var(--muted)]">Cashier</dt>
+              <dd>{cashier}</dd>
+            </div>
+          ) : null}
         </dl>
 
         <ul className="mt-3 space-y-2 text-sm">

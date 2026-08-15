@@ -249,7 +249,7 @@ const en: Messages = {
   homeEyebrow: "Customer ordering",
   homeTitle: "Table or walk-in",
   homeBody:
-    "Seated guests scan a table QR. Standing guests order walk-in, get a pickup number, and watch the overhead TV board.",
+    "Use the QR code or link from your restaurant. Seated guests scan a table QR. Standing guests use a walk-in link for a pickup number and the overhead TV board.",
   openDemoTable: "Open demo table",
   walkIn: "Walk-in",
   pickupTv: "Pickup TV",
@@ -403,7 +403,7 @@ const fi: Messages = {
   homeEyebrow: "Asiakastilaus",
   homeTitle: "Pöytä tai walk-in",
   homeBody:
-    "Pöytäasiakkaat skannaavat QR-koodin. Walk-in-asiakkaat tilaavat, saavat numeron ja seuraavat näyttöä.",
+    "Käytä ravintolan QR-koodia tai linkkiä. Pöytäasiakkaat skannaavat pöytä-QR:n. Walk-in-asiakkaat käyttävät walk-in-linkkiä numerolle ja näytölle.",
   openDemoTable: "Avaa demopöytä",
   walkIn: "Walk-in",
   pickupTv: "Nouto-TV",
@@ -553,7 +553,7 @@ const ar: Messages = {
   homeEyebrow: "طلب العميل",
   homeTitle: "طاولة أو وقوف",
   homeBody:
-    "الجلوس عبر رمز QR. طلبات الوقوف تحصل على رقم وتتابع الشاشة.",
+    "استخدم رمز QR أو الرابط من المطعم. الجلوس عبر رمز طاولة. الوقوف عبر رابط الطلب لرقم الشاشة.",
   openDemoTable: "فتح طاولة تجريبية",
   walkIn: "وقوف",
   pickupTv: "شاشة الاستلام",
@@ -707,7 +707,7 @@ const so: Messages = {
   homeEyebrow: "Dalabka macaamiisha",
   homeTitle: "Miis ama walk-in",
   homeBody:
-    "Martida miiska waxay scan-gareeyaan QR. Walk-in waxay helaan lambar oo daawadaan TV-ga.",
+    "Isticmaal QR ama link-ga makhaayadda. Martida miiska waxay scan-gareeyaan QR-ka miiska. Walk-in waxay isticmaalaan link-ga si ay u helaan lambar iyo TV-ga.",
   openDemoTable: "Fur miiska tijaabada",
   walkIn: "Walk-in",
   pickupTv: "TV qaadista",

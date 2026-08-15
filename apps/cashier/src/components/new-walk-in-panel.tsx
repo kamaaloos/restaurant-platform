@@ -60,6 +60,9 @@ export function NewWalkInPanel({
   const [cart, setCart] = React.useState<Record<string, number>>({});
   const [created, setCreated] = React.useState<Order | null>(null);
   const [error, setError] = React.useState<string | null>(null);
+  const [selectedCategoryId, setSelectedCategoryId] = React.useState<
+    string | "all"
+  >("all");
 
   const menuQuery = useQuery({
     queryKey: ["cashier-menu", restaurantId ?? "self"],
@@ -97,6 +100,13 @@ export function NewWalkInPanel({
     (item) => item.active && item.available !== false,
   );
   const categories = React.useMemo(() => groupByCategory(items), [items]);
+  const visibleCategories = React.useMemo(
+    () =>
+      selectedCategoryId === "all"
+        ? categories
+        : categories.filter((c) => c.id === selectedCategoryId),
+    [categories, selectedCategoryId],
+  );
   const currency = "EUR";
   const lines = items.filter((item) => (cart[item.id] ?? 0) > 0);
   const total = lines.reduce(
@@ -118,6 +128,7 @@ export function NewWalkInPanel({
     setError(null);
     setCart({});
     setCustomerName("");
+    setSelectedCategoryId("all");
   }
 
   if (!open) {
@@ -219,76 +230,110 @@ export function NewWalkInPanel({
       ) : items.length === 0 ? (
         <p className="text-sm text-[var(--muted)]">No active menu items.</p>
       ) : (
-        <div className="max-h-[28rem] space-y-4 overflow-y-auto rounded-md border border-[var(--line)] bg-[var(--paper)] p-3">
-          {categories.map((category) => (
-            <section key={category.id} className="space-y-2">
-              <h3 className="sticky top-0 z-10 -mx-1 rounded-md bg-[var(--surface-2)] px-2 py-2 text-sm font-semibold tracking-wide text-[var(--ink)]">
+        <div className="space-y-3">
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => setSelectedCategoryId("all")}
+              className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
+                selectedCategoryId === "all"
+                  ? "bg-[var(--accent)] text-[var(--accent-foreground)]"
+                  : "border border-[var(--line)] bg-[var(--paper)] text-[var(--ink)] hover:border-[var(--accent)]"
+              }`}
+            >
+              All
+              <span className="ms-1.5 opacity-70">{items.length}</span>
+            </button>
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                type="button"
+                onClick={() => setSelectedCategoryId(category.id)}
+                className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
+                  selectedCategoryId === category.id
+                    ? "bg-[var(--accent)] text-[var(--accent-foreground)]"
+                    : "border border-[var(--line)] bg-[var(--paper)] text-[var(--ink)] hover:border-[var(--accent)]"
+                }`}
+              >
                 {category.name}
-                <span className="ms-2 text-xs font-normal text-[var(--muted)]">
+                <span className="ms-1.5 opacity-70">
                   {category.items.length}
                 </span>
-              </h3>
-              <ul className="space-y-1.5">
-                {category.items.map((item) => {
-                  const qty = cart[item.id] ?? 0;
-                  const image = resolveMenuImage(item.imageUrl, item.name);
-                  return (
-                    <li
-                      key={item.id}
-                      className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-[var(--surface)]"
-                    >
-                      <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md bg-[var(--surface-2)]">
-                        {image ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={image}
-                            alt=""
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          <span className="grid h-full w-full place-items-center text-sm font-semibold text-[var(--muted)]">
-                            {item.name.slice(0, 1)}
+              </button>
+            ))}
+          </div>
+
+          <div className="max-h-[28rem] space-y-4 overflow-y-auto rounded-md border border-[var(--line)] bg-[var(--paper)] p-3">
+            {visibleCategories.map((category) => (
+              <section key={category.id} className="space-y-2">
+                <h3 className="sticky top-0 z-10 -mx-1 rounded-md bg-[var(--surface-2)] px-2 py-2 text-sm font-semibold tracking-wide text-[var(--ink)]">
+                  {category.name}
+                  <span className="ms-2 text-xs font-normal text-[var(--muted)]">
+                    {category.items.length}
+                  </span>
+                </h3>
+                <ul className="space-y-1.5">
+                  {category.items.map((item) => {
+                    const qty = cart[item.id] ?? 0;
+                    const image = resolveMenuImage(item.imageUrl, item.name);
+                    return (
+                      <li
+                        key={item.id}
+                        className="flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-[var(--surface)]"
+                      >
+                        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-md bg-[var(--surface-2)]">
+                          {image ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={image}
+                              alt=""
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <span className="grid h-full w-full place-items-center text-sm font-semibold text-[var(--muted)]">
+                              {item.name.slice(0, 1)}
+                            </span>
+                          )}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-medium">
+                            {item.name}
+                          </p>
+                          <p className="text-xs text-[var(--muted)]">
+                            {formatMoney(Number(item.price), currency)}
+                          </p>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-1.5">
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            disabled={qty === 0}
+                            onClick={() => setQty(item.id, qty - 1)}
+                            aria-label={`Decrease ${item.name}`}
+                          >
+                            −
+                          </Button>
+                          <span className="w-6 text-center text-sm tabular-nums">
+                            {qty}
                           </span>
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium">
-                          {item.name}
-                        </p>
-                        <p className="text-xs text-[var(--muted)]">
-                          {formatMoney(Number(item.price), currency)}
-                        </p>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-1.5">
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          disabled={qty === 0}
-                          onClick={() => setQty(item.id, qty - 1)}
-                          aria-label={`Decrease ${item.name}`}
-                        >
-                          −
-                        </Button>
-                        <span className="w-6 text-center text-sm tabular-nums">
-                          {qty}
-                        </span>
-                        <Button
-                          type="button"
-                          size="sm"
-                          variant="outline"
-                          onClick={() => setQty(item.id, qty + 1)}
-                          aria-label={`Increase ${item.name}`}
-                        >
-                          +
-                        </Button>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </section>
-          ))}
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setQty(item.id, qty + 1)}
+                            aria-label={`Increase ${item.name}`}
+                          >
+                            +
+                          </Button>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </section>
+            ))}
+          </div>
         </div>
       )}
 

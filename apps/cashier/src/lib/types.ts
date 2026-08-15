@@ -40,6 +40,12 @@ export type Payment = {
   paidAt?: string | null;
   refundedAt?: string | null;
   currency?: string;
+  receivedBy?: {
+    id: string;
+    email: string;
+    firstName?: string | null;
+    lastName?: string | null;
+  } | null;
 };
 
 export type PaymentProviderConfig = {
