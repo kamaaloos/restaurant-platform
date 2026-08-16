@@ -15,8 +15,8 @@ const CASHIER_ROLES = new Set([
 
 export function LoginForm() {
   const router = useRouter();
-  const [email, setEmail] = React.useState("cashier@restaurant.local");
-  const [password, setPassword] = React.useState("cashier123");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
   const [pending, setPending] = React.useState(false);
 
