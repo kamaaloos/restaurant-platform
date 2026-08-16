@@ -98,6 +98,13 @@ export type MessageKey =
   | "homeEyebrow"
   | "homeTitle"
   | "homeBody"
+  | "tenantEyebrow"
+  | "tenantBody"
+  | "tenantBranches"
+  | "tenantNoBranches"
+  | "tenantOrderHere"
+  | "tenantNotFoundTitle"
+  | "tenantNotFoundBody"
   | "openDemoTable"
   | "walkIn"
   | "pickupTv"
@@ -250,6 +257,14 @@ const en: Messages = {
   homeTitle: "Table or walk-in",
   homeBody:
     "Use the QR code or link from your restaurant. Seated guests scan a table QR. Standing guests use a walk-in link for a pickup number and the overhead TV board.",
+  tenantEyebrow: "Order online",
+  tenantBody: "Choose a branch to browse the menu and place a walk-in order.",
+  tenantBranches: "Branches",
+  tenantNoBranches: "No branches are available yet. Please ask staff for a QR code.",
+  tenantOrderHere: "Order",
+  tenantNotFoundTitle: "Restaurant not found",
+  tenantNotFoundBody:
+    "This link does not match an active restaurant. Check the address or ask staff for a QR code.",
   openDemoTable: "Open demo table",
   walkIn: "Walk-in",
   pickupTv: "Pickup TV",
@@ -404,6 +419,15 @@ const fi: Messages = {
   homeTitle: "Pöytä tai walk-in",
   homeBody:
     "Käytä ravintolan QR-koodia tai linkkiä. Pöytäasiakkaat skannaavat pöytä-QR:n. Walk-in-asiakkaat käyttävät walk-in-linkkiä numerolle ja näytölle.",
+  tenantEyebrow: "Tilaa verkossa",
+  tenantBody: "Valitse toimipiste nähdäksesi menun ja tehdäksesi walk-in-tilauksen.",
+  tenantBranches: "Toimipisteet",
+  tenantNoBranches:
+    "Ei toimipisteitä vielä. Pyydä henkilökunnalta QR-koodi.",
+  tenantOrderHere: "Tilaa",
+  tenantNotFoundTitle: "Ravintolaa ei löydy",
+  tenantNotFoundBody:
+    "Tämä osoite ei vastaa aktiivista ravintolaa. Tarkista linkki tai pyydä QR-koodi henkilökunnalta.",
   openDemoTable: "Avaa demopöytä",
   walkIn: "Walk-in",
   pickupTv: "Nouto-TV",
@@ -554,6 +578,14 @@ const ar: Messages = {
   homeTitle: "طاولة أو وقوف",
   homeBody:
     "استخدم رمز QR أو الرابط من المطعم. الجلوس عبر رمز طاولة. الوقوف عبر رابط الطلب لرقم الشاشة.",
+  tenantEyebrow: "اطلب عبر الإنترنت",
+  tenantBody: "اختر فرعاً لتصفح القائمة وتقديم طلب وقوف.",
+  tenantBranches: "الفروع",
+  tenantNoBranches: "لا توجد فروع بعد. اطلب رمز QR من الموظفين.",
+  tenantOrderHere: "اطلب",
+  tenantNotFoundTitle: "المطعم غير موجود",
+  tenantNotFoundBody:
+    "هذا الرابط لا يطابق مطعماً نشطاً. تحقق من العنوان أو اطلب رمز QR من الموظفين.",
   openDemoTable: "فتح طاولة تجريبية",
   walkIn: "وقوف",
   pickupTv: "شاشة الاستلام",
@@ -708,6 +740,14 @@ const so: Messages = {
   homeTitle: "Miis ama walk-in",
   homeBody:
     "Isticmaal QR ama link-ga makhaayadda. Martida miiska waxay scan-gareeyaan QR-ka miiska. Walk-in waxay isticmaalaan link-ga si ay u helaan lambar iyo TV-ga.",
+  tenantEyebrow: "Dalbo online",
+  tenantBody: "Dooro laanta si aad u aragto menu-ga oo aad u sameyso dalab walk-in.",
+  tenantBranches: "Laamaha",
+  tenantNoBranches: "Weli ma jiraan laamo. Weydii shaqaalaha QR.",
+  tenantOrderHere: "Dalbo",
+  tenantNotFoundTitle: "Makhaayadda lama helin",
+  tenantNotFoundBody:
+    "Link-gani ma waafaqsana makhaayad firfircoon. Hubi cinwaanka ama weydii shaqaalaha QR.",
   openDemoTable: "Fur miiska tijaabada",
   walkIn: "Walk-in",
   pickupTv: "TV qaadista",

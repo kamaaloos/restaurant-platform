@@ -133,6 +133,53 @@ With `CORS_ALLOW_VERCEL_PREVIEWS=1`, PR preview deployments (`*.vercel.app`) can
 
 Also update `CUSTOMER_APP_URL` and `CASHIER_APP_URL` to your production customer/cashier URLs.
 
+For **restaurant subdomains** (Pattern B, e.g. `alhuda.maylesoft.com`), include a wildcard origin:
+
+```
+CORS_ORIGIN=https://admin.maylesoft.com,https://kitchen.maylesoft.com,https://waiter.maylesoft.com,https://till.maylesoft.com,https://maylesoft.com,https://*.maylesoft.com
+```
+
+---
+
+## 4b. Custom domain: restaurant subdomains (Pattern B)
+
+Guest ordering can live on **one subdomain per restaurant**:
+
+| Host | App |
+|------|-----|
+| `alhuda.maylesoft.com` | Customer (tenant home + `/w`, `/t`) |
+| `admin.maylesoft.com` | Admin |
+| `kitchen.maylesoft.com` | Kitchen |
+| `waiter.maylesoft.com` | Waiter |
+| `till.maylesoft.com` | Cashier |
+
+### DNS (registrar)
+
+1. **Wildcard for guests** — Customer Vercel project:
+   - Type: **CNAME**
+   - Name: `*`
+   - Value: `cname.vercel-dns.com` (use the value Vercel shows)
+2. Add **app** subdomains the same way (`admin`, `kitchen`, `waiter`, `till`) pointing at their Vercel projects.
+3. Optional apex `maylesoft.com` → customer or a marketing site.
+
+### Vercel (customer project)
+
+1. Domains → add `*.maylesoft.com` (and optionally `maylesoft.com`)
+2. Set env:
+   - `NEXT_PUBLIC_ROOT_DOMAIN=maylesoft.com`
+3. Redeploy customer after adding the env var.
+
+### Admin
+
+1. Set `NEXT_PUBLIC_ROOT_DOMAIN=maylesoft.com` so walk-in copy links use `https://{slug}.maylesoft.com/w/...`
+2. In Restaurants, set each restaurant **slug** (e.g. `alhuda`) — this is the subdomain label.
+
+### How it works
+
+- Middleware reads the host; `alhuda.maylesoft.com` rewrites `/` → restaurant home (branches list).
+- Public API: `GET /api/customer/tenants/:slug`
+- Reserved labels (`admin`, `kitchen`, `www`, …) are never treated as restaurant slugs.
+
 ---
 
 ## 5. Preview vs production

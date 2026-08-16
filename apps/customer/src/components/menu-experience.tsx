@@ -301,10 +301,7 @@ export function MenuExperience({
   if (menuQuery.isLoading) {
     return (
       <div className="relative min-h-screen px-4 py-10">
-        <FruitsBackdrop
-          imageUrl={menuQuery.data?.restaurant.brandBackgroundUrl}
-          imageUrls={menuQuery.data?.restaurant.brandBackgroundUrls}
-        />
+        <FruitsBackdrop />
         <div className="relative z-10">
           <div className="mx-auto h-10 w-48 animate-pulse rounded bg-[var(--surface-2)]" />
           <div className="mx-auto mt-8 h-40 max-w-3xl animate-pulse rounded-[28px] bg-[var(--surface-2)]" />

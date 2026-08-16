@@ -108,6 +108,26 @@ export type WalkInBranch = {
   restaurant: { id: string; name: string };
 };
 
+export type CustomerTenant = {
+  restaurant: {
+    id: string;
+    name: string;
+    slug: string;
+    logoUrl: string | null;
+    currency: string;
+    brandAccent?: string | null;
+    brandButton?: string | null;
+    brandPaper?: string | null;
+    brandBackgroundUrl?: string | null;
+    brandBackgroundUrls?: string[];
+  };
+  branches: Array<{
+    id: string;
+    name: string;
+    walkInToken: string;
+  }>;
+};
+
 export type PickupBoardEntry = {
   orderId: string;
   queueNumber: number;

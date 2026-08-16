@@ -3,6 +3,7 @@ import type {
   CustomerMenu,
   CustomerOrder,
   CustomerServiceRequest,
+  CustomerTenant,
   MenuItem,
   PickupBoard,
   WalkInBranch,
@@ -13,6 +14,11 @@ const request = createHttpClient();
 export const customerApi = {
   listWalkInBranches: () =>
     request<WalkInBranch[]>("/customer/walk-in/branches", { auth: false }),
+
+  getTenant: (slug: string) =>
+    request<CustomerTenant>(`/customer/tenants/${encodeURIComponent(slug)}`, {
+      auth: false,
+    }),
 
   getWalkInMenu: (walkInToken: string) =>
     request<CustomerMenu>(`/customer/walk-in/${walkInToken}/menu`, {

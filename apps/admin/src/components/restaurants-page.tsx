@@ -13,6 +13,16 @@ import { BrandBackgroundGallery } from "@/components/brand-background-gallery";
 const CUSTOMER_URL =
   process.env.NEXT_PUBLIC_CUSTOMER_URL ?? "http://localhost:3001";
 
+/** Apex used for Pattern B tenant hosts (alhuda.maylesoft.com). */
+const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN?.trim() || "";
+
+function guestBaseUrl(restaurantSlug?: string | null) {
+  if (ROOT_DOMAIN && restaurantSlug) {
+    return `https://${restaurantSlug}.${ROOT_DOMAIN}`;
+  }
+  return CUSTOMER_URL.replace(/\/$/, "");
+}
+
 const DEFAULT_BRAND = {
   accent: "#c9a86a",
   button: "#234128",
@@ -21,6 +31,7 @@ const DEFAULT_BRAND = {
 
 type RestaurantFormState = {
   name: string;
+  slug: string;
   email: string;
   phone: string;
   address: string;
@@ -34,6 +45,7 @@ type RestaurantFormState = {
 
 const emptyForm: RestaurantFormState = {
   name: "",
+  slug: "",
   email: "",
   phone: "",
   address: "",
@@ -103,6 +115,7 @@ export function RestaurantsPage() {
     setEditingId(restaurant.id);
     setForm({
       name: restaurant.name,
+      slug: restaurant.slug ?? "",
       email: restaurant.email ?? "",
       phone: restaurant.phone ?? "",
       address: restaurant.address ?? "",
@@ -118,6 +131,7 @@ export function RestaurantsPage() {
     mutationFn: async () => {
       const body = {
         name: form.name.trim(),
+        slug: form.slug.trim().toLowerCase() || undefined,
         email: form.email.trim(),
         phone: form.phone.trim(),
         address: form.address.trim() || undefined,
@@ -175,8 +189,12 @@ export function RestaurantsPage() {
     onSuccess: (branch) => {
       setBranchName("");
       setBranchError(null);
+      const restaurant = restaurantsQuery.data?.find(
+        (r) => r.id === branch.restaurantId,
+      );
+      const base = guestBaseUrl(restaurant?.slug);
       setBranchSuccess(
-        `Branch “${branch.name}” created. Walk-in: ${CUSTOMER_URL}/w/${branch.walkInToken}`,
+        `Branch “${branch.name}” created. Walk-in: ${base}/w/${branch.walkInToken}`,
       );
       void queryClient.invalidateQueries({ queryKey: ["admin-branches"] });
     },
@@ -190,8 +208,12 @@ export function RestaurantsPage() {
     mutationFn: (id: string) => adminApi.rotateWalkInToken(id),
     onSuccess: (branch) => {
       setBranchError(null);
+      const restaurant = restaurantsQuery.data?.find(
+        (r) => r.id === branch.restaurantId,
+      );
+      const base = guestBaseUrl(restaurant?.slug);
       setBranchSuccess(
-        `Rotated walk-in link for “${branch.name}”: ${CUSTOMER_URL}/w/${branch.walkInToken}`,
+        `Rotated walk-in link for “${branch.name}”: ${base}/w/${branch.walkInToken}`,
       );
       void queryClient.invalidateQueries({ queryKey: ["admin-branches"] });
     },
@@ -312,6 +334,28 @@ export function RestaurantsPage() {
             className={`${inputClass} md:col-span-2`}
             required
           />
+          <div className="md:col-span-2 space-y-1.5">
+            <input
+              value={form.slug}
+              onChange={(e) =>
+                setForm((f) => ({
+                  ...f,
+                  slug: e.target.value
+                    .toLowerCase()
+                    .replace(/[^a-z0-9-]/g, ""),
+                }))
+              }
+              placeholder="Subdomain slug (e.g. alhuda)"
+              className={inputClass}
+              pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
+              title="Lowercase letters, numbers, and hyphens"
+            />
+            <p className="text-xs text-[var(--muted)]">
+              {ROOT_DOMAIN
+                ? `Guest site: https://${form.slug.trim() || "slug"}.${ROOT_DOMAIN}`
+                : "Used for guest subdomain (set NEXT_PUBLIC_ROOT_DOMAIN on admin + customer)."}
+            </p>
+          </div>
           <input
             value={form.email}
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
@@ -721,7 +765,16 @@ export function RestaurantsPage() {
                       key={restaurant.id}
                       className="border-t border-[var(--line)] bg-[var(--surface)]"
                     >
-                      <td className="px-4 py-3 font-medium">{restaurant.name}</td>
+                      <td className="px-4 py-3 font-medium">
+                        <div>{restaurant.name}</div>
+                        {restaurant.slug ? (
+                          <div className="mt-0.5 font-mono text-xs font-normal text-[var(--muted)]">
+                            {ROOT_DOMAIN
+                              ? `${restaurant.slug}.${ROOT_DOMAIN}`
+                              : restaurant.slug}
+                          </div>
+                        ) : null}
+                      </td>
                       <td className="px-4 py-3">{restaurant.email ?? "—"}</td>
                       <td className="px-4 py-3">{restaurant.phone ?? "—"}</td>
                       <td className="px-4 py-3">{count}</td>
@@ -849,10 +902,11 @@ export function RestaurantsPage() {
           </p>
           <div className="space-y-3">
             {(isPlatformAdmin ? branches : ownerBranches).map((branch) => {
-              const walkInUrl = `${CUSTOMER_URL}/w/${branch.walkInToken}`;
-              const restaurantName =
-                restaurants.find((r) => r.id === branch.restaurantId)?.name ??
-                "Restaurant";
+              const restaurant = restaurants.find(
+                (r) => r.id === branch.restaurantId,
+              );
+              const walkInUrl = `${guestBaseUrl(restaurant?.slug)}/w/${branch.walkInToken}`;
+              const restaurantName = restaurant?.name ?? "Restaurant";
               return (
                 <article
                   key={branch.id}

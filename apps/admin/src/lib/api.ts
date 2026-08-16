@@ -61,6 +61,7 @@ export const adminApi = {
 
   createRestaurant: (body: {
     name: string;
+    slug?: string;
     email: string;
     phone: string;
     address?: string;
@@ -80,6 +81,7 @@ export const adminApi = {
     id: string,
     body: {
       name?: string;
+      slug?: string;
       email?: string;
       phone?: string;
       address?: string;
