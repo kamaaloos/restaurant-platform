@@ -98,6 +98,21 @@ export type MessageKey =
   | "homeEyebrow"
   | "homeTitle"
   | "homeBody"
+  | "landingBrand"
+  | "landingTitle"
+  | "landingLead"
+  | "landingPromoSpecials"
+  | "landingPromoOffers"
+  | "landingPromoWeekend"
+  | "landingPromoFresh"
+  | "landingCta"
+  | "landingHowEyebrow"
+  | "landingHowTitle"
+  | "landingHowBody"
+  | "landingHowTableTitle"
+  | "landingHowTableBody"
+  | "landingHowWalkInTitle"
+  | "landingHowWalkInBody"
   | "tenantEyebrow"
   | "tenantBody"
   | "tenantBranches"
@@ -257,6 +272,25 @@ const en: Messages = {
   homeTitle: "Table or walk-in",
   homeBody:
     "Use the QR code or link from your restaurant. Seated guests scan a table QR. Standing guests use a walk-in link for a pickup number and the overhead TV board.",
+  landingBrand: "Maylesoft",
+  landingTitle: "Order from the table. Pick up when ready.",
+  landingLead:
+    "Beautiful menus, live kitchen updates, and walk-in pickup — built for modern restaurants.",
+  landingPromoSpecials: "Today’s specials",
+  landingPromoOffers: "Seasonal offers",
+  landingPromoWeekend: "Weekend favourites",
+  landingPromoFresh: "Fresh from the kitchen",
+  landingCta: "How ordering works",
+  landingHowEyebrow: "For guests",
+  landingHowTitle: "Scan, order, enjoy",
+  landingHowBody:
+    "Restaurants on Maylesoft share a QR or link. You never need an app — just your phone browser.",
+  landingHowTableTitle: "At the table",
+  landingHowTableBody:
+    "Scan the table QR, browse the menu, send dishes to the kitchen, and track your order live.",
+  landingHowWalkInTitle: "Walk-in & pickup",
+  landingHowWalkInBody:
+    "Open the walk-in link, place your order, get a pickup number, and watch the overhead TV board.",
   tenantEyebrow: "Order online",
   tenantBody: "Choose a branch to browse the menu and place a walk-in order.",
   tenantBranches: "Branches",
@@ -419,6 +453,25 @@ const fi: Messages = {
   homeTitle: "Pöytä tai walk-in",
   homeBody:
     "Käytä ravintolan QR-koodia tai linkkiä. Pöytäasiakkaat skannaavat pöytä-QR:n. Walk-in-asiakkaat käyttävät walk-in-linkkiä numerolle ja näytölle.",
+  landingBrand: "Maylesoft",
+  landingTitle: "Tilaa pöydästä. Nouda kun valmista.",
+  landingLead:
+    "Kaunis menu, live-keittiöpäivitykset ja walk-in-nouto — moderneille ravintoloille.",
+  landingPromoSpecials: "Päivän erikoisuudet",
+  landingPromoOffers: "Kauden tarjoukset",
+  landingPromoWeekend: "Viikonlopun suosikit",
+  landingPromoFresh: "Tuoreena keittiöstä",
+  landingCta: "Näin tilaaminen toimii",
+  landingHowEyebrow: "Vieraille",
+  landingHowTitle: "Skannaa, tilaa, nauti",
+  landingHowBody:
+    "Maylesoft-ravintolat jakavat QR-koodin tai linkin. Et tarvitse sovellusta — vain puhelimen selain.",
+  landingHowTableTitle: "Pöydässä",
+  landingHowTableBody:
+    "Skannaa pöytä-QR, selaa menua, lähetä annokset keittiöön ja seuraa tilausta livenä.",
+  landingHowWalkInTitle: "Walk-in ja nouto",
+  landingHowWalkInBody:
+    "Avaa walk-in-linkki, tilaa, saa noutonumero ja seuraa TV-taulua.",
   tenantEyebrow: "Tilaa verkossa",
   tenantBody: "Valitse toimipiste nähdäksesi menun ja tehdäksesi walk-in-tilauksen.",
   tenantBranches: "Toimipisteet",
@@ -578,6 +631,25 @@ const ar: Messages = {
   homeTitle: "طاولة أو وقوف",
   homeBody:
     "استخدم رمز QR أو الرابط من المطعم. الجلوس عبر رمز طاولة. الوقوف عبر رابط الطلب لرقم الشاشة.",
+  landingBrand: "Maylesoft",
+  landingTitle: "اطلب من الطاولة. استلم عند الجاهزية.",
+  landingLead:
+    "قوائم جميلة، تحديثات مطبخ مباشرة، واستلام للوقوف — للمطاعم الحديثة.",
+  landingPromoSpecials: "عروض اليوم",
+  landingPromoOffers: "عروض الموسم",
+  landingPromoWeekend: "مفضلات نهاية الأسبوع",
+  landingPromoFresh: "طازج من المطبخ",
+  landingCta: "كيف يعمل الطلب",
+  landingHowEyebrow: "للضيوف",
+  landingHowTitle: "امسح، اطلب، استمتع",
+  landingHowBody:
+    "مطاعم Maylesoft تشارك رمز QR أو رابطاً. لا حاجة لتطبيق — فقط متصفح هاتفك.",
+  landingHowTableTitle: "على الطاولة",
+  landingHowTableBody:
+    "امسح رمز الطاولة، تصفح القائمة، أرسل الأطباق للمطبخ، وتابع طلبك مباشرة.",
+  landingHowWalkInTitle: "وقوف واستلام",
+  landingHowWalkInBody:
+    "افتح رابط الوقوف، قدّم طلبك، احصل على رقم، وتابع لوحة الشاشة.",
   tenantEyebrow: "اطلب عبر الإنترنت",
   tenantBody: "اختر فرعاً لتصفح القائمة وتقديم طلب وقوف.",
   tenantBranches: "الفروع",
@@ -740,6 +812,25 @@ const so: Messages = {
   homeTitle: "Miis ama walk-in",
   homeBody:
     "Isticmaal QR ama link-ga makhaayadda. Martida miiska waxay scan-gareeyaan QR-ka miiska. Walk-in waxay isticmaalaan link-ga si ay u helaan lambar iyo TV-ga.",
+  landingBrand: "Maylesoft",
+  landingTitle: "Ka dalbo miiska. Qaado marka diyaar yahay.",
+  landingLead:
+    "Menu qurux badan, cusboonaysiin jiko toos ah, iyo walk-in qaadis — makhaayadaha casriga ah.",
+  landingPromoSpecials: "Gaar ahaanta maanta",
+  landingPromoOffers: "Dalabyada xilliyeed",
+  landingPromoWeekend: "Jecelasha usbuuca dhamaadka",
+  landingPromoFresh: "Cusub oo ka yimid jikada",
+  landingCta: "Sida dalabku u shaqeeyo",
+  landingHowEyebrow: "Martida",
+  landingHowTitle: "Scan-garee, dalbo, ku raaxayso",
+  landingHowBody:
+    "Makhaayadaha Maylesoft waxay wadaagaan QR ama link. Uma baahnid app — browser-ka telefoonkaaga uun.",
+  landingHowTableTitle: "Miiska",
+  landingHowTableBody:
+    "Scan-garee QR-ka miiska, fiiri menu-ga, u dir cuntooyinka jikada, oo raac dalabkaaga toos.",
+  landingHowWalkInTitle: "Walk-in & qaadis",
+  landingHowWalkInBody:
+    "Fur link-ga walk-in, samee dalab, hel lambar, oo daawo TV-ga.",
   tenantEyebrow: "Dalbo online",
   tenantBody: "Dooro laanta si aad u aragto menu-ga oo aad u sameyso dalab walk-in.",
   tenantBranches: "Laamaha",
