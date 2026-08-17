@@ -22,8 +22,9 @@ const arabic = Noto_Naskh_Arabic({
 });
 
 export const metadata: Metadata = {
-  title: "Table ordering",
-  description: "Scan, order, and track from your table",
+  title: "MayleSoft — Restaurant platform",
+  description:
+    "Run your restaurant, not your software. Orders, tables, kitchen, and walk-in pickup in one platform.",
 };
 
 export default function RootLayout({

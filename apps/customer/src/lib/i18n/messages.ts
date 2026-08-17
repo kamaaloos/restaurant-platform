@@ -99,13 +99,40 @@ export type MessageKey =
   | "homeTitle"
   | "homeBody"
   | "landingBrand"
-  | "landingTitle"
-  | "landingLead"
-  | "landingPromoSpecials"
-  | "landingPromoOffers"
-  | "landingPromoWeekend"
-  | "landingPromoFresh"
-  | "landingCta"
+  | "landingNavFeatures"
+  | "landingNavProduct"
+  | "landingNavHow"
+  | "landingNavAbout"
+  | "landingNavLogin"
+  | "landingNavDemo"
+  | "landingHeroLine1"
+  | "landingHeroLine2"
+  | "landingHeroLead"
+  | "landingCtaTrial"
+  | "landingCtaWatch"
+  | "landingTrustEasy"
+  | "landingTrustAllInOne"
+  | "landingTrustDevices"
+  | "landingTrustSecure"
+  | "landingProductEyebrow"
+  | "landingProductTitle"
+  | "landingProductBullet1"
+  | "landingProductBullet2"
+  | "landingProductBullet3"
+  | "landingProductBullet4"
+  | "landingFeaturesTitle"
+  | "landingFeatPosTitle"
+  | "landingFeatPosBody"
+  | "landingFeatTablesTitle"
+  | "landingFeatTablesBody"
+  | "landingFeatKitchenTitle"
+  | "landingFeatKitchenBody"
+  | "landingFeatOnlineTitle"
+  | "landingFeatOnlineBody"
+  | "landingFeatReportsTitle"
+  | "landingFeatReportsBody"
+  | "landingFeatStaffTitle"
+  | "landingFeatStaffBody"
   | "landingHowEyebrow"
   | "landingHowTitle"
   | "landingHowBody"
@@ -113,6 +140,19 @@ export type MessageKey =
   | "landingHowTableBody"
   | "landingHowWalkInTitle"
   | "landingHowWalkInBody"
+  | "landingStoriesEyebrow"
+  | "landingStoriesTitle"
+  | "landingStoriesBody"
+  | "landingStoriesRating"
+  | "landingQuote1"
+  | "landingQuote1By"
+  | "landingQuote2"
+  | "landingQuote2By"
+  | "landingQuote3"
+  | "landingQuote3By"
+  | "landingFinalTitle"
+  | "landingFinalBody"
+  | "landingFinalNote"
   | "tenantEyebrow"
   | "tenantBody"
   | "tenantBranches"
@@ -272,25 +312,75 @@ const en: Messages = {
   homeTitle: "Table or walk-in",
   homeBody:
     "Use the QR code or link from your restaurant. Seated guests scan a table QR. Standing guests use a walk-in link for a pickup number and the overhead TV board.",
-  landingBrand: "Maylesoft",
-  landingTitle: "Order from the table. Pick up when ready.",
-  landingLead:
-    "Beautiful menus, live kitchen updates, and walk-in pickup — built for modern restaurants.",
-  landingPromoSpecials: "Today’s specials",
-  landingPromoOffers: "Seasonal offers",
-  landingPromoWeekend: "Weekend favourites",
-  landingPromoFresh: "Fresh from the kitchen",
-  landingCta: "How ordering works",
+  landingBrand: "MayleSoft",
+  landingNavFeatures: "Features",
+  landingNavProduct: "Product",
+  landingNavHow: "How it works",
+  landingNavAbout: "Stories",
+  landingNavLogin: "Log in",
+  landingNavDemo: "Book demo",
+  landingHeroLine1: "Run your restaurant.",
+  landingHeroLine2: "Not your software.",
+  landingHeroLead:
+    "MayleSoft is the complete platform for orders, tables, kitchen, and walk-in pickup — so your team can focus on guests.",
+  landingCtaTrial: "Start free trial",
+  landingCtaWatch: "See the product",
+  landingTrustEasy: "Easy to use",
+  landingTrustAllInOne: "All-in-one platform",
+  landingTrustDevices: "Works on any device",
+  landingTrustSecure: "Secure & reliable",
+  landingProductEyebrow: "All-in-one",
+  landingProductTitle: "Everything you need to run your restaurant.",
+  landingProductBullet1: "Fast, intuitive till and payments",
+  landingProductBullet2: "Table and floor management",
+  landingProductBullet3: "Kitchen and waiter displays in sync",
+  landingProductBullet4: "Guest QR ordering and pickup TV",
+  landingFeaturesTitle: "Powerful features. Simple to use.",
+  landingFeatPosTitle: "Smart POS",
+  landingFeatPosBody:
+    "Take walk-in and table payments with cash, card, or Terminal — clear totals every time.",
+  landingFeatTablesTitle: "Table management",
+  landingFeatTablesBody:
+    "QR per table, live order status, and service requests without paper tickets.",
+  landingFeatKitchenTitle: "Kitchen display",
+  landingFeatKitchenBody:
+    "Tickets appear the moment guests order — rush and VIP flags stay visible.",
+  landingFeatOnlineTitle: "Online ordering",
+  landingFeatOnlineBody:
+    "Restaurant subdomains and walk-in links for guests on their own phones.",
+  landingFeatReportsTitle: "Reports & insights",
+  landingFeatReportsBody:
+    "See what sold, what’s unpaid, and how the floor moved — without a spreadsheet.",
+  landingFeatStaffTitle: "Staff & devices",
+  landingFeatStaffBody:
+    "Pair kitchen, waiter, and pickup screens with secure tokens from Admin.",
   landingHowEyebrow: "For guests",
   landingHowTitle: "Scan, order, enjoy",
   landingHowBody:
-    "Restaurants on Maylesoft share a QR or link. You never need an app — just your phone browser.",
+    "Restaurants on MayleSoft share a QR or link. Guests never need an app — just their phone browser.",
   landingHowTableTitle: "At the table",
   landingHowTableBody:
-    "Scan the table QR, browse the menu, send dishes to the kitchen, and track your order live.",
+    "Scan the table QR, browse the menu, send dishes to the kitchen, and track the order live.",
   landingHowWalkInTitle: "Walk-in & pickup",
   landingHowWalkInBody:
-    "Open the walk-in link, place your order, get a pickup number, and watch the overhead TV board.",
+    "Open the walk-in link, place an order, get a pickup number, and watch the TV board.",
+  landingStoriesEyebrow: "Trusted by restaurants",
+  landingStoriesTitle: "Built for Nordic hospitality.",
+  landingStoriesBody:
+    "From Helsinki cafés to busy dinner service — MayleSoft keeps floor, kitchen, and till on the same page.",
+  landingStoriesRating: "Made for Finland · multi-language menus",
+  landingQuote1:
+    "Our guests order from the table and we stopped losing tickets between waiter and kitchen.",
+  landingQuote1By: "Restaurant owner · Helsinki",
+  landingQuote2:
+    "Walk-in pickup with the TV board cut our lunch queue confusion in half.",
+  landingQuote2By: "Café owner · Tampere",
+  landingQuote3:
+    "Finally one system for till, kitchen, and QR — not five different tools.",
+  landingQuote3By: "Restaurant owner · Turku",
+  landingFinalTitle: "Ready to grow your restaurant?",
+  landingFinalBody: "Join MayleSoft and see the difference on the floor.",
+  landingFinalNote: "No credit card required to start a conversation · Cancel anytime",
   tenantEyebrow: "Order online",
   tenantBody: "Choose a branch to browse the menu and place a walk-in order.",
   tenantBranches: "Branches",
@@ -453,25 +543,75 @@ const fi: Messages = {
   homeTitle: "Pöytä tai walk-in",
   homeBody:
     "Käytä ravintolan QR-koodia tai linkkiä. Pöytäasiakkaat skannaavat pöytä-QR:n. Walk-in-asiakkaat käyttävät walk-in-linkkiä numerolle ja näytölle.",
-  landingBrand: "Maylesoft",
-  landingTitle: "Tilaa pöydästä. Nouda kun valmista.",
-  landingLead:
-    "Kaunis menu, live-keittiöpäivitykset ja walk-in-nouto — moderneille ravintoloille.",
-  landingPromoSpecials: "Päivän erikoisuudet",
-  landingPromoOffers: "Kauden tarjoukset",
-  landingPromoWeekend: "Viikonlopun suosikit",
-  landingPromoFresh: "Tuoreena keittiöstä",
-  landingCta: "Näin tilaaminen toimii",
+  landingBrand: "MayleSoft",
+  landingNavFeatures: "Ominaisuudet",
+  landingNavProduct: "Tuote",
+  landingNavHow: "Miten toimii",
+  landingNavAbout: "Tarinoita",
+  landingNavLogin: "Kirjaudu",
+  landingNavDemo: "Varaa demo",
+  landingHeroLine1: "Johda ravintolaasi.",
+  landingHeroLine2: "Älä ohjelmistoasi.",
+  landingHeroLead:
+    "MayleSoft on kokonaisalusta tilauksille, pöydille, keittiölle ja walk-in-noutoon — tiimisi voi keskittyä vieraisiin.",
+  landingCtaTrial: "Aloita ilmainen kokeilu",
+  landingCtaWatch: "Katso tuote",
+  landingTrustEasy: "Helppokäyttöinen",
+  landingTrustAllInOne: "Kaikki yhdessä",
+  landingTrustDevices: "Toimii kaikilla laitteilla",
+  landingTrustSecure: "Turvallinen ja luotettava",
+  landingProductEyebrow: "Kaikki yhdessä",
+  landingProductTitle: "Kaikki mitä tarvitset ravintolan pyörittämiseen.",
+  landingProductBullet1: "Nopea kassa ja maksut",
+  landingProductBullet2: "Pöytä- ja salinhallinta",
+  landingProductBullet3: "Keittiö- ja tarjoilijanäytöt synkassa",
+  landingProductBullet4: "Vieras-QR ja nouto-TV",
+  landingFeaturesTitle: "Vahvat ominaisuudet. Yksinkertainen käyttää.",
+  landingFeatPosTitle: "Älykäs kassa",
+  landingFeatPosBody:
+    "Walk-in- ja pöytämaksut käteisellä, kortilla tai Terminalilla — selkeät summat.",
+  landingFeatTablesTitle: "Pöytähallinta",
+  landingFeatTablesBody:
+    "QR per pöytä, live-tila ja palvelupyynnöt ilman paperilappuja.",
+  landingFeatKitchenTitle: "Keittiönäyttö",
+  landingFeatKitchenBody:
+    "Liput ilmestyvät heti kun vieras tilaa — rush ja VIP näkyvät.",
+  landingFeatOnlineTitle: "Verkkotilaus",
+  landingFeatOnlineBody:
+    "Ravintolan alidomainit ja walk-in-linkit vieraan omalla puhelimella.",
+  landingFeatReportsTitle: "Raportit",
+  landingFeatReportsBody:
+    "Näe myynti, maksamattomat ja salin liike — ilman taulukkoa.",
+  landingFeatStaffTitle: "Henkilöstö ja laitteet",
+  landingFeatStaffBody:
+    "Parita keittiö-, tarjoilija- ja noutoruudut turvallisilla tokeneilla.",
   landingHowEyebrow: "Vieraille",
   landingHowTitle: "Skannaa, tilaa, nauti",
   landingHowBody:
-    "Maylesoft-ravintolat jakavat QR-koodin tai linkin. Et tarvitse sovellusta — vain puhelimen selain.",
+    "MayleSoft-ravintolat jakavat QR:n tai linkin. Vieras ei tarvitse sovellusta.",
   landingHowTableTitle: "Pöydässä",
   landingHowTableBody:
-    "Skannaa pöytä-QR, selaa menua, lähetä annokset keittiöön ja seuraa tilausta livenä.",
+    "Skannaa pöytä-QR, selaa menua, lähetä annokset keittiöön ja seuraa tilausta.",
   landingHowWalkInTitle: "Walk-in ja nouto",
   landingHowWalkInBody:
-    "Avaa walk-in-linkki, tilaa, saa noutonumero ja seuraa TV-taulua.",
+    "Avaa walk-in-linkki, tilaa, saa numero ja seuraa TV-taulua.",
+  landingStoriesEyebrow: "Ravintoloiden luottama",
+  landingStoriesTitle: "Rakennettu pohjoismaiseen hospitalityyn.",
+  landingStoriesBody:
+    "Helsingin kahviloista illallisruuhkaan — MayleSoft pitää salin, keittiön ja kassan samalla sivulla.",
+  landingStoriesRating: "Suomeen · monikieliset menut",
+  landingQuote1:
+    "Vieraat tilaavat pöydästä, emmekä enää hukkaa lippuja tarjoilijan ja keittiön välillä.",
+  landingQuote1By: "Ravintoloitsija · Helsinki",
+  landingQuote2:
+    "Walk-in-nouto TV-taululla puolitti lounasruuhkan sekaannukset.",
+  landingQuote2By: "Kahvilan omistaja · Tampere",
+  landingQuote3:
+    "Vihdoin yksi järjestelmä kassalle, keittiölle ja QR:lle — ei viittä eri työkalua.",
+  landingQuote3By: "Ravintoloitsija · Turku",
+  landingFinalTitle: "Valmis kasvattamaan ravintolaasi?",
+  landingFinalBody: "Liity MayleSoftiin ja näe ero salissa.",
+  landingFinalNote: "Ei korttia keskustelun aloittamiseen · Peru milloin tahansa",
   tenantEyebrow: "Tilaa verkossa",
   tenantBody: "Valitse toimipiste nähdäksesi menun ja tehdäksesi walk-in-tilauksen.",
   tenantBranches: "Toimipisteet",
@@ -631,25 +771,75 @@ const ar: Messages = {
   homeTitle: "طاولة أو وقوف",
   homeBody:
     "استخدم رمز QR أو الرابط من المطعم. الجلوس عبر رمز طاولة. الوقوف عبر رابط الطلب لرقم الشاشة.",
-  landingBrand: "Maylesoft",
-  landingTitle: "اطلب من الطاولة. استلم عند الجاهزية.",
-  landingLead:
-    "قوائم جميلة، تحديثات مطبخ مباشرة، واستلام للوقوف — للمطاعم الحديثة.",
-  landingPromoSpecials: "عروض اليوم",
-  landingPromoOffers: "عروض الموسم",
-  landingPromoWeekend: "مفضلات نهاية الأسبوع",
-  landingPromoFresh: "طازج من المطبخ",
-  landingCta: "كيف يعمل الطلب",
+  landingBrand: "MayleSoft",
+  landingNavFeatures: "الميزات",
+  landingNavProduct: "المنتج",
+  landingNavHow: "كيف يعمل",
+  landingNavAbout: "قصص",
+  landingNavLogin: "تسجيل الدخول",
+  landingNavDemo: "احجز عرضاً",
+  landingHeroLine1: "أدِر مطعمك.",
+  landingHeroLine2: "لا برنامجك.",
+  landingHeroLead:
+    "MayleSoft منصة متكاملة للطلبات والطاولات والمطبخ والاستلام — ليركّز فريقك على الضيوف.",
+  landingCtaTrial: "ابدأ تجربة مجانية",
+  landingCtaWatch: "شاهد المنتج",
+  landingTrustEasy: "سهل الاستخدام",
+  landingTrustAllInOne: "كل شيء في مكان واحد",
+  landingTrustDevices: "يعمل على أي جهاز",
+  landingTrustSecure: "آمن وموثوق",
+  landingProductEyebrow: "كل شيء معاً",
+  landingProductTitle: "كل ما تحتاجه لإدارة مطعمك.",
+  landingProductBullet1: "صندوق سريع ومدفوعات واضحة",
+  landingProductBullet2: "إدارة الطاولات والصالة",
+  landingProductBullet3: "شاشات المطبخ والنادل متزامنة",
+  landingProductBullet4: "طلب عبر QR ولوحة الاستلام",
+  landingFeaturesTitle: "ميزات قوية. استخدام بسيط.",
+  landingFeatPosTitle: "نقطة بيع ذكية",
+  landingFeatPosBody:
+    "ادفع طلبات الوقوف والطاولات نقداً أو بطاقة أو Terminal.",
+  landingFeatTablesTitle: "إدارة الطاولات",
+  landingFeatTablesBody:
+    "رمز لكل طاولة، حالة مباشرة، وطلبات خدمة بلا ورق.",
+  landingFeatKitchenTitle: "شاشة المطبخ",
+  landingFeatKitchenBody:
+    "تظهر التذاكر فور طلب الضيف — مع علامات الاستعجال وVIP.",
+  landingFeatOnlineTitle: "طلب عبر الإنترنت",
+  landingFeatOnlineBody:
+    "نطاقات فرعية للمطاعم وروابط وقوف على هاتف الضيف.",
+  landingFeatReportsTitle: "تقارير ورؤى",
+  landingFeatReportsBody:
+    "اعرف ما بيع وما لم يُدفع دون جداول معقدة.",
+  landingFeatStaffTitle: "الموظفون والأجهزة",
+  landingFeatStaffBody:
+    "اربط شاشات المطبخ والنادل والاستلام برموز آمنة من لوحة الإدارة.",
   landingHowEyebrow: "للضيوف",
   landingHowTitle: "امسح، اطلب، استمتع",
   landingHowBody:
-    "مطاعم Maylesoft تشارك رمز QR أو رابطاً. لا حاجة لتطبيق — فقط متصفح هاتفك.",
+    "مطاعم MayleSoft تشارك رمزاً أو رابطاً. لا حاجة لتطبيق.",
   landingHowTableTitle: "على الطاولة",
   landingHowTableBody:
-    "امسح رمز الطاولة، تصفح القائمة، أرسل الأطباق للمطبخ، وتابع طلبك مباشرة.",
+    "امسح رمز الطاولة، تصفح القائمة، أرسل للمطبخ، وتابع الطلب.",
   landingHowWalkInTitle: "وقوف واستلام",
   landingHowWalkInBody:
-    "افتح رابط الوقوف، قدّم طلبك، احصل على رقم، وتابع لوحة الشاشة.",
+    "افتح رابط الوقوف، اطلب، احصل على رقم، وتابع الشاشة.",
+  landingStoriesEyebrow: "موثوق من المطاعم",
+  landingStoriesTitle: "مبني لضيافة الشمال.",
+  landingStoriesBody:
+    "من مقاهي هلسنكي إلى خدمة العشاء — MayleSoft يوحّد الصالة والمطبخ والصندوق.",
+  landingStoriesRating: "مخصص لفنلندا · قوائم متعددة اللغات",
+  landingQuote1:
+    "ضيوفنا يطلبون من الطاولة وتوقفنا عن ضياع التذاكر بين النادل والمطبخ.",
+  landingQuote1By: "صاحب مطعم · هلسنكي",
+  landingQuote2:
+    "الاستلام مع لوحة التلفاز قلّل فوضى طابور الغداء للنصف.",
+  landingQuote2By: "صاحبة مقهى · تامبيري",
+  landingQuote3:
+    "أخيراً نظام واحد للصندوق والمطبخ وQR — لا خمسة أدوات.",
+  landingQuote3By: "صاحب مطعم · توركو",
+  landingFinalTitle: "جاهز لتنمية مطعمك؟",
+  landingFinalBody: "انضم إلى MayleSoft وشاهد الفرق في الصالة.",
+  landingFinalNote: "لا بطاقة لبدء الحديث · ألغِ في أي وقت",
   tenantEyebrow: "اطلب عبر الإنترنت",
   tenantBody: "اختر فرعاً لتصفح القائمة وتقديم طلب وقوف.",
   tenantBranches: "الفروع",
@@ -812,25 +1002,75 @@ const so: Messages = {
   homeTitle: "Miis ama walk-in",
   homeBody:
     "Isticmaal QR ama link-ga makhaayadda. Martida miiska waxay scan-gareeyaan QR-ka miiska. Walk-in waxay isticmaalaan link-ga si ay u helaan lambar iyo TV-ga.",
-  landingBrand: "Maylesoft",
-  landingTitle: "Ka dalbo miiska. Qaado marka diyaar yahay.",
-  landingLead:
-    "Menu qurux badan, cusboonaysiin jiko toos ah, iyo walk-in qaadis — makhaayadaha casriga ah.",
-  landingPromoSpecials: "Gaar ahaanta maanta",
-  landingPromoOffers: "Dalabyada xilliyeed",
-  landingPromoWeekend: "Jecelasha usbuuca dhamaadka",
-  landingPromoFresh: "Cusub oo ka yimid jikada",
-  landingCta: "Sida dalabku u shaqeeyo",
+  landingBrand: "MayleSoft",
+  landingNavFeatures: "Astaamaha",
+  landingNavProduct: "Alaabta",
+  landingNavHow: "Sida u shaqeeyso",
+  landingNavAbout: "Sheekooyin",
+  landingNavLogin: "Gal",
+  landingNavDemo: "Ballan demo",
+  landingHeroLine1: "Maamul makhaayaddaada.",
+  landingHeroLine2: "Ma aha software-kaaga.",
+  landingHeroLead:
+    "MayleSoft waa platform dhammaystiran oo loogu talagalay dalabyada, miisaska, jikada, iyo walk-in qaadista — si kooxdaadu ugu diiradda geliso martida.",
+  landingCtaTrial: "Bilow tijaabo bilaash ah",
+  landingCtaWatch: "Arag alaabta",
+  landingTrustEasy: "Fudud in la isticmaalo",
+  landingTrustAllInOne: "Dhammaan mid",
+  landingTrustDevices: "Ku shaqeeya aalad kasta",
+  landingTrustSecure: "Ammaan & la isku halleyn karo",
+  landingProductEyebrow: "Dhammaan mid",
+  landingProductTitle: "Wax kasta oo aad u baahan tahay inaad ku maamusho makhaayadda.",
+  landingProductBullet1: "Khasnadda degdeg ah iyo lacag-bixinta",
+  landingProductBullet2: "Maamulka miisaska iyo dabaqa",
+  landingProductBullet3: "Shaashadaha jikada iyo waiter-ka oo iswaafaqsan",
+  landingProductBullet4: "Dalabka QR ee martida iyo TV qaadista",
+  landingFeaturesTitle: "Astaamo xooggan. Isticmaal fudud.",
+  landingFeatPosTitle: "POS caqli leh",
+  landingFeatPosBody:
+    "Lacag-bixin walk-in iyo miis — cash, card, ama Terminal.",
+  landingFeatTablesTitle: "Maamulka miisaska",
+  landingFeatTablesBody:
+    "QR miis kasta, xaalad toos ah, iyo codsiyo adeeg oo aan waraaq lahayn.",
+  landingFeatKitchenTitle: "Shaashadda jikada",
+  landingFeatKitchenBody:
+    "Tigidhada waxay soo baxaan marka martidu dalbato — rush iyo VIP waa muuqdaan.",
+  landingFeatOnlineTitle: "Dalab online",
+  landingFeatOnlineBody:
+    "Subdomain-yada makhaayadaha iyo link-yada walk-in ee telefoonka martida.",
+  landingFeatReportsTitle: "Warbixinno",
+  landingFeatReportsBody:
+    "Arag waxa la iibiyay iyo waxa aan la bixin — spreadsheet la'aan.",
+  landingFeatStaffTitle: "Shaqaalaha & aaladaha",
+  landingFeatStaffBody:
+    "Isku xidh shaashadaha jikada, waiter-ka, iyo qaadista token-yo ammaan ah.",
   landingHowEyebrow: "Martida",
   landingHowTitle: "Scan-garee, dalbo, ku raaxayso",
   landingHowBody:
-    "Makhaayadaha Maylesoft waxay wadaagaan QR ama link. Uma baahnid app — browser-ka telefoonkaaga uun.",
+    "Makhaayadaha MayleSoft waxay wadaagaan QR ama link. Uma baahnid app.",
   landingHowTableTitle: "Miiska",
   landingHowTableBody:
-    "Scan-garee QR-ka miiska, fiiri menu-ga, u dir cuntooyinka jikada, oo raac dalabkaaga toos.",
+    "Scan-garee QR-ka miiska, fiiri menu-ga, u dir jikada, oo raac dalabka.",
   landingHowWalkInTitle: "Walk-in & qaadis",
   landingHowWalkInBody:
-    "Fur link-ga walk-in, samee dalab, hel lambar, oo daawo TV-ga.",
+    "Fur link-ga walk-in, dalbo, hel lambar, oo daawo TV-ga.",
+  landingStoriesEyebrow: "Makhaayadaha ayaa aaminay",
+  landingStoriesTitle: "Loogu talagalay martigelinta Waqooyiga.",
+  landingStoriesBody:
+    "Laga bilaabo makhaayadaha Helsinki ilaa cashada fiidkii — MayleSoft wuxuu midaynayaa dabaqa, jikada, iyo khasnadda.",
+  landingStoriesRating: "Loogu talagalay Finland · menu luqado badan",
+  landingQuote1:
+    "Martidayadu waxay ka dalbadaan miiska, waxaanana joojinay luminta tigidhada waiter iyo jiko.",
+  landingQuote1By: "Mulkiilaha makhaayadda · Helsinki",
+  landingQuote2:
+    "Walk-in qaadis TV-ga ayaa kala badhay jahawareerka safka qadada.",
+  landingQuote2By: "Mulkiilaha cafega · Tampere",
+  landingQuote3:
+    "Ugu dambayntii nidaam keliya khasnadda, jikada, iyo QR — ma aha shan qalab.",
+  landingQuote3By: "Mulkiilaha makhaayadda · Turku",
+  landingFinalTitle: "Diyaar ma u tahay inaad kor u qaaddo makhaayaddaada?",
+  landingFinalBody: "Ku biir MayleSoft oo arag farqiga dabaqa.",
+  landingFinalNote: "Kaarka looma baahna bilowga wadahadalka · Jooji markaad doonto",
   tenantEyebrow: "Dalbo online",
   tenantBody: "Dooro laanta si aad u aragto menu-ga oo aad u sameyso dalab walk-in.",
   tenantBranches: "Laamaha",

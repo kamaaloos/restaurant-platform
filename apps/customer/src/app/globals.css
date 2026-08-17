@@ -192,6 +192,86 @@ html[dir="rtl"] body {
   will-change: transform;
 }
 
+/* —— MayleSoft marketing landing —— */
+.landing-page {
+  --landing-cream: #f7f3ec;
+  --landing-ink: #1c1917;
+  --landing-muted: #6b6560;
+  --landing-accent: #e07a3a;
+  --landing-line: color-mix(in oklab, #1c1917 10%, transparent);
+  --landing-shadow: 0 24px 60px rgba(28, 25, 23, 0.14);
+}
+
+@keyframes landing-ken-burns {
+  0%,
+  100% {
+    transform: scale(1.06) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.14) translate3d(-1.2%, -0.8%, 0);
+  }
+}
+
+.landing-ken-burns {
+  animation: landing-ken-burns 32s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes landing-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.landing-fade-up {
+  animation: landing-fade-up 0.8s ease-out both;
+}
+
+.landing-fade-up:nth-child(2) {
+  animation-delay: 0.08s;
+}
+
+.landing-fade-up:nth-child(3) {
+  animation-delay: 0.16s;
+}
+
+@keyframes landing-brand-zoom {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+.landing-brand-zoom {
+  display: inline-block;
+  transform-origin: left center;
+  animation: landing-brand-zoom 4.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes landing-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.landing-float {
+  animation: landing-float 7s ease-in-out infinite;
+  will-change: transform;
+}
+
 @keyframes landing-promo-fade {
   from {
     opacity: 0;
@@ -205,29 +285,6 @@ html[dir="rtl"] body {
 
 .landing-promo-fade {
   animation: landing-promo-fade 0.65s ease-out both;
-}
-
-@keyframes landing-brand-zoom {
-  0%,
-  100% {
-    transform: scale(1);
-    letter-spacing: 0.28em;
-  }
-  50% {
-    transform: scale(1.08);
-    letter-spacing: 0.34em;
-  }
-}
-
-.landing-brand-zoom {
-  display: inline-block;
-  transform-origin: center left;
-  animation: landing-brand-zoom 4.5s ease-in-out infinite;
-  will-change: transform;
-}
-
-html[dir="rtl"] .landing-brand-zoom {
-  transform-origin: center right;
 }
 
 .pickup-fire-glow {
@@ -245,7 +302,10 @@ html[dir="rtl"] .landing-brand-zoom {
   .menu-bg-drift,
   .pickup-fire-glow,
   .landing-promo-fade,
-  .landing-brand-zoom {
+  .landing-brand-zoom,
+  .landing-ken-burns,
+  .landing-fade-up,
+  .landing-float {
     animation: none !important;
   }
 }
