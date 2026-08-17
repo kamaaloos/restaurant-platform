@@ -32,9 +32,9 @@ function ProductMock({ className = "" }: { className?: string }) {
             <Image
               src="/images/brand/maylesoft-logo.png"
               alt=""
-              width={28}
-              height={28}
-              className="h-7 w-7 rounded-full object-cover"
+              width={36}
+              height={36}
+              className="h-9 w-9 rounded-full object-cover"
             />
             <p className="hidden text-[0.7rem] font-semibold tracking-wide text-white sm:block sm:text-sm">
               MayleSoft
@@ -191,9 +191,9 @@ export function LandingMarketing() {
             <Image
               src="/images/brand/maylesoft-logo.png"
               alt="MayleSoft"
-              width={56}
-              height={56}
-              className="h-11 w-11 rounded-full object-cover ring-1 ring-white/20 sm:h-12 sm:w-12"
+              width={80}
+              height={80}
+              className="h-16 w-16 rounded-full object-cover ring-1 ring-white/20 sm:h-[4.5rem] sm:w-[4.5rem]"
               priority
             />
             <span className="sr-only">MayleSoft</span>
@@ -434,9 +434,9 @@ export function LandingMarketing() {
           <Image
             src="/images/brand/maylesoft-logo.png"
             alt="MayleSoft"
-            width={72}
-            height={72}
-            className="mx-auto h-16 w-16 rounded-full object-cover ring-1 ring-white/15"
+            width={96}
+            height={96}
+            className="mx-auto h-20 w-20 rounded-full object-cover ring-1 ring-white/15"
           />
           <h2 className="mt-4 font-[family-name:var(--font-body)] text-3xl font-semibold tracking-tight sm:text-4xl">
             {t("landingFinalTitle")}
