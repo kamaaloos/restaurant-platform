@@ -109,7 +109,15 @@ export type MessageKey =
   | "landingHeroLine2"
   | "landingHeroLead"
   | "landingCtaTrial"
-  | "landingCtaWatch"
+  | "landingCtaTrialSub"
+  | "landingCtaDemo"
+  | "landingCtaDemoSub"
+  | "landingStat1Value"
+  | "landingStat1Label"
+  | "landingStat2Value"
+  | "landingStat2Label"
+  | "landingStat3Value"
+  | "landingStat3Label"
   | "landingTrustEasy"
   | "landingTrustAllInOne"
   | "landingTrustDevices"
@@ -322,9 +330,17 @@ const en: Messages = {
   landingHeroLine1: "Run your restaurant.",
   landingHeroLine2: "Not your software.",
   landingHeroLead:
-    "MayleSoft is the complete platform for orders, tables, kitchen, and walk-in pickup — so your team can focus on guests.",
+    "When the dining room is full and the kitchen is moving, MayleSoft keeps every table, order, and payment under control.",
   landingCtaTrial: "Start free trial",
-  landingCtaWatch: "See the product",
+  landingCtaTrialSub: "No credit card required",
+  landingCtaDemo: "Book a live demo",
+  landingCtaDemoSub: "30 minutes",
+  landingStat1Value: "40%",
+  landingStat1Label: "Less order mistakes",
+  landingStat2Value: "2×",
+  landingStat2Label: "Faster table turnover",
+  landingStat3Value: "24/7",
+  landingStat3Label: "Cloud platform",
   landingTrustEasy: "Easy to use",
   landingTrustAllInOne: "All-in-one platform",
   landingTrustDevices: "Works on any device",
@@ -553,9 +569,17 @@ const fi: Messages = {
   landingHeroLine1: "Johda ravintolaasi.",
   landingHeroLine2: "Älä ohjelmistoasi.",
   landingHeroLead:
-    "MayleSoft on kokonaisalusta tilauksille, pöydille, keittiölle ja walk-in-noutoon — tiimisi voi keskittyä vieraisiin.",
+    "Kun sali on täynnä ja keittiö liikkuu, MayleSoft pitää pöydät, tilaukset ja maksut hallinnassa.",
   landingCtaTrial: "Aloita ilmainen kokeilu",
-  landingCtaWatch: "Katso tuote",
+  landingCtaTrialSub: "Ei luottokorttia",
+  landingCtaDemo: "Varaa live-demo",
+  landingCtaDemoSub: "30 minuuttia",
+  landingStat1Value: "40%",
+  landingStat1Label: "Vähemmän tilausvirheitä",
+  landingStat2Value: "2×",
+  landingStat2Label: "Nopeampi pöytäkierto",
+  landingStat3Value: "24/7",
+  landingStat3Label: "Pilvialusta",
   landingTrustEasy: "Helppokäyttöinen",
   landingTrustAllInOne: "Kaikki yhdessä",
   landingTrustDevices: "Toimii kaikilla laitteilla",
@@ -781,9 +805,17 @@ const ar: Messages = {
   landingHeroLine1: "أدِر مطعمك.",
   landingHeroLine2: "لا برنامجك.",
   landingHeroLead:
-    "MayleSoft منصة متكاملة للطلبات والطاولات والمطبخ والاستلام — ليركّز فريقك على الضيوف.",
+    "عندما تمتلئ الصالة ويتحرك المطبخ، MayleSoft يبقي كل طاولة وطلب ودفعة تحت السيطرة.",
   landingCtaTrial: "ابدأ تجربة مجانية",
-  landingCtaWatch: "شاهد المنتج",
+  landingCtaTrialSub: "لا حاجة لبطاقة ائتمان",
+  landingCtaDemo: "احجز عرضاً مباشراً",
+  landingCtaDemoSub: "30 دقيقة",
+  landingStat1Value: "40%",
+  landingStat1Label: "أخطاء طلبات أقل",
+  landingStat2Value: "2×",
+  landingStat2Label: "دوران أسرع للطاولات",
+  landingStat3Value: "24/7",
+  landingStat3Label: "منصة سحابية",
   landingTrustEasy: "سهل الاستخدام",
   landingTrustAllInOne: "كل شيء في مكان واحد",
   landingTrustDevices: "يعمل على أي جهاز",
@@ -1012,9 +1044,17 @@ const so: Messages = {
   landingHeroLine1: "Maamul makhaayaddaada.",
   landingHeroLine2: "Ma aha software-kaaga.",
   landingHeroLead:
-    "MayleSoft waa platform dhammaystiran oo loogu talagalay dalabyada, miisaska, jikada, iyo walk-in qaadista — si kooxdaadu ugu diiradda geliso martida.",
+    "Marka dabaqa uu buuxo jikaduna socoto, MayleSoft wuxuu hayaa miis kasta, dalab, iyo lacag-bixin gacanta ku jira.",
   landingCtaTrial: "Bilow tijaabo bilaash ah",
-  landingCtaWatch: "Arag alaabta",
+  landingCtaTrialSub: "Kaarka looma baahna",
+  landingCtaDemo: "Ballan demo toos ah",
+  landingCtaDemoSub: "30 daqiiqo",
+  landingStat1Value: "40%",
+  landingStat1Label: "Khaladaad dalab oo yar",
+  landingStat2Value: "2×",
+  landingStat2Label: "Wareeg miis oo degdeg ah",
+  landingStat3Value: "24/7",
+  landingStat3Label: "Platform daruur",
   landingTrustEasy: "Fudud in la isticmaalo",
   landingTrustAllInOne: "Dhammaan mid",
   landingTrustDevices: "Ku shaqeeya aalad kasta",

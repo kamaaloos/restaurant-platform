@@ -202,6 +202,97 @@ html[dir="rtl"] body {
   --landing-shadow: 0 24px 60px rgba(28, 25, 23, 0.14);
 }
 
+@keyframes landing-cinematic-drift {
+  0%,
+  100% {
+    transform: scale(1.04) translate3d(0, 0, 0);
+  }
+  33% {
+    transform: scale(1.1) translate3d(-0.8%, -0.5%, 0);
+  }
+  66% {
+    transform: scale(1.08) translate3d(0.6%, -0.3%, 0);
+  }
+}
+
+.landing-cinematic-drift {
+  animation: landing-cinematic-drift 48s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes landing-warm-glow {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.landing-warm-glow {
+  background: radial-gradient(
+    ellipse 55% 45% at 65% 55%,
+    rgba(255, 180, 100, 0.22),
+    transparent 70%
+  );
+  animation: landing-warm-glow 8s ease-in-out infinite;
+  mix-blend-mode: soft-light;
+}
+
+@keyframes landing-hero-line1 {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes landing-hero-line2 {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes landing-hero-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.landing-hero-line1 {
+  animation: landing-hero-line1 0.9s ease-out both;
+}
+
+.landing-hero-line2 {
+  animation: landing-hero-line2 0.9s ease-out 0.3s both;
+}
+
+.landing-hero-lead {
+  animation: landing-hero-line1 0.9s ease-out 0.55s both;
+}
+
+.landing-hero-cta {
+  animation: landing-hero-slide-up 0.85s ease-out 0.75s both;
+}
+
+.landing-hero-mock {
+  animation: landing-hero-slide-up 1s ease-out 0.5s both;
+}
+
 @keyframes landing-ken-burns {
   0%,
   100% {
@@ -263,13 +354,23 @@ html[dir="rtl"] body {
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-14px);
   }
 }
 
 .landing-float {
-  animation: landing-float 7s ease-in-out infinite;
+  animation: landing-float 11s ease-in-out infinite;
   will-change: transform;
+}
+
+.landing-glass-mock {
+  background: color-mix(in oklab, white 78%, transparent);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid color-mix(in oklab, white 55%, transparent);
+  box-shadow:
+    0 32px 80px rgba(20, 16, 12, 0.28),
+    0 0 0 1px rgba(255, 255, 255, 0.06) inset;
 }
 
 @keyframes landing-promo-fade {
@@ -304,6 +405,13 @@ html[dir="rtl"] body {
   .landing-promo-fade,
   .landing-brand-zoom,
   .landing-ken-burns,
+  .landing-cinematic-drift,
+  .landing-warm-glow,
+  .landing-hero-line1,
+  .landing-hero-line2,
+  .landing-hero-lead,
+  .landing-hero-cta,
+  .landing-hero-mock,
   .landing-fade-up,
   .landing-float {
     animation: none !important;

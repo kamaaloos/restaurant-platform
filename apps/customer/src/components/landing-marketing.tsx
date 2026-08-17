@@ -1,18 +1,33 @@
 "use client";
 
+import {
+  BarChart3,
+  ChefHat,
+  Check,
+  Cloud,
+  LayoutGrid,
+  Monitor,
+  Shield,
+  Smartphone,
+  Sparkles,
+  Users,
+} from "lucide-react";
 import { LocaleControls } from "@/lib/currency-provider";
 import { useLocale } from "@/lib/i18n/locale-provider";
+import type { MessageKey } from "@/lib/i18n/messages";
 import { LandingPhotoBackdrop } from "@/components/landing-photo-backdrop";
 
 const ADMIN_URL =
   process.env.NEXT_PUBLIC_ADMIN_URL ?? "https://admin.maylesoft.com";
 const DEMO_MAIL = "mailto:hello@maylesoft.com?subject=MayleSoft%20demo";
 
-function ProductMock() {
+function ProductMock({ className = "" }: { className?: string }) {
   return (
-    <div className="landing-float relative mx-auto w-full max-w-md overflow-hidden rounded-[1.75rem] border border-[var(--landing-line)] bg-white shadow-[var(--landing-shadow)]">
+    <div
+      className={`landing-float landing-glass-mock relative mx-auto w-full max-w-md overflow-hidden rounded-[1.75rem] ${className}`}
+    >
       <div className="flex min-h-[22rem]">
-        <aside className="flex w-[4.5rem] flex-col gap-3 bg-[#1c1917] px-2 py-5 text-[0.65rem] text-white/55 sm:w-36 sm:px-3 sm:text-xs">
+        <aside className="flex w-[4.5rem] flex-col gap-3 bg-[#1c1917]/95 px-2 py-5 text-[0.65rem] text-white/55 sm:w-36 sm:px-3 sm:text-xs">
           <p className="mb-2 px-1 text-[0.7rem] font-semibold tracking-wide text-white sm:text-sm">
             MayleSoft
           </p>
@@ -28,7 +43,7 @@ function ProductMock() {
             </span>
           ))}
         </aside>
-        <div className="flex flex-1 flex-col bg-[#faf7f2] p-4 sm:p-5">
+        <div className="flex flex-1 flex-col bg-[#faf7f2]/95 p-4 sm:p-5">
           <p className="text-xs font-medium uppercase tracking-[0.16em] text-[var(--landing-muted)]">
             Table 5
           </p>
@@ -66,21 +81,57 @@ function ProductMock() {
   );
 }
 
-const FEATURE_KEYS = [
-  ["landingFeatPosTitle", "landingFeatPosBody"],
-  ["landingFeatTablesTitle", "landingFeatTablesBody"],
-  ["landingFeatKitchenTitle", "landingFeatKitchenBody"],
-  ["landingFeatOnlineTitle", "landingFeatOnlineBody"],
-  ["landingFeatReportsTitle", "landingFeatReportsBody"],
-  ["landingFeatStaffTitle", "landingFeatStaffBody"],
+const FEATURE_ITEMS: {
+  icon: typeof Monitor;
+  titleKey: MessageKey;
+  bodyKey: MessageKey;
+}[] = [
+  { icon: Monitor, titleKey: "landingFeatPosTitle", bodyKey: "landingFeatPosBody" },
+  {
+    icon: LayoutGrid,
+    titleKey: "landingFeatTablesTitle",
+    bodyKey: "landingFeatTablesBody",
+  },
+  {
+    icon: ChefHat,
+    titleKey: "landingFeatKitchenTitle",
+    bodyKey: "landingFeatKitchenBody",
+  },
+  {
+    icon: Smartphone,
+    titleKey: "landingFeatOnlineTitle",
+    bodyKey: "landingFeatOnlineBody",
+  },
+  {
+    icon: BarChart3,
+    titleKey: "landingFeatReportsTitle",
+    bodyKey: "landingFeatReportsBody",
+  },
+  { icon: Users, titleKey: "landingFeatStaffTitle", bodyKey: "landingFeatStaffBody" },
+];
+
+const TRUST_ITEMS: {
+  icon: typeof Sparkles;
+  key: MessageKey;
+}[] = [
+  { icon: Sparkles, key: "landingTrustEasy" },
+  { icon: Check, key: "landingTrustAllInOne" },
+  { icon: Smartphone, key: "landingTrustDevices" },
+  { icon: Shield, key: "landingTrustSecure" },
+];
+
+const STAT_KEYS = [
+  ["landingStat1Value", "landingStat1Label"],
+  ["landingStat2Value", "landingStat2Label"],
+  ["landingStat3Value", "landingStat3Label"],
 ] as const;
 
-const TRUST_KEYS = [
-  "landingTrustEasy",
-  "landingTrustAllInOne",
-  "landingTrustDevices",
-  "landingTrustSecure",
-] as const;
+const PRODUCT_BULLETS: MessageKey[] = [
+  "landingProductBullet1",
+  "landingProductBullet2",
+  "landingProductBullet3",
+  "landingProductBullet4",
+];
 
 const QUOTE_KEYS = [
   ["landingQuote1", "landingQuote1By"],
@@ -88,12 +139,43 @@ const QUOTE_KEYS = [
   ["landingQuote3", "landingQuote3By"],
 ] as const;
 
+function CtaButton({
+  href,
+  primary,
+  title,
+  subtitle,
+}: {
+  href: string;
+  primary?: boolean;
+  title: string;
+  subtitle?: string;
+}) {
+  return (
+    <a
+      href={href}
+      className={`inline-flex flex-col items-start rounded-2xl px-6 py-3.5 text-left transition ${
+        primary
+          ? "bg-[var(--landing-accent)] text-white hover:brightness-110"
+          : "border border-white/40 bg-white/10 text-white backdrop-blur-sm hover:bg-white/16"
+      }`}
+    >
+      <span className="text-sm font-semibold">{title}</span>
+      {subtitle ? (
+        <span
+          className={`mt-0.5 text-xs ${primary ? "text-white/80" : "text-white/65"}`}
+        >
+          {subtitle}
+        </span>
+      ) : null}
+    </a>
+  );
+}
+
 export function LandingMarketing() {
   const { t } = useLocale();
 
   return (
     <div className="landing-page bg-[var(--landing-cream)] text-[var(--landing-ink)]">
-      {/* Nav */}
       <header className="absolute inset-x-0 top-0 z-20">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-5 sm:px-6">
           <a href="#" className="flex items-center gap-2 text-white">
@@ -136,41 +218,61 @@ export function LandingMarketing() {
       </header>
 
       {/* Hero */}
-      <section className="relative flex min-h-[100svh] flex-col justify-end overflow-hidden pb-16 pt-28 sm:justify-center sm:pb-24 sm:pt-32">
+      <section className="relative flex min-h-[100svh] flex-col overflow-hidden pt-28 sm:pt-32">
         <LandingPhotoBackdrop tone="hero" startIndex={0} />
-        <div className="relative z-10 mx-auto w-full max-w-6xl px-4 sm:px-6">
-          <h1 className="landing-fade-up max-w-3xl font-[family-name:var(--font-body)] text-4xl font-semibold leading-[1.08] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
-            {t("landingHeroLine1")}{" "}
-            <span className="text-[var(--landing-accent)]">
-              {t("landingHeroLine2")}
-            </span>
-          </h1>
-          <p className="landing-fade-up mt-6 max-w-xl text-base leading-relaxed text-white/80 sm:text-lg">
-            {t("landingHeroLead")}
-          </p>
-          <div className="landing-fade-up mt-9 flex flex-wrap gap-3">
-            <a
-              href={DEMO_MAIL}
-              className="inline-flex items-center gap-2 rounded-full bg-[var(--landing-accent)] px-6 py-3.5 text-sm font-semibold text-white transition hover:brightness-110"
-            >
-              {t("landingCtaTrial")}
-              <span aria-hidden>→</span>
-            </a>
-            <a
-              href="#product"
-              className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/16"
-            >
-              {t("landingCtaWatch")}
-            </a>
+        <div className="relative z-10 mx-auto grid w-full max-w-6xl flex-1 items-center gap-12 px-4 pb-8 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:gap-10 lg:pb-12">
+          <div>
+            <h1 className="max-w-3xl font-[family-name:var(--font-body)] text-4xl font-semibold leading-[1.1] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-[3.5rem]">
+              <span className="landing-hero-line1 block">{t("landingHeroLine1")}</span>
+              <span className="landing-hero-line2 mt-2 block text-[var(--landing-accent)]">
+                {t("landingHeroLine2")}
+              </span>
+            </h1>
+            <p className="landing-hero-lead mt-6 max-w-xl text-base leading-relaxed text-white/82 sm:text-lg">
+              {t("landingHeroLead")}
+            </p>
+            <div className="landing-hero-cta mt-9 flex flex-wrap gap-3">
+              <CtaButton
+                href={DEMO_MAIL}
+                primary
+                title={t("landingCtaTrial")}
+                subtitle={t("landingCtaTrialSub")}
+              />
+              <CtaButton
+                href={DEMO_MAIL}
+                title={t("landingCtaDemo")}
+                subtitle={t("landingCtaDemoSub")}
+              />
+            </div>
           </div>
+          <div className="landing-hero-mock hidden lg:block">
+            <ProductMock />
+          </div>
+        </div>
+
+        {/* Stats */}
+        <div className="relative z-10 border-t border-white/10 bg-[#14100c]/55 backdrop-blur-md">
+          <ul className="mx-auto grid max-w-6xl grid-cols-1 divide-y divide-white/10 sm:grid-cols-3 sm:divide-x sm:divide-y-0 px-4 sm:px-6">
+            {STAT_KEYS.map(([valueKey, labelKey]) => (
+              <li key={valueKey} className="py-8 text-center sm:py-10">
+                <p className="font-[family-name:var(--font-body)] text-4xl font-semibold tracking-tight text-white sm:text-5xl">
+                  {t(valueKey)}
+                </p>
+                <p className="mt-2 text-sm text-white/65">{t(labelKey)}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
       {/* Trust */}
       <section className="border-b border-[var(--landing-line)] bg-[var(--landing-cream)]">
         <ul className="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-4 py-12 sm:grid-cols-4 sm:px-6 sm:py-14">
-          {TRUST_KEYS.map((key) => (
-            <li key={key} className="text-center sm:text-left">
+          {TRUST_ITEMS.map(({ icon: Icon, key }) => (
+            <li key={key} className="flex flex-col items-center gap-3 text-center sm:items-start sm:text-left">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--landing-accent)]/12 text-[var(--landing-accent)]">
+                <Icon className="h-5 w-5" strokeWidth={1.75} aria-hidden />
+              </span>
               <p className="text-sm font-semibold text-[var(--landing-ink)]">
                 {t(key)}
               </p>
@@ -179,38 +281,33 @@ export function LandingMarketing() {
         </ul>
       </section>
 
-      {/* Product */}
+      {/* Product — mock left, checklist right */}
       <section
         id="product"
         className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-20 sm:px-6 sm:py-28 lg:grid-cols-2 lg:gap-16"
       >
-        <div>
+        <ProductMock className="lg:order-1" />
+        <div className="lg:order-2">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--landing-accent)]">
             {t("landingProductEyebrow")}
           </p>
           <h2 className="mt-3 font-[family-name:var(--font-body)] text-3xl font-semibold tracking-tight sm:text-4xl">
             {t("landingProductTitle")}
           </h2>
-          <ul className="mt-8 space-y-3 text-[var(--landing-muted)]">
-            <li className="flex gap-3">
-              <span className="mt-1 text-[var(--landing-accent)]">✓</span>
-              {t("landingProductBullet1")}
-            </li>
-            <li className="flex gap-3">
-              <span className="mt-1 text-[var(--landing-accent)]">✓</span>
-              {t("landingProductBullet2")}
-            </li>
-            <li className="flex gap-3">
-              <span className="mt-1 text-[var(--landing-accent)]">✓</span>
-              {t("landingProductBullet3")}
-            </li>
-            <li className="flex gap-3">
-              <span className="mt-1 text-[var(--landing-accent)]">✓</span>
-              {t("landingProductBullet4")}
-            </li>
+          <ul className="mt-8 space-y-4">
+            {PRODUCT_BULLETS.map((key) => (
+              <li
+                key={key}
+                className="flex items-start gap-3 text-[var(--landing-muted)]"
+              >
+                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--landing-accent)]/15 text-[var(--landing-accent)]">
+                  <Check className="h-3.5 w-3.5" strokeWidth={2.5} aria-hidden />
+                </span>
+                <span className="text-base leading-relaxed">{t(key)}</span>
+              </li>
+            ))}
           </ul>
         </div>
-        <ProductMock />
       </section>
 
       {/* Features */}
@@ -223,12 +320,17 @@ export function LandingMarketing() {
             {t("landingFeaturesTitle")}
           </h2>
           <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURE_KEYS.map(([titleKey, bodyKey]) => (
+            {FEATURE_ITEMS.map(({ icon: Icon, titleKey, bodyKey }) => (
               <article
                 key={titleKey}
                 className="rounded-2xl border border-[var(--landing-line)] bg-white/80 p-6 backdrop-blur-sm"
               >
-                <h3 className="text-lg font-semibold tracking-tight">
+                <Icon
+                  className="h-10 w-10 text-[var(--landing-accent)]"
+                  strokeWidth={1.5}
+                  aria-hidden
+                />
+                <h3 className="mt-4 text-lg font-semibold tracking-tight">
                   {t(titleKey)}
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-[var(--landing-muted)]">
@@ -253,7 +355,7 @@ export function LandingMarketing() {
           <h2 className="mt-3 font-[family-name:var(--font-body)] text-3xl font-semibold tracking-tight sm:text-4xl">
             {t("landingHowTitle")}
           </h2>
-          <p className="mt-5 max-w-xl text-[var(--landing-muted)] leading-relaxed">
+          <p className="mt-5 max-w-xl leading-relaxed text-[var(--landing-muted)]">
             {t("landingHowBody")}
           </p>
           <div className="mt-12 grid gap-10 sm:grid-cols-2">
@@ -287,7 +389,7 @@ export function LandingMarketing() {
           <h2 className="mt-3 font-[family-name:var(--font-body)] text-3xl font-semibold tracking-tight sm:text-4xl">
             {t("landingStoriesTitle")}
           </h2>
-          <p className="mt-5 max-w-md text-[var(--landing-muted)] leading-relaxed">
+          <p className="mt-5 max-w-md leading-relaxed text-[var(--landing-muted)]">
             {t("landingStoriesBody")}
           </p>
           <p className="mt-6 text-sm font-semibold text-[var(--landing-accent)]">
@@ -300,7 +402,7 @@ export function LandingMarketing() {
               key={quoteKey}
               className="rounded-2xl border border-[var(--landing-line)] bg-white/70 p-5"
             >
-              <p className="text-[var(--landing-ink)]/90 italic leading-relaxed">
+              <p className="italic leading-relaxed text-[var(--landing-ink)]/90">
                 “{t(quoteKey)}”
               </p>
               <footer className="mt-3 text-sm font-medium text-[var(--landing-muted)]">
@@ -314,25 +416,24 @@ export function LandingMarketing() {
       {/* Final CTA */}
       <section className="bg-[#1c1917] px-4 py-20 text-center text-white sm:px-6 sm:py-24">
         <div className="mx-auto max-w-2xl">
-          <h2 className="font-[family-name:var(--font-body)] text-3xl font-semibold tracking-tight sm:text-4xl">
+          <Cloud className="mx-auto h-8 w-8 text-[var(--landing-accent)]/80" aria-hidden />
+          <h2 className="mt-4 font-[family-name:var(--font-body)] text-3xl font-semibold tracking-tight sm:text-4xl">
             {t("landingFinalTitle")}
           </h2>
           <p className="mt-4 text-white/70">{t("landingFinalBody")}</p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
-            <a
+            <CtaButton
               href={DEMO_MAIL}
-              className="rounded-full bg-[var(--landing-accent)] px-6 py-3.5 text-sm font-semibold text-white transition hover:brightness-110"
-            >
-              {t("landingCtaTrial")}
-            </a>
-            <a
+              primary
+              title={t("landingCtaTrial")}
+              subtitle={t("landingCtaTrialSub")}
+            />
+            <CtaButton
               href={DEMO_MAIL}
-              className="rounded-full border border-white/35 px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-white/10"
-            >
-              {t("landingNavDemo")}
-            </a>
+              title={t("landingCtaDemo")}
+              subtitle={t("landingCtaDemoSub")}
+            />
           </div>
-          <p className="mt-6 text-xs text-white/45">{t("landingFinalNote")}</p>
         </div>
       </section>
     </div>
