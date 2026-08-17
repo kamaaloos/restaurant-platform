@@ -140,31 +140,31 @@ function AdminShell({
 
   return (
     <div className="relative flex flex-1 flex-col md:grid md:grid-cols-[272px_1fr]">
-      <aside className="flex flex-col border-b border-[var(--line)] bg-[var(--surface)]/92 backdrop-blur-md md:min-h-0 md:border-b-0 md:border-r">
-        <div className="flex flex-col items-start gap-3 px-5 py-6">
+      <aside className="flex flex-col border-b border-[var(--line)] bg-[#f7efc8] md:min-h-0 md:border-b-0 md:border-r">
+        <div className="flex flex-col items-start gap-3 bg-[#1b2a4a] px-5 py-6 text-white">
           {restaurant?.logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={restaurant.logoUrl}
               alt=""
-              className="h-16 w-16 rounded-2xl bg-white object-cover shadow-sm ring-1 ring-[var(--line)]"
+              className="h-16 w-16 rounded-2xl bg-white object-cover shadow-sm ring-1 ring-white/25"
             />
           ) : (
-            <div className="grid h-16 w-16 place-items-center rounded-2xl bg-[var(--accent-soft)] text-xl font-semibold text-[var(--accent)]">
+            <div className="grid h-16 w-16 place-items-center rounded-2xl bg-white/12 text-xl font-semibold text-white">
               {(restaurant?.name ?? "A").slice(0, 1).toUpperCase()}
             </div>
           )}
           <div className="min-w-0 w-full">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/65">
               Ops console
             </p>
-            <h1 className="mt-1 font-[family-name:var(--font-display)] text-[1.35rem] leading-snug tracking-tight text-[var(--ink)]">
+            <h1 className="mt-1 font-[family-name:var(--font-display)] text-[1.35rem] leading-snug tracking-tight text-white">
               {restaurant?.name ?? "Admin"}
             </h1>
           </div>
         </div>
 
-        <nav className="flex gap-1 overflow-x-auto px-3 pb-3 md:flex-1 md:flex-col md:overflow-visible md:px-3">
+        <nav className="flex gap-1 overflow-x-auto px-3 py-3 md:flex-1 md:flex-col md:overflow-visible md:px-3">
           {nav.map((item) => {
             const active =
               item.href === "/"
@@ -178,8 +178,8 @@ function AdminShell({
                 className={cn(
                   "flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium whitespace-nowrap transition",
                   active
-                    ? "bg-[var(--accent-soft)] text-[var(--accent)] shadow-sm"
-                    : "text-[var(--muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)]",
+                    ? "bg-[#1b2a4a] text-white shadow-sm"
+                    : "text-[#3d3a2a] hover:bg-[#efe6a8] hover:text-[#1b2a4a]",
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0 opacity-80" strokeWidth={1.75} />
@@ -189,17 +189,17 @@ function AdminShell({
           })}
         </nav>
 
-        <div className="hidden border-t border-[var(--line)] px-4 py-4 md:block">
-          <p className="truncate text-sm font-medium text-[var(--ink)]">
+        <div className="hidden border-t border-[#e4d98a] px-4 py-4 md:block">
+          <p className="truncate text-sm font-medium text-[#1b2a4a]">
             {user.email}
           </p>
-          <p className="mt-0.5 text-xs text-[var(--muted)]">
+          <p className="mt-0.5 text-xs text-[#5c5840]">
             {ROLE_LABEL[user.role] ?? user.role}
           </p>
           <button
             type="button"
             onClick={logout}
-            className="mt-3 inline-flex h-9 w-full items-center justify-center gap-2 rounded-xl border border-[var(--line)] bg-white text-sm font-medium text-[var(--ink)] transition hover:bg-[var(--surface-2)]"
+            className="mt-3 inline-flex h-9 w-full items-center justify-center gap-2 rounded-xl border border-[#1b2a4a]/20 bg-white text-sm font-medium text-[#1b2a4a] transition hover:bg-[#efe6a8]"
           >
             <LogOut className="h-3.5 w-3.5" strokeWidth={1.75} />
             Sign out

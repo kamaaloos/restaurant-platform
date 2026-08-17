@@ -118,6 +118,18 @@ export const adminApi = {
       body: JSON.stringify(body),
     }),
 
+  updateTable: (
+    id: string,
+    body: { number?: string; seats?: number; notes?: string },
+  ) =>
+    request<RestaurantTable>(`/tables/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    }),
+
+  deleteTable: (id: string) =>
+    request<RestaurantTable>(`/tables/${id}`, { method: "DELETE" }),
+
   rotateTableQr: (id: string) =>
     request<RestaurantTable>(`/tables/${id}/rotate-qr`, { method: "POST" }),
 

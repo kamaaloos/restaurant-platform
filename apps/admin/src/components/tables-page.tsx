@@ -39,6 +39,7 @@ export function TablesPage() {
     useSelectedBranch(restaurantId);
   const [number, setNumber] = React.useState("");
   const [seats, setSeats] = React.useState("4");
+  const [editingId, setEditingId] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [copied, setCopied] = React.useState<string | null>(null);
 
@@ -63,6 +64,50 @@ export function TablesPage() {
     },
     onError: (err: Error) => setError(err.message),
   });
+
+  const update = useMutation({
+    mutationFn: () =>
+      adminApi.updateTable(editingId!, {
+        number: number.trim(),
+        seats: Number(seats),
+      }),
+    onSuccess: () => {
+      setEditingId(null);
+      setNumber("");
+      setSeats("4");
+      setError(null);
+      void queryClient.invalidateQueries({ queryKey: ["admin-tables"] });
+    },
+    onError: (err: Error) => setError(err.message),
+  });
+
+  const remove = useMutation({
+    mutationFn: (id: string) => adminApi.deleteTable(id),
+    onSuccess: () => {
+      setError(null);
+      if (editingId) {
+        setEditingId(null);
+        setNumber("");
+        setSeats("4");
+      }
+      void queryClient.invalidateQueries({ queryKey: ["admin-tables"] });
+    },
+    onError: (err: Error) => setError(err.message),
+  });
+
+  function startEdit(table: { id: string; number: string; seats: number }) {
+    setEditingId(table.id);
+    setNumber(table.number);
+    setSeats(String(table.seats));
+    setError(null);
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setNumber("");
+    setSeats("4");
+    setError(null);
+  }
 
   const rotateQr = useMutation({
     mutationFn: (id: string) => adminApi.rotateTableQr(id),
@@ -125,7 +170,7 @@ export function TablesPage() {
     <div>
       <PageHeader
         title="Tables"
-        subtitle="Create floor tables and copy customer QR ordering links."
+        subtitle="Add, edit, or remove floor tables and copy customer QR ordering links."
       />
 
       <div className="mb-4 grid max-w-3xl gap-3 md:grid-cols-2">
@@ -144,14 +189,15 @@ export function TablesPage() {
       </div>
 
       <form
-        className="mb-8 grid gap-3 rounded-xl border border-[var(--line)] bg-[var(--surface)] p-4 md:grid-cols-[1fr_120px_auto]"
+        className="mb-8 grid gap-3 rounded-xl border border-[var(--line)] bg-[var(--surface)] p-4 md:grid-cols-[1fr_120px_auto_auto]"
         onSubmit={(e) => {
           e.preventDefault();
           if (!branchId) {
             setError("Select a branch first.");
             return;
           }
-          create.mutate();
+          if (editingId) update.mutate();
+          else create.mutate();
         }}
       >
         <input
@@ -169,11 +215,27 @@ export function TablesPage() {
           className="h-11 rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
           required
         />
-        <Button type="submit" disabled={create.isPending || !branchId}>
-          {create.isPending ? "Creating…" : "Add table"}
+        <Button
+          type="submit"
+          disabled={create.isPending || update.isPending || !branchId}
+        >
+          {editingId
+            ? update.isPending
+              ? "Saving…"
+              : "Save table"
+            : create.isPending
+              ? "Creating…"
+              : "Add table"}
         </Button>
+        {editingId ? (
+          <Button type="button" variant="outline" onClick={cancelEdit}>
+            Cancel
+          </Button>
+        ) : (
+          <span className="hidden md:block" />
+        )}
         {error ? (
-          <p className="md:col-span-3 text-sm text-[var(--danger)]">{error}</p>
+          <p className="md:col-span-4 text-sm text-[var(--danger)]">{error}</p>
         ) : null}
       </form>
 
@@ -187,14 +249,15 @@ export function TablesPage() {
         </p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-[var(--line)]">
-          <table className="w-full min-w-[640px] text-left text-sm">
+          <table className="w-full min-w-[860px] text-left text-sm">
             <thead className="bg-[var(--surface-2)] text-[var(--muted)]">
               <tr>
                 <th className="px-4 py-3 font-medium">Table</th>
                 <th className="px-4 py-3 font-medium">Seats</th>
                 <th className="px-4 py-3 font-medium">Status</th>
                 <th className="px-4 py-3 font-medium">QR token</th>
-                <th className="px-4 py-3 font-medium">Actions</th>
+                <th className="px-4 py-3 font-medium">Manage</th>
+                <th className="px-4 py-3 font-medium">QR</th>
               </tr>
             </thead>
             <tbody>
@@ -208,6 +271,38 @@ export function TablesPage() {
                   <td className="px-4 py-3">{table.status}</td>
                   <td className="px-4 py-3 font-mono text-xs">
                     {shortId(table.qrToken)}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex flex-nowrap gap-2">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={() => startEdit(table)}
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="danger"
+                        disabled={remove.isPending || table.status === "OCCUPIED"}
+                        title={
+                          table.status === "OCCUPIED"
+                            ? "Occupied tables cannot be deleted"
+                            : "Delete table"
+                        }
+                        onClick={() => {
+                          if (
+                            window.confirm(
+                              `Delete table ${table.number}? Occupied tables cannot be deleted.`,
+                            )
+                          ) {
+                            remove.mutate(table.id);
+                          }
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-2">
