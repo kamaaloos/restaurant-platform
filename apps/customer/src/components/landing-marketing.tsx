@@ -4,7 +4,6 @@ import {
   BarChart3,
   ChefHat,
   Check,
-  Cloud,
   LayoutGrid,
   Monitor,
   Shield,
@@ -12,6 +11,7 @@ import {
   Sparkles,
   Users,
 } from "lucide-react";
+import Image from "next/image";
 import { LocaleControls } from "@/lib/currency-provider";
 import { useLocale } from "@/lib/i18n/locale-provider";
 import type { MessageKey } from "@/lib/i18n/messages";
@@ -28,9 +28,18 @@ function ProductMock({ className = "" }: { className?: string }) {
     >
       <div className="flex min-h-[22rem]">
         <aside className="flex w-[4.5rem] flex-col gap-3 bg-[#1c1917]/95 px-2 py-5 text-[0.65rem] text-white/55 sm:w-36 sm:px-3 sm:text-xs">
-          <p className="mb-2 px-1 text-[0.7rem] font-semibold tracking-wide text-white sm:text-sm">
-            MayleSoft
-          </p>
+          <div className="mb-2 flex items-center gap-2 px-1">
+            <Image
+              src="/images/brand/maylesoft-logo.png"
+              alt=""
+              width={28}
+              height={28}
+              className="h-7 w-7 rounded-full object-cover"
+            />
+            <p className="hidden text-[0.7rem] font-semibold tracking-wide text-white sm:block sm:text-sm">
+              MayleSoft
+            </p>
+          </div>
           {["Dashboard", "Orders", "Tables", "Menu", "Staff"].map((label, i) => (
             <span
               key={label}
@@ -178,10 +187,16 @@ export function LandingMarketing() {
     <div className="landing-page bg-[var(--landing-cream)] text-[var(--landing-ink)]">
       <header className="absolute inset-x-0 top-0 z-20">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-5 sm:px-6">
-          <a href="#" className="flex items-center gap-2 text-white">
-            <span className="landing-brand-zoom text-lg font-semibold tracking-tight">
-              MayleSoft
-            </span>
+          <a href="#" className="landing-brand-zoom flex items-center">
+            <Image
+              src="/images/brand/maylesoft-logo.png"
+              alt="MayleSoft"
+              width={56}
+              height={56}
+              className="h-11 w-11 rounded-full object-cover ring-1 ring-white/20 sm:h-12 sm:w-12"
+              priority
+            />
+            <span className="sr-only">MayleSoft</span>
           </a>
           <nav className="hidden items-center gap-6 text-sm text-white/80 md:flex">
             <a href="#features" className="transition hover:text-white">
@@ -416,7 +431,13 @@ export function LandingMarketing() {
       {/* Final CTA */}
       <section className="bg-[#1c1917] px-4 py-20 text-center text-white sm:px-6 sm:py-24">
         <div className="mx-auto max-w-2xl">
-          <Cloud className="mx-auto h-8 w-8 text-[var(--landing-accent)]/80" aria-hidden />
+          <Image
+            src="/images/brand/maylesoft-logo.png"
+            alt="MayleSoft"
+            width={72}
+            height={72}
+            className="mx-auto h-16 w-16 rounded-full object-cover ring-1 ring-white/15"
+          />
           <h2 className="mt-4 font-[family-name:var(--font-body)] text-3xl font-semibold tracking-tight sm:text-4xl">
             {t("landingFinalTitle")}
           </h2>
