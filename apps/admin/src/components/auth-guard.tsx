@@ -3,12 +3,24 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useQuery } from "@tanstack/react-query";
-import { adminApi } from "@/lib/api";
-import { clearSession, getAccessToken, getStoredUser } from "@/lib/session";
-import type { AuthUser } from "@/lib/types";
+import {
+  LayoutDashboard,
+  Building2,
+  UtensilsCrossed,
+  MonitorSmartphone,
+  BookOpen,
+  Users,
+  LogOut,
+} from "lucide-react";
+import { useSelectedRestaurant } from "@/hooks/use-selected-restaurant";
+import {
+  clearSession,
+  getAccessToken,
+  getStoredUser,
+  setSession,
+} from "@/lib/session";
+import type { AuthUser, Restaurant } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
 const ADMIN_ROLES = new Set([
   "PLATFORM_ADMIN",
@@ -16,16 +28,22 @@ const ADMIN_ROLES = new Set([
   "BRANCH_MANAGER",
 ]);
 
+const ROLE_LABEL: Record<string, string> = {
+  PLATFORM_ADMIN: "Platform admin",
+  RESTAURANT_OWNER: "Restaurant owner",
+  BRANCH_MANAGER: "Branch manager",
+};
+
 function navForRole(role: string) {
   const locationsLabel =
     role === "PLATFORM_ADMIN" ? "Restaurants" : "Branches";
   return [
-    { href: "/", label: "Overview" },
-    { href: "/restaurants", label: locationsLabel },
-    { href: "/tables", label: "Tables" },
-    { href: "/devices", label: "Devices" },
-    { href: "/menu", label: "Menu" },
-    { href: "/users", label: "Users" },
+    { href: "/", label: "Overview", icon: LayoutDashboard },
+    { href: "/restaurants", label: locationsLabel, icon: Building2 },
+    { href: "/tables", label: "Tables", icon: UtensilsCrossed },
+    { href: "/devices", label: "Devices", icon: MonitorSmartphone },
+    { href: "/menu", label: "Menu", icon: BookOpen },
+    { href: "/users", label: "Users", icon: Users },
   ];
 }
 
@@ -61,6 +79,19 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   return <AdminShell user={user}>{children}</AdminShell>;
 }
 
+function restaurantFromUser(user: AuthUser): Restaurant | undefined {
+  if (!user.restaurant) return undefined;
+  return {
+    id: user.restaurant.id,
+    name: user.restaurant.name,
+    slug: user.restaurant.slug ?? undefined,
+    logoUrl: user.restaurant.logoUrl,
+    brandAccent: user.restaurant.brandAccent,
+    brandButton: user.restaurant.brandButton,
+    brandPaper: user.restaurant.brandPaper,
+  };
+}
+
 function AdminShell({
   user,
   children,
@@ -71,15 +102,36 @@ function AdminShell({
   const pathname = usePathname();
   const router = useRouter();
   const nav = navForRole(user.role);
-
-  const restaurantsQuery = useQuery({
-    queryKey: ["admin-restaurants"],
-    queryFn: () => adminApi.listRestaurants(),
-  });
+  const { restaurants, restaurantId } = useSelectedRestaurant();
 
   const restaurant =
-    restaurantsQuery.data?.find((r) => r.id === user.restaurantId) ??
-    (user.role !== "PLATFORM_ADMIN" ? restaurantsQuery.data?.[0] : undefined);
+    restaurants.find((r) => r.id === restaurantId) ??
+    restaurants.find((r) => r.id === user.restaurantId) ??
+    restaurants[0] ??
+    restaurantFromUser(user);
+
+  React.useEffect(() => {
+    if (!restaurant?.logoUrl || user.restaurant?.logoUrl) return;
+    const token = getAccessToken();
+    if (!token) return;
+    setSession(token, {
+      ...user,
+      restaurant: {
+        id: restaurant.id,
+        name: restaurant.name,
+        slug: restaurant.slug,
+        logoUrl: restaurant.logoUrl,
+        brandAccent: restaurant.brandAccent,
+        brandButton: restaurant.brandButton,
+        brandPaper: restaurant.brandPaper,
+      },
+    });
+  }, [
+    restaurant?.id,
+    restaurant?.logoUrl,
+    restaurant?.name,
+    user,
+  ]);
 
   function logout() {
     clearSession();
@@ -87,83 +139,102 @@ function AdminShell({
   }
 
   return (
-    <div className="relative flex flex-1 flex-col md:grid md:grid-cols-[240px_1fr]">
-      <aside className="border-b border-[var(--line)] bg-[var(--surface)]/88 backdrop-blur-md md:border-b-0 md:border-r">
-        <div className="flex items-center gap-3 px-5 py-6">
+    <div className="relative flex flex-1 flex-col md:grid md:grid-cols-[272px_1fr]">
+      <aside className="flex flex-col border-b border-[var(--line)] bg-[var(--surface)]/92 backdrop-blur-md md:min-h-0 md:border-b-0 md:border-r">
+        <div className="flex flex-col items-start gap-3 px-5 py-6">
           {restaurant?.logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={restaurant.logoUrl}
               alt=""
-              className="h-12 w-12 shrink-0 rounded-full object-cover ring-2 ring-[var(--accent)]/30"
+              className="h-16 w-16 rounded-2xl bg-white object-cover shadow-sm ring-1 ring-[var(--line)]"
             />
-          ) : null}
-          <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+          ) : (
+            <div className="grid h-16 w-16 place-items-center rounded-2xl bg-[var(--accent-soft)] text-xl font-semibold text-[var(--accent)]">
+              {(restaurant?.name ?? "A").slice(0, 1).toUpperCase()}
+            </div>
+          )}
+          <div className="min-w-0 w-full">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--muted)]">
               Ops console
             </p>
-            <h1 className="mt-1 truncate font-[family-name:var(--font-display)] text-2xl tracking-wide">
+            <h1 className="mt-1 font-[family-name:var(--font-display)] text-[1.35rem] leading-snug tracking-tight text-[var(--ink)]">
               {restaurant?.name ?? "Admin"}
             </h1>
           </div>
         </div>
-        <nav className="flex gap-1 overflow-x-auto px-3 pb-4 md:flex-col">
+
+        <nav className="flex gap-1 overflow-x-auto px-3 pb-3 md:flex-1 md:flex-col md:overflow-visible md:px-3">
           {nav.map((item) => {
             const active =
               item.href === "/"
                 ? pathname === "/"
                 : pathname.startsWith(item.href);
+            const Icon = item.icon;
             return (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "rounded-md px-3 py-2 text-sm font-semibold whitespace-nowrap transition",
+                  "flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium whitespace-nowrap transition",
                   active
-                    ? "bg-[var(--accent-soft)] text-[var(--accent)]"
+                    ? "bg-[var(--accent-soft)] text-[var(--accent)] shadow-sm"
                     : "text-[var(--muted)] hover:bg-[var(--surface-2)] hover:text-[var(--ink)]",
                 )}
               >
+                <Icon className="h-4 w-4 shrink-0 opacity-80" strokeWidth={1.75} />
                 {item.label}
               </Link>
             );
           })}
         </nav>
-        <div className="hidden border-t border-[var(--line)] px-5 py-4 md:block">
-          <p className="truncate text-sm font-medium">{user.email}</p>
-          <p className="text-xs text-[var(--muted)]">{user.role}</p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-3 w-full"
+
+        <div className="hidden border-t border-[var(--line)] px-4 py-4 md:block">
+          <p className="truncate text-sm font-medium text-[var(--ink)]">
+            {user.email}
+          </p>
+          <p className="mt-0.5 text-xs text-[var(--muted)]">
+            {ROLE_LABEL[user.role] ?? user.role}
+          </p>
+          <button
+            type="button"
             onClick={logout}
+            className="mt-3 inline-flex h-9 w-full items-center justify-center gap-2 rounded-xl border border-[var(--line)] bg-white text-sm font-medium text-[var(--ink)] transition hover:bg-[var(--surface-2)]"
           >
+            <LogOut className="h-3.5 w-3.5" strokeWidth={1.75} />
             Sign out
-          </Button>
+          </button>
         </div>
       </aside>
 
       <div className="flex min-h-0 flex-1 flex-col">
-        <header className="flex items-center justify-between border-b border-[var(--line)] bg-[var(--surface)]/85 px-5 py-3 backdrop-blur-md md:hidden">
-          <div className="flex min-w-0 items-center gap-2">
+        <header className="flex items-center justify-between border-b border-[var(--line)] bg-[var(--surface)]/90 px-4 py-3 backdrop-blur-md md:hidden">
+          <div className="flex min-w-0 items-center gap-3">
             {restaurant?.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={restaurant.logoUrl}
                 alt=""
-                className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-[var(--accent)]/30"
+                className="h-10 w-10 shrink-0 rounded-xl bg-white object-cover ring-1 ring-[var(--line)]"
               />
             ) : null}
             <div className="min-w-0">
-              <p className="truncate text-sm font-medium">
+              <p className="text-sm font-semibold leading-tight text-[var(--ink)]">
                 {restaurant?.name ?? user.email}
               </p>
-              <p className="text-xs text-[var(--muted)]">{user.role}</p>
+              <p className="text-xs text-[var(--muted)]">
+                {ROLE_LABEL[user.role] ?? user.role}
+              </p>
             </div>
           </div>
-          <Button variant="outline" size="sm" onClick={logout}>
+          <button
+            type="button"
+            onClick={logout}
+            className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-[var(--line)] bg-white px-3 text-sm font-medium"
+          >
+            <LogOut className="h-3.5 w-3.5" />
             Sign out
-          </Button>
+          </button>
         </header>
         <main className="relative z-10 flex-1 p-5 md:p-8">{children}</main>
       </div>

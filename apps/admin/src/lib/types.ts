@@ -4,6 +4,15 @@ export type AuthUser = {
   role: string;
   restaurantId: string | null;
   branchId: string | null;
+  restaurant?: {
+    id: string;
+    name: string;
+    slug?: string | null;
+    logoUrl?: string | null;
+    brandAccent?: string | null;
+    brandButton?: string | null;
+    brandPaper?: string | null;
+  } | null;
 };
 
 export type Branch = {
