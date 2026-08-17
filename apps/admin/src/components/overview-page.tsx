@@ -13,38 +13,50 @@ import {
   RestaurantSelect,
   useSelectedRestaurant,
 } from "@/hooks/use-selected-restaurant";
+import { useLocale } from "@/lib/i18n/locale-provider";
+import { ROLE_MESSAGE } from "@/lib/i18n/labels";
+import type { MessageKey } from "@/lib/i18n/messages";
 
-function overviewLinks(role: string | undefined) {
+function overviewLinks(
+  role: string | undefined,
+  t: (key: MessageKey) => string,
+) {
   const isPlatformAdmin = role === "PLATFORM_ADMIN";
   return [
     {
       href: "/restaurants",
-      title: isPlatformAdmin ? "Restaurants" : "Branches",
+      title: isPlatformAdmin ? t("navRestaurants") : t("navBranches"),
       body: isPlatformAdmin
-        ? "Create restaurants and branches."
-        : "Add and manage branches for your restaurant.",
+        ? t("overviewLinkRestaurantsBody")
+        : t("overviewLinkBranchesBody"),
     },
     {
       href: "/tables",
-      title: "Tables",
-      body: "Create tables and copy customer QR links.",
+      title: t("navTables"),
+      body: t("overviewLinkTablesBody"),
     },
     {
       href: "/devices",
-      title: "Devices",
-      body: "Create kitchen/waiter devices; pair with short-lived QR codes.",
+      title: t("navDevices"),
+      body: t("overviewLinkDevicesBody"),
     },
     {
       href: "/menu",
-      title: "Menu",
-      body: "Add categories and items for the QR menu.",
+      title: t("navMenu"),
+      body: t("overviewLinkMenuBody"),
     },
   ];
 }
 
 export function OverviewPage() {
+  const { t } = useLocale();
   const user = getStoredUser();
-  const LINKS = overviewLinks(user?.role);
+  const roleLabel = user?.role
+    ? ROLE_MESSAGE[user.role]
+      ? t(ROLE_MESSAGE[user.role])
+      : user.role
+    : "…";
+  const LINKS = overviewLinks(user?.role, t);
   const {
     restaurantId,
     setRestaurantId,
@@ -81,8 +93,11 @@ export function OverviewPage() {
   return (
     <div>
       <PageHeader
-        title="Overview"
-        subtitle={`Signed in as ${user?.email ?? "…"} (${user?.role ?? "…"})`}
+        title={t("overviewTitle")}
+        subtitle={t("overviewSignedIn", {
+          email: user?.email ?? "…",
+          role: roleLabel,
+        })}
       />
 
       <div className="mb-6 grid max-w-3xl gap-3 md:grid-cols-2">
@@ -100,10 +115,16 @@ export function OverviewPage() {
         />
       </div>
       <div className="mb-8 grid gap-3 sm:grid-cols-3">
-        <StatCard label="Tables" value={tablesQuery.data?.length ?? "—"} />
-        <StatCard label="Devices" value={devicesQuery.data?.length ?? "—"} />
         <StatCard
-          label="Categories"
+          label={t("navTables")}
+          value={tablesQuery.data?.length ?? "—"}
+        />
+        <StatCard
+          label={t("navDevices")}
+          value={devicesQuery.data?.length ?? "—"}
+        />
+        <StatCard
+          label={t("categories")}
           value={categoriesQuery.data?.length ?? "—"}
         />
       </div>
@@ -111,87 +132,99 @@ export function OverviewPage() {
       <section className="mb-8">
         <div className="mb-3 flex items-end justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold">Kitchen service</h2>
+            <h2 className="text-lg font-semibold">{t("kitchenService")}</h2>
             <p className="text-sm text-[var(--muted)]">
-              Live ticket pressure for the selected branch
+              {t("kitchenServiceBody")}
             </p>
           </div>
           {!branchId ? (
-            <p className="text-sm text-[var(--muted)]">Select a branch</p>
+            <p className="text-sm text-[var(--muted)]">{t("selectABranch")}</p>
           ) : null}
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          <StatCard label="New" value={kitchen?.new ?? "—"} />
-          <StatCard label="Preparing" value={kitchen?.preparing ?? "—"} />
-          <StatCard label="Ready" value={kitchen?.ready ?? "—"} />
+          <StatCard label={t("kitchenNew")} value={kitchen?.new ?? "—"} />
           <StatCard
-            label="Avg prep"
+            label={t("kitchenPreparing")}
+            value={kitchen?.preparing ?? "—"}
+          />
+          <StatCard label={t("kitchenReady")} value={kitchen?.ready ?? "—"} />
+          <StatCard
+            label={t("kitchenAvgPrep")}
             value={
               kitchen?.averagePrepTimeMinutes != null
-                ? `${kitchen.averagePrepTimeMinutes}m`
+                ? t("minutesUnit", { m: kitchen.averagePrepTimeMinutes })
                 : "—"
             }
           />
           <StatCard
-            label="Oldest ticket"
+            label={t("kitchenOldestTicket")}
             value={
-              kitchen ? `${kitchen.longestWaitingMinutes}m` : "—"
+              kitchen
+                ? t("minutesUnit", { m: kitchen.longestWaitingMinutes })
+                : "—"
             }
             hot={!!kitchen && kitchen.longestWaitingMinutes >= 12}
           />
         </div>
         {kitchen ? (
           <p className="mt-3 text-sm text-[var(--muted)]">
-            {kitchen.open} open · avg wait {kitchen.averageWaitMinutes}m ·{" "}
-            {kitchen.accepted} accepted
+            {t("kitchenOpenSummary", {
+              open: kitchen.open,
+              wait: kitchen.averageWaitMinutes,
+              accepted: kitchen.accepted,
+            })}
           </p>
         ) : null}
       </section>
 
       <section className="mb-8">
         <div className="mb-3">
-          <h2 className="text-lg font-semibold">Latency SLOs</h2>
-          <p className="text-sm text-[var(--muted)]">
-            4h lookback · prep PREPARING→READY · pay created→paid · scrape{" "}
-            <code className="text-xs">/api/metrics</code>
-          </p>
+          <h2 className="text-lg font-semibold">{t("latencySlos")}</h2>
+          <p className="text-sm text-[var(--muted)]">{t("latencySlosBody")}</p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
-            label="Prep p95"
+            label={t("prepP95")}
             value={
               kitchen?.prepP95Seconds != null
-                ? formatSeconds(kitchen.prepP95Seconds)
+                ? formatSeconds(kitchen.prepP95Seconds, t)
                 : "—"
             }
             hot={kitchen?.prepSlo === "breach"}
           />
           <StatCard
-            label="Prep SLO"
-            value={sloLabel(kitchen?.prepSlo)}
+            label={t("prepSlo")}
+            value={sloLabel(kitchen?.prepSlo, t)}
             hot={kitchen?.prepSlo === "breach"}
           />
           <StatCard
-            label="Pay settle p95"
+            label={t("paySettleP95")}
             value={
               kitchen?.paymentSettleP95Seconds != null
-                ? formatSeconds(kitchen.paymentSettleP95Seconds)
+                ? formatSeconds(kitchen.paymentSettleP95Seconds, t)
                 : "—"
             }
             hot={kitchen?.paymentSlo === "breach"}
           />
           <StatCard
-            label="Pay SLO"
-            value={sloLabel(kitchen?.paymentSlo)}
+            label={t("paySlo")}
+            value={sloLabel(kitchen?.paymentSlo, t)}
             hot={kitchen?.paymentSlo === "breach"}
           />
         </div>
         {kitchen ? (
           <p className="mt-3 text-sm text-[var(--muted)]">
-            Thresholds · prep {formatSeconds(kitchen.sloPrepThresholdSeconds)} ·
-            pay {formatSeconds(kitchen.sloPaymentThresholdSeconds)}
+            {t("sloThresholds", {
+              prep: formatSeconds(kitchen.sloPrepThresholdSeconds, t),
+              pay: formatSeconds(kitchen.sloPaymentThresholdSeconds, t),
+            })}
             {kitchen.averagePaymentSettleSeconds != null
-              ? ` · avg settle ${formatSeconds(kitchen.averagePaymentSettleSeconds)}`
+              ? t("sloAvgSettle", {
+                  settle: formatSeconds(
+                    kitchen.averagePaymentSettleSeconds,
+                    t,
+                  ),
+                })
               : ""}
           </p>
         ) : null}
@@ -210,30 +243,36 @@ export function OverviewPage() {
       </div>
 
       <div className="mt-8 rounded-xl border border-[var(--line)] bg-[var(--surface)] p-5">
-        <h2 className="font-semibold">Quick ops loop</h2>
+        <h2 className="font-semibold">{t("quickOps")}</h2>
         <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-[var(--muted)]">
-          <li>Create a table and copy its QR ordering link.</li>
-          <li>Create KITCHEN and WAITER devices; pair tokens on those apps.</li>
-          <li>Keep the menu current so customers can order.</li>
+          <li>{t("quickOps1")}</li>
+          <li>{t("quickOps2")}</li>
+          <li>{t("quickOps3")}</li>
         </ol>
       </div>
     </div>
   );
 }
 
-function formatSeconds(seconds: number): string {
-  if (seconds < 60) return `${Math.round(seconds)}s`;
+function formatSeconds(
+  seconds: number,
+  t: (key: MessageKey, vars?: Record<string, string | number>) => string,
+): string {
+  if (seconds < 60) return t("secondsUnit", { n: Math.round(seconds) });
   const m = Math.floor(seconds / 60);
   const s = Math.round(seconds % 60);
-  return s === 0 ? `${m}m` : `${m}m ${s}s`;
+  return s === 0
+    ? t("minutesUnit", { m })
+    : t("minutesSeconds", { m, s });
 }
 
 function sloLabel(
   status: "ok" | "breach" | "insufficient_data" | undefined,
+  t: (key: MessageKey) => string,
 ): string {
-  if (status === "ok") return "OK";
-  if (status === "breach") return "Breach";
-  if (status === "insufficient_data") return "No data";
+  if (status === "ok") return t("sloOk");
+  if (status === "breach") return t("sloBreach");
+  if (status === "insufficient_data") return t("sloNoData");
   return "—";
 }
 

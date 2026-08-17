@@ -31,7 +31,7 @@ export function PairingQr({ url, label }: { url: string; label?: string }) {
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={dataUrl}
-        alt={label ?? "Pairing QR"}
+        alt={label ?? "QR"}
         width={180}
         height={180}
         className="rounded-md border border-[var(--line)] bg-white p-2"

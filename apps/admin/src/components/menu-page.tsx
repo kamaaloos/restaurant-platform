@@ -15,6 +15,7 @@ import {
   RestaurantSelect,
   useSelectedRestaurant,
 } from "@/hooks/use-selected-restaurant";
+import { useLocale } from "@/lib/i18n/locale-provider";
 
 type ItemFormState = {
   categoryId: string;
@@ -36,6 +37,7 @@ const emptyItemForm = (categoryId = ""): ItemFormState => ({
 
 export function MenuPage() {
   const queryClient = useQueryClient();
+  const { t } = useLocale();
   const {
     restaurantId,
     setRestaurantId,
@@ -98,11 +100,11 @@ export function MenuPage() {
   const saveCategory = useMutation({
     mutationFn: async () => {
       const name = (editingCategory?.name ?? categoryName).trim();
-      if (!name) throw new Error("Category name is required");
+      if (!name) throw new Error(t("categoryNameRequired"));
       if (editingCategory) {
         return adminApi.updateCategory(editingCategory.id, { name });
       }
-      if (!restaurantId) throw new Error("Select a restaurant first.");
+      if (!restaurantId) throw new Error(t("selectRestaurantFirst"));
       return adminApi.createCategory({ name, restaurantId });
     },
     onSuccess: (category) => {
@@ -128,11 +130,11 @@ export function MenuPage() {
 
   const saveItem = useMutation({
     mutationFn: async () => {
-      if (!restaurantId) throw new Error("Select a restaurant first.");
-      if (!itemForm.categoryId) throw new Error("Select a category.");
+      if (!restaurantId) throw new Error(t("selectRestaurantFirst"));
+      if (!itemForm.categoryId) throw new Error(t("selectCategory"));
       const price = Number(itemForm.price);
       if (!Number.isFinite(price) || price < 0.01) {
-        throw new Error("Enter a valid price.");
+        throw new Error(t("enterValidPrice"));
       }
 
       const payload = {
@@ -144,7 +146,7 @@ export function MenuPage() {
         active: itemForm.active,
       };
 
-      if (!payload.name) throw new Error("Item name is required");
+      if (!payload.name) throw new Error(t("itemNameRequired"));
 
       if (editingItemId) {
         return adminApi.updateItem(editingItemId, {
@@ -241,7 +243,7 @@ export function MenuPage() {
   function confirmDeleteCategory(category: MenuCategory) {
     if (
       !window.confirm(
-        `Delete category "${category.name}"? It must have no menu items.`,
+        t("confirmDeleteCategory", { name: category.name }),
       )
     ) {
       return;
@@ -252,7 +254,7 @@ export function MenuPage() {
   function confirmDeleteItem(item: MenuItem) {
     if (
       !window.confirm(
-        `Deactivate "${item.name}"? It will be hidden from the customer menu.`,
+        t("confirmDeactivateItem", { name: item.name }),
       )
     ) {
       return;
@@ -265,8 +267,8 @@ export function MenuPage() {
   return (
     <div>
       <PageHeader
-        title="Menu"
-        subtitle="Manage catalog items. Mark sold out when finished; activate again when available."
+        title={t("menuTitle")}
+        subtitle={t("menuSubtitle")}
       />
 
       <div className="mb-4 max-w-md">
@@ -290,7 +292,7 @@ export function MenuPage() {
           onSubmit={(e) => {
             e.preventDefault();
             if (!restaurantId) {
-              setError("Select a restaurant first.");
+              setError(t("selectRestaurantFirst"));
               return;
             }
             if (editingCategory) {
@@ -302,7 +304,7 @@ export function MenuPage() {
         >
           <div className="flex items-center justify-between gap-2">
             <h2 className="font-semibold">
-              {editingCategory ? "Edit category" : "New category"}
+              {editingCategory ? t("editCategory") : t("newCategory")}
             </h2>
             {editingCategory ? (
               <Button
@@ -314,7 +316,7 @@ export function MenuPage() {
                   setCategoryName("");
                 }}
               >
-                Cancel
+                {t("cancel")}
               </Button>
             ) : null}
           </div>
@@ -330,7 +332,7 @@ export function MenuPage() {
                 setCategoryName(e.target.value);
               }
             }}
-            placeholder="Category name"
+            placeholder={t("categoryNamePlaceholder")}
             className="h-11 w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
             required
           />
@@ -339,10 +341,10 @@ export function MenuPage() {
             disabled={saveCategory.isPending || !restaurantId}
           >
             {saveCategory.isPending
-              ? "Saving…"
+              ? t("saving")
               : editingCategory
-                ? "Update category"
-                : "Add category"}
+                ? t("updateCategory")
+                : t("addCategory")}
           </Button>
         </form>
 
@@ -355,7 +357,7 @@ export function MenuPage() {
         >
           <div className="flex items-center justify-between gap-2">
             <h2 className="font-semibold">
-              {editingItemId ? "Edit item" : "New item"}
+              {editingItemId ? t("editItem") : t("newItem")}
             </h2>
             {editingItemId ? (
               <Button
@@ -364,7 +366,7 @@ export function MenuPage() {
                 size="sm"
                 onClick={cancelEditItem}
               >
-                Cancel
+                {t("cancel")}
               </Button>
             ) : null}
           </div>
@@ -377,7 +379,7 @@ export function MenuPage() {
             required
           >
             <option value="" disabled>
-              Select category
+              {t("selectCategory")}
             </option>
             {categories.map((category) => (
               <option key={category.id} value={category.id}>
@@ -390,7 +392,7 @@ export function MenuPage() {
             onChange={(e) =>
               setItemForm((f) => ({ ...f, name: e.target.value }))
             }
-            placeholder="Item name"
+            placeholder={t("itemNamePlaceholder")}
             className="h-11 w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
             required
           />
@@ -399,7 +401,7 @@ export function MenuPage() {
             onChange={(e) =>
               setItemForm((f) => ({ ...f, description: e.target.value }))
             }
-            placeholder="Description (optional)"
+            placeholder={t("descriptionOptional")}
             className="min-h-24 w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3 py-2"
           />
           <div className="space-y-2">
@@ -426,13 +428,13 @@ export function MenuPage() {
               }}
               className="h-11 w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
             >
-              <option value="">No image</option>
+              <option value="">{t("noImage")}</option>
               {LOCAL_MENU_IMAGE_OPTIONS.map((opt) => (
                 <option key={opt.key} value={opt.key}>
                   {opt.label}
                 </option>
               ))}
-              <option value="__custom__">Custom URL…</option>
+              <option value="__custom__">{t("customUrl")}</option>
             </select>
             {itemForm.imageUrl &&
             !LOCAL_MENU_IMAGE_OPTIONS.some((o) => o.key === itemForm.imageUrl) ? (
@@ -447,7 +449,7 @@ export function MenuPage() {
               />
             ) : null}
             <ImageUploadButton
-              label="Upload menu photo"
+              label={t("uploadMenuPhoto")}
               onUploaded={(url) =>
                 setItemForm((f) => ({ ...f, imageUrl: url }))
               }
@@ -469,7 +471,7 @@ export function MenuPage() {
             onChange={(e) =>
               setItemForm((f) => ({ ...f, price: e.target.value }))
             }
-            placeholder="Price"
+            placeholder={t("pricePlaceholder")}
             className="h-11 w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
             required
           />
@@ -481,7 +483,7 @@ export function MenuPage() {
                 setItemForm((f) => ({ ...f, active: e.target.checked }))
               }
             />
-            Active on customer menu
+            {t("activeOnCustomerMenu")}
           </label>
           <Button
             type="submit"
@@ -490,10 +492,10 @@ export function MenuPage() {
             }
           >
             {saveItem.isPending
-              ? "Saving…"
+              ? t("saving")
               : editingItemId
-                ? "Update item"
-                : "Add item"}
+                ? t("updateItem")
+                : t("addItem")}
           </Button>
         </form>
       </div>
@@ -501,7 +503,7 @@ export function MenuPage() {
       <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
         <aside className="rounded-xl border border-[var(--line)] bg-[var(--surface)] p-3">
           <p className="mb-2 px-2 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-            Categories
+            {t("categories")}
           </p>
           <div className="space-y-1">
             <button
@@ -513,7 +515,7 @@ export function MenuPage() {
                   : "hover:bg-[var(--surface-2)]"
               }`}
             >
-              All items
+              {t("allItems")}
             </button>
             {categories.map((category) => (
               <div
@@ -545,7 +547,7 @@ export function MenuPage() {
                       setCategoryName(category.name);
                     }}
                   >
-                    Edit
+                    {t("edit")}
                   </Button>
                   <Button
                     type="button"
@@ -554,7 +556,7 @@ export function MenuPage() {
                     disabled={deleteCategory.isPending}
                     onClick={() => confirmDeleteCategory(category)}
                   >
-                    Delete
+                    {t("delete")}
                   </Button>
                 </div>
               </div>
@@ -564,15 +566,15 @@ export function MenuPage() {
 
         <section className="rounded-xl border border-[var(--line)] bg-[var(--surface)]">
           {!restaurantId || restaurantsLoading ? (
-            <p className="p-4 text-[var(--muted)]">Loading restaurant…</p>
+            <p className="p-4 text-[var(--muted)]">{t("loadingRestaurant")}</p>
           ) : itemsQuery.isLoading ? (
-            <p className="p-4 text-[var(--muted)]">Loading items…</p>
+            <p className="p-4 text-[var(--muted)]">{t("loadingItems")}</p>
           ) : itemsQuery.isError ? (
             <p className="p-4 text-[var(--danger)]">
               {(itemsQuery.error as Error).message}
             </p>
           ) : items.length === 0 ? (
-            <p className="p-4 text-[var(--muted)]">No items yet.</p>
+            <p className="p-4 text-[var(--muted)]">{t("noItemsYet")}</p>
           ) : (
             <ul className="divide-y divide-[var(--line)]">
               {items.map((item) => (
@@ -590,7 +592,7 @@ export function MenuPage() {
                       />
                     ) : (
                       <div className="grid h-14 w-14 shrink-0 place-items-center rounded-lg bg-[var(--surface-2)] text-xs text-[var(--muted)]">
-                        No img
+                        {t("noImg")}
                       </div>
                     )}
                     <div className="min-w-0">
@@ -601,9 +603,11 @@ export function MenuPage() {
                         </p>
                       ) : null}
                       <p className="text-sm text-[var(--muted)]">
-                        {item.active ? "On menu" : "Hidden"} ·{" "}
-                        {item.available !== false ? "Available" : "Sold out"} ·{" "}
-                        {Number(item.price).toFixed(2)}
+                        {item.active ? t("onMenu") : t("hidden")} ·{" "}
+                        {item.available !== false
+                          ? t("available")
+                          : t("soldOut")}{" "}
+                        · {Number(item.price).toFixed(2)}
                       </p>
                     </div>
                   </div>
@@ -614,7 +618,7 @@ export function MenuPage() {
                       variant="secondary"
                       onClick={() => startEditItem(item)}
                     >
-                      Edit
+                      {t("edit")}
                     </Button>
                     <Button
                       type="button"
@@ -628,8 +632,8 @@ export function MenuPage() {
                       onClick={() => toggleItemAvailable.mutate(item)}
                     >
                       {item.available !== false
-                        ? "Mark sold out"
-                        : "Mark available"}
+                        ? t("markSoldOut")
+                        : t("markAvailable")}
                     </Button>
                     <Button
                       type="button"
@@ -638,7 +642,7 @@ export function MenuPage() {
                       disabled={toggleItemActive.isPending}
                       onClick={() => toggleItemActive.mutate(item)}
                     >
-                      {item.active ? "Hide from menu" : "Show on menu"}
+                      {item.active ? t("hideFromMenu") : t("showOnMenu")}
                     </Button>
                     <Button
                       type="button"
@@ -647,7 +651,7 @@ export function MenuPage() {
                       disabled={deleteItem.isPending}
                       onClick={() => confirmDeleteItem(item)}
                     >
-                      Delete
+                      {t("delete")}
                     </Button>
                   </div>
                 </li>

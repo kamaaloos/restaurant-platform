@@ -15,6 +15,8 @@ import {
   RestaurantSelect,
   useSelectedRestaurant,
 } from "@/hooks/use-selected-restaurant";
+import { useLocale } from "@/lib/i18n/locale-provider";
+import { TABLE_STATUS_MESSAGE } from "@/lib/i18n/labels";
 
 const CUSTOMER_URL =
   process.env.NEXT_PUBLIC_CUSTOMER_URL ?? "http://localhost:3001";
@@ -29,6 +31,7 @@ function escapeHtml(value: string) {
 
 export function TablesPage() {
   const queryClient = useQueryClient();
+  const { t, locale, dir } = useLocale();
   const {
     restaurantId,
     setRestaurantId,
@@ -119,7 +122,7 @@ export function TablesPage() {
   });
 
   const restaurantName =
-    restaurants.find((r) => r.id === restaurantId)?.name ?? "Restaurant";
+    restaurants.find((r) => r.id === restaurantId)?.name ?? t("restaurant");
   const branchName = branches.find((b) => b.id === branchId)?.name ?? "";
 
   async function copyQrLink(token: string) {
@@ -143,9 +146,9 @@ export function TablesPage() {
     );
     if (!w) return;
     w.document.write(`<!DOCTYPE html>
-<html>
+<html lang="${escapeHtml(locale)}" dir="${dir}">
 <head>
-  <title>Table ${escapeHtml(tableNumber)} QR</title>
+  <title>${escapeHtml(t("qrPrintTitle", { number: tableNumber }))}</title>
   <style>
     body { font-family: Georgia, serif; text-align: center; padding: 32px; color: #111; }
     h1 { font-size: 28px; margin: 0 0 4px; }
@@ -156,11 +159,11 @@ export function TablesPage() {
   </style>
 </head>
 <body>
-  <h1>Table ${escapeHtml(tableNumber)}</h1>
+  <h1>${escapeHtml(t("colTable"))} ${escapeHtml(tableNumber)}</h1>
   <p>${escapeHtml(restaurantName)}${branchName ? ` · ${escapeHtml(branchName)}` : ""}</p>
-  <img src="${qr}" alt="Table ${escapeHtml(tableNumber)} QR" />
-  <p class="hint">Scan to order</p>
-  <button onclick="window.print()">Print</button>
+  <img src="${qr}" alt="${escapeHtml(t("qrPrintTitle", { number: tableNumber }))}" />
+  <p class="hint">${escapeHtml(t("printScanToOrder"))}</p>
+  <button onclick="window.print()">${escapeHtml(t("printButton"))}</button>
 </body>
 </html>`);
     w.document.close();
@@ -169,8 +172,8 @@ export function TablesPage() {
   return (
     <div>
       <PageHeader
-        title="Tables"
-        subtitle="Add, edit, or remove floor tables and copy customer QR ordering links."
+        title={t("tablesTitle")}
+        subtitle={t("tablesSubtitle")}
       />
 
       <div className="mb-4 grid max-w-3xl gap-3 md:grid-cols-2">
@@ -193,7 +196,7 @@ export function TablesPage() {
         onSubmit={(e) => {
           e.preventDefault();
           if (!branchId) {
-            setError("Select a branch first.");
+            setError(t("selectBranchFirst"));
             return;
           }
           if (editingId) update.mutate();
@@ -203,7 +206,7 @@ export function TablesPage() {
         <input
           value={number}
           onChange={(e) => setNumber(e.target.value)}
-          placeholder="Table number (e.g. A3)"
+          placeholder={t("tableNumberPlaceholder")}
           className="h-11 rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
           required
         />
@@ -221,15 +224,15 @@ export function TablesPage() {
         >
           {editingId
             ? update.isPending
-              ? "Saving…"
-              : "Save table"
+              ? t("saving")
+              : t("saveTable")
             : create.isPending
-              ? "Creating…"
-              : "Add table"}
+              ? t("creating")
+              : t("addTable")}
         </Button>
         {editingId ? (
           <Button type="button" variant="outline" onClick={cancelEdit}>
-            Cancel
+            {t("cancel")}
           </Button>
         ) : (
           <span className="hidden md:block" />
@@ -240,9 +243,9 @@ export function TablesPage() {
       </form>
 
       {!branchId && branchesLoading ? (
-        <p className="text-[var(--muted)]">Loading branches…</p>
+        <p className="text-[var(--muted)]">{t("loadingBranches")}</p>
       ) : tablesQuery.isLoading ? (
-        <p className="text-[var(--muted)]">Loading tables…</p>
+        <p className="text-[var(--muted)]">{t("loadingTables")}</p>
       ) : tablesQuery.isError ? (
         <p className="text-[var(--danger)]">
           {(tablesQuery.error as Error).message}
@@ -252,12 +255,12 @@ export function TablesPage() {
           <table className="w-full min-w-[860px] text-left text-sm">
             <thead className="bg-[var(--surface-2)] text-[var(--muted)]">
               <tr>
-                <th className="px-4 py-3 font-medium">Table</th>
-                <th className="px-4 py-3 font-medium">Seats</th>
-                <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">QR token</th>
-                <th className="px-4 py-3 font-medium">Manage</th>
-                <th className="px-4 py-3 font-medium">QR</th>
+                <th className="px-4 py-3 font-medium">{t("colTable")}</th>
+                <th className="px-4 py-3 font-medium">{t("colSeats")}</th>
+                <th className="px-4 py-3 font-medium">{t("status")}</th>
+                <th className="px-4 py-3 font-medium">{t("colQrToken")}</th>
+                <th className="px-4 py-3 font-medium">{t("colManage")}</th>
+                <th className="px-4 py-3 font-medium">{t("colQr")}</th>
               </tr>
             </thead>
             <tbody>
@@ -268,7 +271,11 @@ export function TablesPage() {
                 >
                   <td className="px-4 py-3 font-semibold">{table.number}</td>
                   <td className="px-4 py-3">{table.seats}</td>
-                  <td className="px-4 py-3">{table.status}</td>
+                  <td className="px-4 py-3">
+                    {TABLE_STATUS_MESSAGE[table.status]
+                      ? t(TABLE_STATUS_MESSAGE[table.status])
+                      : table.status}
+                  </td>
                   <td className="px-4 py-3 font-mono text-xs">
                     {shortId(table.qrToken)}
                   </td>
@@ -279,7 +286,7 @@ export function TablesPage() {
                         variant="secondary"
                         onClick={() => startEdit(table)}
                       >
-                        Edit
+                        {t("edit")}
                       </Button>
                       <Button
                         size="sm"
@@ -287,20 +294,20 @@ export function TablesPage() {
                         disabled={remove.isPending || table.status === "OCCUPIED"}
                         title={
                           table.status === "OCCUPIED"
-                            ? "Occupied tables cannot be deleted"
-                            : "Delete table"
+                            ? t("occupiedCannotDelete")
+                            : t("deleteTable")
                         }
                         onClick={() => {
                           if (
                             window.confirm(
-                              `Delete table ${table.number}? Occupied tables cannot be deleted.`,
+                              t("confirmDeleteTable", { number: table.number }),
                             )
                           ) {
                             remove.mutate(table.id);
                           }
                         }}
                       >
-                        Delete
+                        {t("delete")}
                       </Button>
                     </div>
                   </td>
@@ -314,8 +321,8 @@ export function TablesPage() {
                             onClick={() => void copyQrLink(table.qrToken!)}
                           >
                             {copied === table.qrToken
-                              ? "Copied"
-                              : "Copy QR link"}
+                              ? t("copied")
+                              : t("copyQrLink")}
                           </Button>
                           <Button
                             size="sm"
@@ -324,7 +331,7 @@ export function TablesPage() {
                               void printTableQr(table.number, table.qrToken!)
                             }
                           >
-                            Print QR
+                            {t("printQr")}
                           </Button>
                         </>
                       ) : null}
@@ -335,14 +342,14 @@ export function TablesPage() {
                         onClick={() => {
                           if (
                             window.confirm(
-                              `Rotate QR for table ${table.number}? Old links will stop working.`,
+                              t("confirmRotateQr", { number: table.number }),
                             )
                           ) {
                             rotateQr.mutate(table.id);
                           }
                         }}
                       >
-                        Rotate QR
+                        {t("rotateQr")}
                       </Button>
                     </div>
                   </td>

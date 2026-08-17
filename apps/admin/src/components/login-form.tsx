@@ -6,6 +6,7 @@ import { Eye, EyeOff, UtensilsCrossed } from "lucide-react";
 import { adminApi } from "@/lib/api";
 import { clearSession, getAccessToken, setSession } from "@/lib/session";
 import { Button } from "@/components/ui/button";
+import { useLocale } from "@/lib/i18n/locale-provider";
 
 const ADMIN_ROLES = new Set([
   "PLATFORM_ADMIN",
@@ -15,6 +16,7 @@ const ADMIN_ROLES = new Set([
 
 export function LoginForm() {
   const router = useRouter();
+  const { t } = useLocale();
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
@@ -35,15 +37,15 @@ export function LoginForm() {
         clearSession();
         setError(
           result.user.role === "CASHIER"
-            ? "Cashiers use the Cashier till at http://localhost:3005 — not the Admin console."
-            : `Role ${result.user.role} cannot access the Admin console.`,
+            ? t("loginCashierHint")
+            : t("loginRoleDenied", { role: result.user.role }),
         );
         return;
       }
       setSession(result.access_token, result.user);
       router.replace("/");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : t("loginFailed"));
     } finally {
       setPending(false);
     }
@@ -52,7 +54,9 @@ export function LoginForm() {
   return (
     <form onSubmit={onSubmit} className="w-full space-y-5">
       <label className="block space-y-1.5">
-        <span className="text-sm font-medium text-[var(--ink)]">Email</span>
+        <span className="text-sm font-medium text-[var(--ink)]">
+          {t("loginEmail")}
+        </span>
         <input
           type="email"
           value={email}
@@ -65,21 +69,25 @@ export function LoginForm() {
       </label>
 
       <label className="block space-y-1.5">
-        <span className="text-sm font-medium text-[var(--ink)]">Password</span>
+        <span className="text-sm font-medium text-[var(--ink)]">
+          {t("loginPassword")}
+        </span>
         <div className="relative">
           <input
             type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="h-12 w-full rounded-xl border border-[var(--line)] bg-white px-3.5 pr-11 text-[var(--ink)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/25"
+            className="h-12 w-full rounded-xl border border-[var(--line)] bg-white px-3.5 pe-11 text-[var(--ink)] outline-none transition focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/25"
             required
             autoComplete="current-password"
           />
           <button
             type="button"
             onClick={() => setShowPassword((v) => !v)}
-            className="absolute inset-y-0 right-0 grid w-11 place-items-center text-[var(--muted)] transition hover:text-[var(--ink)]"
-            aria-label={showPassword ? "Hide password" : "Show password"}
+            className="absolute inset-y-0 end-0 grid w-11 place-items-center text-[var(--muted)] transition hover:text-[var(--ink)]"
+            aria-label={
+              showPassword ? t("loginHidePassword") : t("loginShowPassword")
+            }
           >
             {showPassword ? (
               <EyeOff className="h-4 w-4" />
@@ -102,7 +110,7 @@ export function LoginForm() {
         className="h-12 w-full rounded-xl text-base"
         disabled={pending}
       >
-        {pending ? "Signing in…" : "Sign in"}
+        {pending ? t("loginSigningIn") : t("loginSubmit")}
       </Button>
     </form>
   );

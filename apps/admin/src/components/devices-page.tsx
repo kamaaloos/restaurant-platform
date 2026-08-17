@@ -15,6 +15,8 @@ import {
   RestaurantSelect,
   useSelectedRestaurant,
 } from "@/hooks/use-selected-restaurant";
+import { useLocale } from "@/lib/i18n/locale-provider";
+import { DEVICE_TYPE_MESSAGE } from "@/lib/i18n/labels";
 
 const KITCHEN_URL =
   process.env.NEXT_PUBLIC_KITCHEN_URL ?? "http://localhost:3002";
@@ -27,6 +29,7 @@ const EXPIRY_WARN_MS = 2 * 24 * 60 * 60 * 1000;
 
 export function DevicesPage() {
   const queryClient = useQueryClient();
+  const { t, locale } = useLocale();
   const {
     restaurantId,
     setRestaurantId,
@@ -131,12 +134,13 @@ export function DevicesPage() {
   }
 
   function expiryInfo(expiresAt: string | null) {
-    if (!expiresAt) return { label: "No expiry set", urgent: false, expired: false };
+    if (!expiresAt) return { label: t("noExpirySet"), urgent: false, expired: false };
     const ms = new Date(expiresAt).getTime() - Date.now();
-    const label = `Expires ${new Date(expiresAt).toLocaleDateString()}`;
+    const date = new Date(expiresAt).toLocaleDateString(locale);
+    const label = t("expiresOn", { date });
     if (ms <= 0)
       return {
-        label: `Expired ${new Date(expiresAt).toLocaleDateString()}`,
+        label: t("expiredOn", { date }),
         urgent: true,
         expired: true,
       };
@@ -147,8 +151,8 @@ export function DevicesPage() {
   return (
     <div>
       <PageHeader
-        title="Devices"
-        subtitle="Pair displays with a short-lived QR code. Long-lived tokens are shown only when created or rotated."
+        title={t("devicesTitle")}
+        subtitle={t("devicesSubtitle")}
       />
 
       <div className="mb-4 grid max-w-3xl gap-3 md:grid-cols-2">
@@ -171,7 +175,7 @@ export function DevicesPage() {
         onSubmit={(e) => {
           e.preventDefault();
           if (!branchId) {
-            setError("Select a branch first.");
+            setError(t("selectBranchFirst"));
             return;
           }
           create.mutate();
@@ -180,7 +184,7 @@ export function DevicesPage() {
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Device name (e.g. Kitchen TV 1)"
+          placeholder={t("deviceNamePlaceholder")}
           className="h-11 rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
           required
         />
@@ -191,12 +195,14 @@ export function DevicesPage() {
         >
           {DEVICE_TYPES.map((type) => (
             <option key={type} value={type}>
-              {type}
+              {DEVICE_TYPE_MESSAGE[type]
+                ? t(DEVICE_TYPE_MESSAGE[type])
+                : type}
             </option>
           ))}
         </select>
         <Button type="submit" disabled={create.isPending || !branchId}>
-          {create.isPending ? "Creating…" : "Create device"}
+          {create.isPending ? t("creating") : t("createDevice")}
         </Button>
         {error ? (
           <p className="md:col-span-3 text-sm text-[var(--danger)]">{error}</p>
@@ -204,7 +210,7 @@ export function DevicesPage() {
       </form>
 
       {devicesQuery.isLoading ? (
-        <p className="text-[var(--muted)]">Loading devices…</p>
+        <p className="text-[var(--muted)]">{t("loadingDevices")}</p>
       ) : devicesQuery.isError ? (
         <p className="text-[var(--danger)]">
           {(devicesQuery.error as Error).message}
@@ -232,9 +238,16 @@ export function DevicesPage() {
                   <div>
                     <h2 className="text-lg font-semibold">{device.name}</h2>
                     <p className="text-sm text-[var(--muted)]">
-                      {device.deviceType} · {device.status}
+                      {DEVICE_TYPE_MESSAGE[device.deviceType]
+                        ? t(DEVICE_TYPE_MESSAGE[device.deviceType])
+                        : device.deviceType}{" "}
+                      · {device.status}
                       {device.lastSeen
-                        ? ` · last seen ${new Date(device.lastSeen).toLocaleString()}`
+                        ? ` · ${t("lastSeen", {
+                            when: new Date(device.lastSeen).toLocaleString(
+                              locale,
+                            ),
+                          })}`
                         : ""}
                     </p>
                     <p
@@ -245,7 +258,7 @@ export function DevicesPage() {
                       }`}
                     >
                       {expiry.label}
-                      {expiry.urgent ? " — rotate soon" : ""}
+                      {expiry.urgent ? t("rotateSoon") : ""}
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -255,7 +268,7 @@ export function DevicesPage() {
                       disabled={issueCode.isPending}
                       onClick={() => issueCode.mutate(device.id)}
                     >
-                      {codeActive ? "Refresh code" : "Issue pairing code"}
+                      {codeActive ? t("refreshCode") : t("issuePairingCode")}
                     </Button>
                     <Button
                       size="sm"
@@ -263,7 +276,7 @@ export function DevicesPage() {
                       disabled={rotate.isPending}
                       onClick={() => rotate.mutate(device.id)}
                     >
-                      {expiry.urgent ? "Rotate now" : "Rotate token"}
+                      {expiry.urgent ? t("rotateNow") : t("rotateToken")}
                     </Button>
                     <Button
                       size="sm"
@@ -272,20 +285,20 @@ export function DevicesPage() {
                       onClick={() => {
                         if (
                           window.confirm(
-                            `Revoke ${device.name}? The tablet must be re-paired after rotate.`,
+                            t("confirmRevokeDevice", { name: device.name }),
                           )
                         ) {
                           revoke.mutate(device.id);
                         }
                       }}
                     >
-                      Revoke
+                      {t("revoke")}
                     </Button>
                   </div>
                 </div>
 
                 <p className="mt-3 break-all rounded-md bg-[var(--paper)] px-3 py-2 font-mono text-xs text-[var(--muted)]">
-                  Token preview {device.tokenPreview}…
+                  {t("tokenPreview")} {device.tokenPreview}…
                   {revealed ? (
                     <>
                       {" "}
@@ -295,37 +308,40 @@ export function DevicesPage() {
                         className="ml-3 text-[var(--accent)] underline"
                         onClick={() => void copyText(revealed)}
                       >
-                        {copied === revealed ? "Copied" : "Copy token"}
+                        {copied === revealed ? t("copied") : t("copyToken")}
                       </button>
                     </>
                   ) : (
-                    <span className="ml-2">
-                      (full token shown only after create/rotate)
-                    </span>
+                    <span className="ml-2">{t("fullTokenHint")}</span>
                   )}
                 </p>
 
                 {codeActive && device.pairingCode ? (
                   <p className="mt-2 break-all rounded-md bg-[var(--paper)] px-3 py-2 font-mono text-sm">
-                    Pairing code{" "}
+                    {t("pairingCode")}{" "}
                     <span className="font-semibold tracking-widest">
                       {device.pairingCode}
                     </span>
                     <span className="ml-2 text-xs text-[var(--muted)]">
-                      expires{" "}
-                      {new Date(device.pairingCodeExpiresAt!).toLocaleTimeString()}
+                      {t("expiresAt", {
+                        time: new Date(
+                          device.pairingCodeExpiresAt!,
+                        ).toLocaleTimeString(locale),
+                      })}
                     </span>
                     <button
                       type="button"
                       className="ml-3 text-[var(--accent)] underline"
                       onClick={() => void copyText(device.pairingCode!)}
                     >
-                      {copied === device.pairingCode ? "Copied" : "Copy code"}
+                      {copied === device.pairingCode
+                        ? t("copied")
+                        : t("copyCode")}
                     </button>
                   </p>
                 ) : (
                   <p className="mt-2 text-sm text-[var(--muted)]">
-                    No active pairing code — issue one to show a QR.
+                    {t("noActivePairingCode")}
                   </p>
                 )}
 
@@ -334,20 +350,11 @@ export function DevicesPage() {
                     {pair ? (
                       <PairingQr
                         url={pair}
-                        label={`${device.name} pairing`}
+                        label={t("pairingQrAlt", { name: device.name })}
                       />
                     ) : null}
                     <p className="text-sm text-[var(--muted)]">
-                      Scan with the tablet camera, or open{" "}
-                      <a
-                        className="font-medium text-[var(--accent)] underline"
-                        href={hint}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {hint}
-                      </a>{" "}
-                      and paste the pairing code (one-time, ~10 minutes).
+                      {t("scanTabletHint", { url: hint })}
                     </p>
                   </div>
                 ) : null}

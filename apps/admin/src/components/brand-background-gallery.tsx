@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { ImageUploadButton } from "@/components/image-upload-button";
+import { useLocale } from "@/lib/i18n/locale-provider";
 import {
   BRAND_BACKGROUND_PRESETS,
   brandBackgroundPreviewSrc,
@@ -20,6 +21,7 @@ export function BrandBackgroundGallery({
   onChange: (urls: string[]) => void;
   inputClass: string;
 }) {
+  const { t } = useLocale();
   const [customUrl, setCustomUrl] = React.useState("");
 
   function addUrl(raw: string) {
@@ -46,11 +48,10 @@ export function BrandBackgroundGallery({
     <div className="md:col-span-2 space-y-3">
       <div>
         <p className="text-sm font-medium text-[var(--muted)]">
-          Menu background reel
+          {t("menuBackgroundReel")}
         </p>
         <p className="mt-1 text-xs text-[var(--muted)]">
-          Add up to 12 images. Order = cinematic crossfade order. Empty = default
-          scenes.
+          {t("menuBackgroundReelBody")}
         </p>
       </div>
 
@@ -103,7 +104,7 @@ export function BrandBackgroundGallery({
                     variant="outline"
                     onClick={() => removeAt(index)}
                   >
-                    Remove
+                    {t("remove")}
                   </Button>
                 </div>
               </li>
@@ -111,7 +112,7 @@ export function BrandBackgroundGallery({
           })}
         </ul>
       ) : (
-        <p className="text-sm text-[var(--muted)]">No custom backgrounds yet.</p>
+        <p className="text-sm text-[var(--muted)]">{t("noCustomBackgrounds")}</p>
       )}
 
       <div className="flex flex-wrap gap-2">
@@ -136,13 +137,13 @@ export function BrandBackgroundGallery({
 
       <div className="flex flex-wrap items-center gap-2">
         <ImageUploadButton
-          label="Upload background"
+          label={t("uploadBackground")}
           onUploaded={(url) => addUrl(url)}
         />
         <input
           value={customUrl}
           onChange={(e) => setCustomUrl(e.target.value)}
-          placeholder="Or paste image URL"
+          placeholder={t("pasteImageUrl")}
           className={`${inputClass} min-w-[12rem] flex-1`}
         />
         <Button
@@ -155,7 +156,7 @@ export function BrandBackgroundGallery({
             setCustomUrl("");
           }}
         >
-          Add URL
+          {t("addUrl")}
         </Button>
       </div>
     </div>

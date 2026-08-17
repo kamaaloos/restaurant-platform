@@ -21,6 +21,12 @@ import {
 } from "@/lib/session";
 import type { AuthUser, Restaurant } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import {
+  LanguageSwitcher,
+  useLocale,
+} from "@/lib/i18n/locale-provider";
+import { ROLE_MESSAGE } from "@/lib/i18n/labels";
+import type { MessageKey } from "@/lib/i18n/messages";
 
 const ADMIN_ROLES = new Set([
   "PLATFORM_ADMIN",
@@ -28,22 +34,16 @@ const ADMIN_ROLES = new Set([
   "BRANCH_MANAGER",
 ]);
 
-const ROLE_LABEL: Record<string, string> = {
-  PLATFORM_ADMIN: "Platform admin",
-  RESTAURANT_OWNER: "Restaurant owner",
-  BRANCH_MANAGER: "Branch manager",
-};
-
-function navForRole(role: string) {
+function navForRole(role: string, t: (key: MessageKey) => string) {
   const locationsLabel =
-    role === "PLATFORM_ADMIN" ? "Restaurants" : "Branches";
+    role === "PLATFORM_ADMIN" ? t("navRestaurants") : t("navBranches");
   return [
-    { href: "/", label: "Overview", icon: LayoutDashboard },
+    { href: "/", label: t("navOverview"), icon: LayoutDashboard },
     { href: "/restaurants", label: locationsLabel, icon: Building2 },
-    { href: "/tables", label: "Tables", icon: UtensilsCrossed },
-    { href: "/devices", label: "Devices", icon: MonitorSmartphone },
-    { href: "/menu", label: "Menu", icon: BookOpen },
-    { href: "/users", label: "Users", icon: Users },
+    { href: "/tables", label: t("navTables"), icon: UtensilsCrossed },
+    { href: "/devices", label: t("navDevices"), icon: MonitorSmartphone },
+    { href: "/menu", label: t("navMenu"), icon: BookOpen },
+    { href: "/users", label: t("navUsers"), icon: Users },
   ];
 }
 
@@ -69,14 +69,19 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   }, [router]);
 
   if (!ready || !user) {
-    return (
-      <div className="grid flex-1 place-items-center text-[var(--muted)]">
-        Checking session…
-      </div>
-    );
+    return <CheckingSession />;
   }
 
   return <AdminShell user={user}>{children}</AdminShell>;
+}
+
+function CheckingSession() {
+  const { t } = useLocale();
+  return (
+    <div className="grid flex-1 place-items-center text-[var(--muted)]">
+      {t("checkingSession")}
+    </div>
+  );
 }
 
 function restaurantFromUser(user: AuthUser): Restaurant | undefined {
@@ -101,7 +106,11 @@ function AdminShell({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const nav = navForRole(user.role);
+  const { t } = useLocale();
+  const nav = navForRole(user.role, t);
+  const roleLabel = ROLE_MESSAGE[user.role]
+    ? t(ROLE_MESSAGE[user.role])
+    : user.role;
   const { restaurants, restaurantId } = useSelectedRestaurant();
 
   const restaurant =
@@ -156,10 +165,10 @@ function AdminShell({
           )}
           <div className="min-w-0 w-full">
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-white/65">
-              Ops console
+              {t("opsConsole")}
             </p>
             <h1 className="mt-1 font-[family-name:var(--font-display)] text-[1.35rem] leading-snug tracking-tight text-white">
-              {restaurant?.name ?? "Admin"}
+              {restaurant?.name ?? t("adminFallback")}
             </h1>
           </div>
         </div>
@@ -190,19 +199,18 @@ function AdminShell({
         </nav>
 
         <div className="hidden border-t border-[#e4d98a] px-4 py-4 md:block">
+          <LanguageSwitcher className="mb-3 w-full" />
           <p className="truncate text-sm font-medium text-[#1b2a4a]">
             {user.email}
           </p>
-          <p className="mt-0.5 text-xs text-[#5c5840]">
-            {ROLE_LABEL[user.role] ?? user.role}
-          </p>
+          <p className="mt-0.5 text-xs text-[#5c5840]">{roleLabel}</p>
           <button
             type="button"
             onClick={logout}
             className="mt-3 inline-flex h-9 w-full items-center justify-center gap-2 rounded-xl border border-[#1b2a4a]/20 bg-white text-sm font-medium text-[#1b2a4a] transition hover:bg-[#efe6a8]"
           >
             <LogOut className="h-3.5 w-3.5" strokeWidth={1.75} />
-            Sign out
+            {t("signOut")}
           </button>
         </div>
       </aside>
@@ -222,19 +230,20 @@ function AdminShell({
               <p className="text-sm font-semibold leading-tight text-[var(--ink)]">
                 {restaurant?.name ?? user.email}
               </p>
-              <p className="text-xs text-[var(--muted)]">
-                {ROLE_LABEL[user.role] ?? user.role}
-              </p>
+              <p className="text-xs text-[var(--muted)]">{roleLabel}</p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={logout}
-            className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-[var(--line)] bg-white px-3 text-sm font-medium"
-          >
-            <LogOut className="h-3.5 w-3.5" />
-            Sign out
-          </button>
+          <div className="flex shrink-0 items-center gap-2">
+            <LanguageSwitcher className="w-auto [&_select]:min-w-[7.5rem]" />
+            <button
+              type="button"
+              onClick={logout}
+              className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-[var(--line)] bg-white px-3 text-sm font-medium"
+            >
+              <LogOut className="h-3.5 w-3.5" />
+              {t("signOut")}
+            </button>
+          </div>
         </header>
         <main className="relative z-10 flex-1 p-5 md:p-8">{children}</main>
       </div>

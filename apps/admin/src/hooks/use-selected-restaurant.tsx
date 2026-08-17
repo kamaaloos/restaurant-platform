@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { adminApi } from "@/lib/api";
+import { useLocale } from "@/lib/i18n/locale-provider";
 
 const STORAGE_KEY = "admin.selectedRestaurantId";
 
@@ -60,10 +61,11 @@ export function RestaurantSelect({
   restaurants: Array<{ id: string; name: string }>;
   disabled?: boolean;
 }) {
+  const { t } = useLocale();
   return (
     <label className="block space-y-1.5">
       <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
-        Restaurant
+        {t("restaurant")}
       </span>
       <select
         value={restaurantId}
@@ -73,7 +75,7 @@ export function RestaurantSelect({
         required
       >
         {restaurants.length === 0 ? (
-          <option value="">No restaurants available</option>
+            <option value="">{t("noRestaurants")}</option>
         ) : (
           restaurants.map((restaurant) => (
             <option key={restaurant.id} value={restaurant.id}>

@@ -3,14 +3,17 @@
 import * as React from "react";
 import { adminApi } from "@/lib/api";
 import { Button } from "@/components/ui/button";
+import { useLocale } from "@/lib/i18n/locale-provider";
 
 export function ImageUploadButton({
   onUploaded,
-  label = "Upload image",
+  label,
 }: {
   onUploaded: (url: string) => void;
   label?: string;
 }) {
+  const { t } = useLocale();
+  const buttonLabel = label ?? t("uploadImage");
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [busy, setBusy] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -23,7 +26,7 @@ export function ImageUploadButton({
       const result = await adminApi.uploadImage(file);
       onUploaded(result.url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed");
+      setError(err instanceof Error ? err.message : t("uploadFailed"));
     } finally {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = "";
@@ -46,7 +49,7 @@ export function ImageUploadButton({
         disabled={busy}
         onClick={() => inputRef.current?.click()}
       >
-        {busy ? "Uploading…" : label}
+        {busy ? t("uploading") : buttonLabel}
       </Button>
       {error ? <p className="text-xs text-[var(--danger)]">{error}</p> : null}
     </div>

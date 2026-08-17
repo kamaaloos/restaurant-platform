@@ -14,6 +14,8 @@ import {
   RestaurantSelect,
   useSelectedRestaurant,
 } from "@/hooks/use-selected-restaurant";
+import { useLocale } from "@/lib/i18n/locale-provider";
+import { ROLE_MESSAGE } from "@/lib/i18n/labels";
 
 const ROLE_OPTIONS: Record<string, string[]> = {
   PLATFORM_ADMIN: [
@@ -49,6 +51,7 @@ const emptyForm = (role: string): UserForm => ({
 
 export function UsersPage() {
   const queryClient = useQueryClient();
+  const { t } = useLocale();
   const currentUser = getStoredUser();
   const isPlatformAdmin = currentUser?.role === "PLATFORM_ADMIN";
   const isOwner = currentUser?.role === "RESTAURANT_OWNER";
@@ -145,7 +148,7 @@ export function UsersPage() {
       }
 
       if (!form.password.trim()) {
-        throw new Error("Password is required for new users.");
+        throw new Error(t("passwordRequired"));
       }
 
       return adminApi.createUser({
@@ -157,7 +160,9 @@ export function UsersPage() {
       const wasEdit = !!editingId;
       resetForm();
       setSuccess(
-        wasEdit ? `Updated ${user.email}.` : `Created ${user.email}.`,
+        wasEdit
+          ? t("userUpdated", { email: user.email })
+          : t("userCreated", { email: user.email }),
       );
       void queryClient.invalidateQueries({ queryKey: ["admin-users"] });
     },
@@ -171,7 +176,7 @@ export function UsersPage() {
     mutationFn: (id: string) => adminApi.deleteUser(id),
     onSuccess: (user) => {
       if (editingId === user.id) resetForm();
-      setSuccess(`Deactivated ${user.email}.`);
+      setSuccess(t("userDeactivated", { email: user.email }));
       void queryClient.invalidateQueries({ queryKey: ["admin-users"] });
     },
     onError: (err: Error) => {
@@ -198,8 +203,8 @@ export function UsersPage() {
     return (
       <div>
         <PageHeader
-          title="Users"
-          subtitle="You do not have permission to manage staff accounts."
+          title={t("usersTitle")}
+          subtitle={t("usersNoPermission")}
         />
       </div>
     );
@@ -209,8 +214,8 @@ export function UsersPage() {
     return (
       <div>
         <PageHeader
-          title="Users"
-          subtitle="Your account is not assigned to a restaurant. Ask a platform admin to fix this."
+          title={t("usersTitle")}
+          subtitle={t("usersNoRestaurant")}
         />
       </div>
     );
@@ -219,11 +224,9 @@ export function UsersPage() {
   return (
     <div>
       <PageHeader
-        title="Users"
+        title={t("usersTitle")}
         subtitle={
-          isPlatformAdmin
-            ? "View and manage staff for a selected restaurant. Filter by branch to classify who works where."
-            : "View and manage staff for your restaurant branches."
+          isPlatformAdmin ? t("usersSubtitleAdmin") : t("usersSubtitleOwner")
         }
       />
 
@@ -241,13 +244,13 @@ export function UsersPage() {
         ) : (
           <label className="block space-y-1.5">
             <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
-              Restaurant
+              {t("restaurant")}
             </span>
             <input
               className={`${inputClass} w-full opacity-80`}
               value={
                 restaurants.find((r) => r.id === scopedRestaurantId)?.name ??
-                "Your restaurant"
+                t("yourRestaurant")
               }
               readOnly
             />
@@ -256,7 +259,7 @@ export function UsersPage() {
 
         <label className="block space-y-1.5">
           <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
-            Filter by branch
+            {t("filterByBranch")}
           </span>
           <select
             value={filterBranchId}
@@ -264,7 +267,7 @@ export function UsersPage() {
             disabled={branchesLoading || !scopedRestaurantId}
             className={`${inputClass} w-full`}
           >
-            <option value="">All branches</option>
+            <option value="">{t("allBranches")}</option>
             {branches.map((b) => (
               <option key={b.id} value={b.id}>
                 {b.name}
@@ -279,7 +282,7 @@ export function UsersPage() {
         onSubmit={(e) => {
           e.preventDefault();
           if (!scopedRestaurantId && form.role !== "PLATFORM_ADMIN") {
-            setError("Select a restaurant first.");
+            setError(t("selectRestaurantFirst"));
             return;
           }
           saveUser.mutate();
@@ -287,11 +290,11 @@ export function UsersPage() {
       >
         <div className="md:col-span-2 flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-lg font-semibold">
-            {editingId ? "Edit user" : "New user"}
+            {editingId ? t("editUser") : t("newUser")}
           </h2>
           {editingId ? (
             <Button type="button" variant="outline" size="sm" onClick={resetForm}>
-              Cancel edit
+              {t("cancelEdit")}
             </Button>
           ) : null}
         </div>
@@ -300,7 +303,7 @@ export function UsersPage() {
           value={form.email}
           onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
           type="email"
-          placeholder="Email"
+          placeholder={t("email")}
           className={inputClass}
           required
         />
@@ -309,7 +312,7 @@ export function UsersPage() {
           onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
           type="password"
           placeholder={
-            editingId ? "New password (optional)" : "Password (min 8)"
+            editingId ? t("passwordOptional") : t("passwordMin")
           }
           minLength={editingId ? undefined : 8}
           className={inputClass}
@@ -320,13 +323,13 @@ export function UsersPage() {
           onChange={(e) =>
             setForm((f) => ({ ...f, firstName: e.target.value }))
           }
-          placeholder="First name"
+          placeholder={t("firstName")}
           className={inputClass}
         />
         <input
           value={form.lastName}
           onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
-          placeholder="Last name"
+          placeholder={t("lastName")}
           className={inputClass}
         />
         <select
@@ -336,7 +339,7 @@ export function UsersPage() {
         >
           {allowedRoles.map((r) => (
             <option key={r} value={r}>
-              {r}
+              {ROLE_MESSAGE[r] ? t(ROLE_MESSAGE[r]) : r}
             </option>
           ))}
         </select>
@@ -347,8 +350,8 @@ export function UsersPage() {
         >
           <option value="">
             {form.role === "RESTAURANT_OWNER"
-              ? "No branch (owner)"
-              : "Select branch (recommended)"}
+              ? t("noBranchOwner")
+              : t("selectBranchRecommended")}
           </option>
           {branches.map((b) => (
             <option key={b.id} value={b.id}>
@@ -365,7 +368,7 @@ export function UsersPage() {
                 setForm((f) => ({ ...f, active: e.target.checked }))
               }
             />
-            Active
+            {t("active")}
           </label>
         ) : null}
         <Button
@@ -373,11 +376,11 @@ export function UsersPage() {
           className="md:col-span-2"
           disabled={saveUser.isPending || !scopedRestaurantId}
         >
-          {saveUser.isPending
-            ? "Saving…"
-            : editingId
-              ? "Save changes"
-              : "Create user"}
+            {saveUser.isPending
+              ? t("saving")
+              : editingId
+                ? t("saveChanges")
+                : t("createUser")}
         </Button>
         {error ? (
           <p className="md:col-span-2 text-sm text-[var(--danger)]">{error}</p>
@@ -389,22 +392,22 @@ export function UsersPage() {
 
       {!scopedRestaurantId && isPlatformAdmin ? (
         <p className="text-[var(--muted)]">
-          Select a restaurant to view its users.
+          {t("selectRestaurantToViewUsers")}
         </p>
       ) : usersQuery.isLoading ? (
-        <p className="text-[var(--muted)]">Loading users…</p>
+        <p className="text-[var(--muted)]">{t("loadingUsers")}</p>
       ) : usersQuery.isError ? (
         <p className="text-[var(--danger)]">
           {(usersQuery.error as Error).message}
         </p>
       ) : users.length === 0 ? (
-        <p className="text-[var(--muted)]">No users for this scope yet.</p>
+        <p className="text-[var(--muted)]">{t("noUsersYet")}</p>
       ) : (
         <div className="space-y-8">
           {roleGroups.map(([role, group]) => (
             <section key={role}>
               <h3 className="mb-3 font-[family-name:var(--font-display)] text-2xl">
-                {role.replaceAll("_", " ")}{" "}
+                {ROLE_MESSAGE[role] ? t(ROLE_MESSAGE[role]) : role.replaceAll("_", " ")}{" "}
                 <span className="text-base text-[var(--muted)]">
                   ({group.length})
                 </span>
@@ -413,11 +416,11 @@ export function UsersPage() {
                 <table className="w-full min-w-[720px] text-left text-sm">
                   <thead className="bg-[var(--surface-2)] text-[var(--muted)]">
                     <tr>
-                      <th className="px-4 py-3 font-medium">Email</th>
-                      <th className="px-4 py-3 font-medium">Name</th>
-                      <th className="px-4 py-3 font-medium">Branch</th>
-                      <th className="px-4 py-3 font-medium">Status</th>
-                      <th className="px-4 py-3 font-medium">Actions</th>
+                      <th className="px-4 py-3 font-medium">{t("email")}</th>
+                      <th className="px-4 py-3 font-medium">{t("colName")}</th>
+                      <th className="px-4 py-3 font-medium">{t("colBranch")}</th>
+                      <th className="px-4 py-3 font-medium">{t("status")}</th>
+                      <th className="px-4 py-3 font-medium">{t("actions")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -436,7 +439,7 @@ export function UsersPage() {
                           {user.branch?.name ?? "—"}
                         </td>
                         <td className="px-4 py-3">
-                          {user.active ? "Active" : "Inactive"}
+                          {user.active ? t("active") : t("inactive")}
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex flex-wrap gap-2">
@@ -446,7 +449,7 @@ export function UsersPage() {
                               variant="outline"
                               onClick={() => startEdit(user)}
                             >
-                              Edit
+                              {t("edit")}
                             </Button>
                             {user.active && user.id !== currentUser?.id ? (
                               <Button
@@ -457,14 +460,16 @@ export function UsersPage() {
                                 onClick={() => {
                                   if (
                                     window.confirm(
-                                      `Deactivate ${user.email}?`,
+                                    t("confirmDeactivateUser", {
+                                      email: user.email,
+                                    }),
                                     )
                                   ) {
                                     deactivateUser.mutate(user.id);
                                   }
                                 }}
                               >
-                                Deactivate
+                                {t("deactivate")}
                               </Button>
                             ) : null}
                             {!user.active ? (
@@ -476,7 +481,11 @@ export function UsersPage() {
                                   adminApi
                                     .updateUser(user.id, { active: true })
                                     .then(() => {
-                                      setSuccess(`Reactivated ${user.email}.`);
+                                      setSuccess(
+                                        t("userReactivated", {
+                                          email: user.email,
+                                        }),
+                                      );
                                       void queryClient.invalidateQueries({
                                         queryKey: ["admin-users"],
                                       });
@@ -484,7 +493,7 @@ export function UsersPage() {
                                     .catch((err: Error) => setError(err.message))
                                 }
                               >
-                                Reactivate
+                                {t("reactivate")}
                               </Button>
                             ) : null}
                           </div>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, IBM_Plex_Sans } from "next/font/google";
+import { Space_Grotesk, IBM_Plex_Sans, Noto_Sans_Arabic } from "next/font/google";
 import { DiningBackdrop } from "@/components/dining-backdrop";
 import { Providers } from "@/components/providers";
 import { SiteFooter } from "@/components/site-footer";
@@ -13,7 +13,13 @@ const display = Space_Grotesk({
 const body = IBM_Plex_Sans({
   weight: ["400", "500", "600", "700"],
   variable: "--font-body",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
+});
+
+const arabic = Noto_Sans_Arabic({
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-arabic",
+  subsets: ["arabic"],
 });
 
 export const metadata: Metadata = {
@@ -27,8 +33,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${display.variable} ${body.variable} antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${display.variable} ${body.variable} ${arabic.variable} antialiased`}
+      >
         <Providers>
           <div className="relative flex min-h-screen flex-col">
             <DiningBackdrop />

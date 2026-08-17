@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import { ImageUploadButton } from "@/components/image-upload-button";
 import { BrandBackgroundGallery } from "@/components/brand-background-gallery";
+import { useLocale } from "@/lib/i18n/locale-provider";
 
 const CUSTOMER_URL =
   process.env.NEXT_PUBLIC_CUSTOMER_URL ?? "http://localhost:3001";
@@ -82,6 +83,7 @@ function brandFieldsFromRestaurant(restaurant: Restaurant): Pick<
 
 export function RestaurantsPage() {
   const queryClient = useQueryClient();
+  const { t } = useLocale();
   const user = getStoredUser();
   const isPlatformAdmin = user?.role === "PLATFORM_ADMIN";
 
@@ -155,8 +157,8 @@ export function RestaurantsPage() {
       resetForm();
       setSuccess(
         wasEdit
-          ? `Updated “${restaurant.name}”.`
-          : `Created “${restaurant.name}”. Add a branch next.`,
+          ? t("restaurantUpdated", { name: restaurant.name })
+          : t("restaurantCreated", { name: restaurant.name }),
       );
       if (!wasEdit) setBranchRestaurantId(restaurant.id);
       void queryClient.invalidateQueries({ queryKey: ["admin-restaurants"] });
@@ -171,7 +173,7 @@ export function RestaurantsPage() {
     mutationFn: (id: string) => adminApi.deleteRestaurant(id),
     onSuccess: (restaurant) => {
       if (editingId === restaurant.id) resetForm();
-      setSuccess(`Deactivated “${restaurant.name}”.`);
+      setSuccess(t("restaurantDeactivated", { name: restaurant.name }));
       void queryClient.invalidateQueries({ queryKey: ["admin-restaurants"] });
     },
     onError: (err: Error) => {
@@ -194,7 +196,10 @@ export function RestaurantsPage() {
       );
       const base = guestBaseUrl(restaurant?.slug);
       setBranchSuccess(
-        `Branch “${branch.name}” created. Walk-in: ${base}/w/${branch.walkInToken}`,
+        t("branchCreated", {
+          name: branch.name,
+          url: `${base}/w/${branch.walkInToken}`,
+        }),
       );
       void queryClient.invalidateQueries({ queryKey: ["admin-branches"] });
     },
@@ -213,7 +218,10 @@ export function RestaurantsPage() {
       );
       const base = guestBaseUrl(restaurant?.slug);
       setBranchSuccess(
-        `Rotated walk-in link for “${branch.name}”: ${base}/w/${branch.walkInToken}`,
+        t("walkInRotated", {
+          name: branch.name,
+          url: `${base}/w/${branch.walkInToken}`,
+        }),
       );
       void queryClient.invalidateQueries({ queryKey: ["admin-branches"] });
     },
@@ -264,7 +272,7 @@ export function RestaurantsPage() {
 
   const saveOwnerBrand = useMutation({
     mutationFn: () => {
-      if (!ownedRestaurantId) throw new Error("No restaurant assigned");
+      if (!ownedRestaurantId) throw new Error(t("noRestaurantAssigned"));
       return adminApi.updateRestaurant(ownedRestaurantId, {
         logoUrl: ownerBrand.logoUrl.trim() || null,
         brandAccent: ownerBrand.brandAccent.trim() || null,
@@ -276,7 +284,7 @@ export function RestaurantsPage() {
     },
     onSuccess: () => {
       setBrandError(null);
-      setBrandSuccess("Customer brand saved.");
+      setBrandSuccess(t("customerBrandSaved"));
       void queryClient.invalidateQueries({ queryKey: ["admin-restaurants"] });
     },
     onError: (err: Error) => {
@@ -301,11 +309,13 @@ export function RestaurantsPage() {
   return (
     <div>
       <PageHeader
-        title={isPlatformAdmin ? "Restaurants" : "Branches"}
+        title={isPlatformAdmin ? t("restaurantsTitle") : t("branchesTitle")}
         subtitle={
           isPlatformAdmin
-            ? "Create, edit, and deactivate restaurants. Add branches after creating a restaurant."
-            : `Add and manage branches${ownedRestaurant ? ` for ${ownedRestaurant.name}` : ""}.`
+            ? t("restaurantsSubtitle")
+            : ownedRestaurant
+              ? t("branchesSubtitleNamed", { name: ownedRestaurant.name })
+              : t("branchesSubtitle")
         }
       />
 
@@ -319,18 +329,18 @@ export function RestaurantsPage() {
         >
           <div className="md:col-span-2 flex flex-wrap items-center justify-between gap-2">
             <h2 className="text-lg font-semibold">
-              {editingId ? "Edit restaurant" : "New restaurant"}
+              {editingId ? t("editRestaurant") : t("newRestaurant")}
             </h2>
             {editingId ? (
               <Button type="button" variant="outline" size="sm" onClick={resetForm}>
-                Cancel edit
+                {t("cancelEdit")}
               </Button>
             ) : null}
           </div>
           <input
             value={form.name}
             onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-            placeholder="Restaurant name"
+            placeholder={t("restaurantNamePlaceholder")}
             className={`${inputClass} md:col-span-2`}
             required
           />
@@ -345,29 +355,31 @@ export function RestaurantsPage() {
                     .replace(/[^a-z0-9-]/g, ""),
                 }))
               }
-              placeholder="Subdomain slug (e.g. alhuda)"
+              placeholder={t("slugPlaceholder")}
               className={inputClass}
               pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-              title="Lowercase letters, numbers, and hyphens"
+              title={t("slugTitle")}
             />
             <p className="text-xs text-[var(--muted)]">
               {ROOT_DOMAIN
-                ? `Guest site: https://${form.slug.trim() || "slug"}.${ROOT_DOMAIN}`
-                : "Used for guest subdomain (set NEXT_PUBLIC_ROOT_DOMAIN on admin + customer)."}
+                ? t("guestSite", {
+                    url: `https://${form.slug.trim() || "slug"}.${ROOT_DOMAIN}`,
+                  })
+                : t("slugHintNoDomain")}
             </p>
           </div>
           <input
             value={form.email}
             onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
             type="email"
-            placeholder="Contact email"
+            placeholder={t("contactEmail")}
             className={inputClass}
             required
           />
           <input
             value={form.phone}
             onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-            placeholder="Phone"
+            placeholder={t("phonePlaceholder")}
             className={inputClass}
             required
           />
@@ -376,14 +388,14 @@ export function RestaurantsPage() {
             onChange={(e) =>
               setForm((f) => ({ ...f, address: e.target.value }))
             }
-            placeholder="Address (optional)"
+            placeholder={t("addressOptional")}
             className={`${inputClass} md:col-span-2`}
           />
           <div className="md:col-span-2 space-y-2">
-            <span className="text-sm font-medium text-[var(--muted)]">Logo</span>
+            <span className="text-sm font-medium text-[var(--muted)]">{t("logo")}</span>
             <div className="flex flex-wrap items-center gap-2">
               <ImageUploadButton
-                label="Upload logo"
+                label={t("uploadLogo")}
                 onUploaded={(url) => setForm((f) => ({ ...f, logoUrl: url }))}
               />
               <input
@@ -391,7 +403,7 @@ export function RestaurantsPage() {
                 onChange={(e) =>
                   setForm((f) => ({ ...f, logoUrl: e.target.value }))
                 }
-                placeholder="Or paste logo URL"
+                placeholder={t("pasteLogoUrl")}
                 className={`${inputClass} min-w-[12rem] flex-1`}
               />
             </div>
@@ -406,7 +418,7 @@ export function RestaurantsPage() {
           </div>
           <div className="md:col-span-2 grid gap-3 sm:grid-cols-3">
             <label className="space-y-1.5 text-sm">
-              <span className="font-medium text-[var(--muted)]">Accent</span>
+              <span className="font-medium text-[var(--muted)]">{t("accent")}</span>
               <div className="flex items-center gap-2">
                 <input
                   type="color"
@@ -428,7 +440,7 @@ export function RestaurantsPage() {
               </div>
             </label>
             <label className="space-y-1.5 text-sm">
-              <span className="font-medium text-[var(--muted)]">Button</span>
+              <span className="font-medium text-[var(--muted)]">{t("buttonColor")}</span>
               <div className="flex items-center gap-2">
                 <input
                   type="color"
@@ -450,7 +462,7 @@ export function RestaurantsPage() {
               </div>
             </label>
             <label className="space-y-1.5 text-sm">
-              <span className="font-medium text-[var(--muted)]">Paper</span>
+              <span className="font-medium text-[var(--muted)]">{t("paper")}</span>
               <div className="flex items-center gap-2">
                 <input
                   type="color"
@@ -488,7 +500,7 @@ export function RestaurantsPage() {
                   setForm((f) => ({ ...f, active: e.target.checked }))
                 }
               />
-              Active
+              {t("active")}
             </label>
           ) : null}
           <Button
@@ -497,10 +509,10 @@ export function RestaurantsPage() {
             disabled={saveRestaurant.isPending}
           >
             {saveRestaurant.isPending
-              ? "Saving…"
+              ? t("saving")
               : editingId
-                ? "Save changes"
-                : "Create restaurant"}
+                ? t("saveChanges")
+                : t("createRestaurant")}
           </Button>
           {error ? (
             <p className="md:col-span-2 text-sm text-[var(--danger)]">{error}</p>
@@ -522,16 +534,16 @@ export function RestaurantsPage() {
           }}
         >
           <h2 className="md:col-span-2 text-lg font-semibold">
-            Customer brand
+            {t("customerBrand")}
           </h2>
           <p className="md:col-span-2 text-sm text-[var(--muted)]">
-            Logo, colors, and cinematic background reel for the guest menu.
+            {t("customerBrandBody")}
           </p>
           <div className="md:col-span-2 space-y-2">
-            <span className="text-sm font-medium text-[var(--muted)]">Logo</span>
+            <span className="text-sm font-medium text-[var(--muted)]">{t("logo")}</span>
             <div className="flex flex-wrap items-center gap-2">
               <ImageUploadButton
-                label="Upload logo"
+                label={t("uploadLogo")}
                 onUploaded={(url) =>
                   setOwnerBrand((b) => ({ ...b, logoUrl: url }))
                 }
@@ -541,7 +553,7 @@ export function RestaurantsPage() {
                 onChange={(e) =>
                   setOwnerBrand((b) => ({ ...b, logoUrl: e.target.value }))
                 }
-                placeholder="Or paste logo URL"
+                placeholder={t("pasteLogoUrl")}
                 className={`${inputClass} min-w-[12rem] flex-1`}
               />
             </div>
@@ -556,7 +568,7 @@ export function RestaurantsPage() {
           </div>
           <div className="md:col-span-2 grid gap-3 sm:grid-cols-3">
             <label className="space-y-1.5 text-sm">
-              <span className="font-medium text-[var(--muted)]">Accent</span>
+              <span className="font-medium text-[var(--muted)]">{t("accent")}</span>
               <div className="flex items-center gap-2">
                 <input
                   type="color"
@@ -583,7 +595,7 @@ export function RestaurantsPage() {
               </div>
             </label>
             <label className="space-y-1.5 text-sm">
-              <span className="font-medium text-[var(--muted)]">Button</span>
+              <span className="font-medium text-[var(--muted)]">{t("buttonColor")}</span>
               <div className="flex items-center gap-2">
                 <input
                   type="color"
@@ -610,7 +622,7 @@ export function RestaurantsPage() {
               </div>
             </label>
             <label className="space-y-1.5 text-sm">
-              <span className="font-medium text-[var(--muted)]">Paper</span>
+              <span className="font-medium text-[var(--muted)]">{t("paper")}</span>
               <div className="flex items-center gap-2">
                 <input
                   type="color"
@@ -649,7 +661,7 @@ export function RestaurantsPage() {
             className="md:col-span-2"
             disabled={saveOwnerBrand.isPending}
           >
-            {saveOwnerBrand.isPending ? "Saving…" : "Save brand"}
+            {saveOwnerBrand.isPending ? t("saving") : t("saveBrand")}
           </Button>
           {brandError ? (
             <p className="md:col-span-2 text-sm text-[var(--danger)]">
@@ -672,10 +684,10 @@ export function RestaurantsPage() {
             createBranch.mutate();
           }}
         >
-          <h2 className="md:col-span-2 text-lg font-semibold">New branch</h2>
+          <h2 className="md:col-span-2 text-lg font-semibold">{t("newBranch")}</h2>
           {isOwner ? (
             <p className="md:col-span-2 text-sm text-[var(--muted)]">
-              Restaurant:{" "}
+              {t("restaurantColon")}{" "}
               <span className="font-medium text-[var(--ink)]">
                 {ownedRestaurant?.name ?? "—"}
               </span>
@@ -688,12 +700,12 @@ export function RestaurantsPage() {
               required
             >
               {restaurants.length === 0 ? (
-                <option value="">No restaurants yet</option>
+                <option value="">{t("noRestaurantsYet")}</option>
               ) : (
                 restaurants.map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.name}
-                    {r.active === false ? " (inactive)" : ""}
+                    {r.active === false ? t("inactiveSuffix") : ""}
                   </option>
                 ))
               )}
@@ -702,7 +714,7 @@ export function RestaurantsPage() {
           <input
             value={branchName}
             onChange={(e) => setBranchName(e.target.value)}
-            placeholder="Branch name (e.g. Helsinki Downtown)"
+            placeholder={t("branchNamePlaceholder")}
             className={`${inputClass}${isOwner ? " md:col-span-2" : ""}`}
             required
           />
@@ -715,7 +727,7 @@ export function RestaurantsPage() {
               restaurants.length === 0
             }
           >
-            {createBranch.isPending ? "Creating…" : "Create branch"}
+            {createBranch.isPending ? t("creating") : t("createBranch")}
           </Button>
           {branchError ? (
             <p className="md:col-span-2 text-sm text-[var(--danger)]">
@@ -730,13 +742,13 @@ export function RestaurantsPage() {
         </form>
       ) : (
         <p className="mb-8 rounded-xl border border-[var(--line)] bg-[var(--surface)] p-4 text-sm text-[var(--muted)]">
-          Branch creation is limited to restaurant owners and platform admins.
+          {t("branchCreateRestricted")}
         </p>
       )}
 
       {isPlatformAdmin ? (
         restaurantsQuery.isLoading ? (
-          <p className="text-[var(--muted)]">Loading restaurants…</p>
+          <p className="text-[var(--muted)]">{t("loadingRestaurants")}</p>
         ) : restaurantsQuery.isError ? (
           <p className="text-[var(--danger)]">
             {(restaurantsQuery.error as Error).message}
@@ -746,12 +758,12 @@ export function RestaurantsPage() {
             <table className="w-full min-w-[720px] text-left text-sm">
               <thead className="bg-[var(--surface-2)] text-[var(--muted)]">
                 <tr>
-                  <th className="px-4 py-3 font-medium">Name</th>
-                  <th className="px-4 py-3 font-medium">Email</th>
-                  <th className="px-4 py-3 font-medium">Phone</th>
-                  <th className="px-4 py-3 font-medium">Branches</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Actions</th>
+                  <th className="px-4 py-3 font-medium">{t("name")}</th>
+                  <th className="px-4 py-3 font-medium">{t("email")}</th>
+                  <th className="px-4 py-3 font-medium">{t("phone")}</th>
+                  <th className="px-4 py-3 font-medium">{t("colBranches")}</th>
+                  <th className="px-4 py-3 font-medium">{t("status")}</th>
+                  <th className="px-4 py-3 font-medium">{t("actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -779,7 +791,7 @@ export function RestaurantsPage() {
                       <td className="px-4 py-3">{restaurant.phone ?? "—"}</td>
                       <td className="px-4 py-3">{count}</td>
                       <td className="px-4 py-3">
-                        {active ? "Active" : "Inactive"}
+                        {active ? t("active") : t("inactive")}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-2">
@@ -789,7 +801,7 @@ export function RestaurantsPage() {
                             variant="outline"
                             onClick={() => startEdit(restaurant)}
                           >
-                            Edit
+                            {t("edit")}
                           </Button>
                           {active ? (
                             <Button
@@ -800,14 +812,16 @@ export function RestaurantsPage() {
                               onClick={() => {
                                 if (
                                   window.confirm(
-                                    `Deactivate “${restaurant.name}”? You can reactivate it later by editing.`,
+                                    t("confirmDeactivateRestaurant", {
+                                      name: restaurant.name,
+                                    }),
                                   )
                                 ) {
                                   deleteRestaurant.mutate(restaurant.id);
                                 }
                               }}
                             >
-                              Deactivate
+                              {t("deactivate")}
                             </Button>
                           ) : (
                             <Button
@@ -822,7 +836,9 @@ export function RestaurantsPage() {
                                   })
                                   .then(() => {
                                     setSuccess(
-                                      `Reactivated “${restaurant.name}”.`,
+                                      t("restaurantReactivated", {
+                                        name: restaurant.name,
+                                      }),
                                     );
                                     void queryClient.invalidateQueries({
                                       queryKey: ["admin-restaurants"],
@@ -831,7 +847,7 @@ export function RestaurantsPage() {
                                   .catch((err: Error) => setError(err.message))
                               }
                             >
-                              Reactivate
+                              {t("reactivate")}
                             </Button>
                           )}
                         </div>
@@ -844,7 +860,7 @@ export function RestaurantsPage() {
           </div>
         )
       ) : branchesQuery.isLoading ? (
-        <p className="text-[var(--muted)]">Loading branches…</p>
+        <p className="text-[var(--muted)]">{t("loadingBranches")}</p>
       ) : branchesQuery.isError ? (
         <p className="text-[var(--danger)]">
           {(branchesQuery.error as Error).message}
@@ -854,9 +870,9 @@ export function RestaurantsPage() {
           <table className="w-full min-w-[480px] text-left text-sm">
             <thead className="bg-[var(--surface-2)] text-[var(--muted)]">
               <tr>
-                <th className="px-4 py-3 font-medium">Branch</th>
-                <th className="px-4 py-3 font-medium">Restaurant</th>
-                <th className="px-4 py-3 font-medium">Status</th>
+                <th className="px-4 py-3 font-medium">{t("colBranch")}</th>
+                <th className="px-4 py-3 font-medium">{t("restaurant")}</th>
+                <th className="px-4 py-3 font-medium">{t("status")}</th>
               </tr>
             </thead>
             <tbody>
@@ -866,7 +882,7 @@ export function RestaurantsPage() {
                     colSpan={3}
                     className="px-4 py-6 text-[var(--muted)]"
                   >
-                    No branches yet. Create one above.
+                    {t("noBranchesYet")}
                   </td>
                 </tr>
               ) : (
@@ -882,7 +898,7 @@ export function RestaurantsPage() {
                       <td className="px-4 py-3 font-medium">{branch.name}</td>
                       <td className="px-4 py-3">{restaurantName}</td>
                       <td className="px-4 py-3">
-                        {branch.active !== false ? "Active" : "Inactive"}
+                        {branch.active !== false ? t("active") : t("inactive")}
                       </td>
                     </tr>
                   );
@@ -895,10 +911,9 @@ export function RestaurantsPage() {
 
       {(isPlatformAdmin ? branches : ownerBranches).length > 0 ? (
         <div className="mt-10">
-          <h2 className="mb-3 text-lg font-semibold">Walk-in guest links</h2>
+          <h2 className="mb-3 text-lg font-semibold">{t("walkInGuestLinks")}</h2>
           <p className="mb-4 text-sm text-[var(--muted)]">
-            Share these opaque URLs with guests. Rotating invalidates the old
-            link. Pickup TV pairing uses the same token in the path.
+            {t("walkInGuestLinksBody")}
           </p>
           <div className="space-y-3">
             {(isPlatformAdmin ? branches : ownerBranches).map((branch) => {
@@ -906,7 +921,7 @@ export function RestaurantsPage() {
                 (r) => r.id === branch.restaurantId,
               );
               const walkInUrl = `${guestBaseUrl(restaurant?.slug)}/w/${branch.walkInToken}`;
-              const restaurantName = restaurant?.name ?? "Restaurant";
+              const restaurantName = restaurant?.name ?? t("restaurant");
               return (
                 <article
                   key={branch.id}
@@ -925,7 +940,7 @@ export function RestaurantsPage() {
                       type="button"
                       onClick={() => void navigator.clipboard.writeText(walkInUrl)}
                     >
-                      Copy walk-in URL
+                      {t("copyWalkInUrl")}
                     </Button>
                     <Button
                       size="sm"
@@ -934,7 +949,7 @@ export function RestaurantsPage() {
                       disabled={rotateWalkIn.isPending}
                       onClick={() => rotateWalkIn.mutate(branch.id)}
                     >
-                      Rotate walk-in token
+                      {t("rotateWalkInToken")}
                     </Button>
                   </div>
                 </article>
