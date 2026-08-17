@@ -207,6 +207,29 @@ html[dir="rtl"] body {
   animation: landing-promo-fade 0.65s ease-out both;
 }
 
+@keyframes landing-brand-zoom {
+  0%,
+  100% {
+    transform: scale(1);
+    letter-spacing: 0.28em;
+  }
+  50% {
+    transform: scale(1.08);
+    letter-spacing: 0.34em;
+  }
+}
+
+.landing-brand-zoom {
+  display: inline-block;
+  transform-origin: center left;
+  animation: landing-brand-zoom 4.5s ease-in-out infinite;
+  will-change: transform;
+}
+
+html[dir="rtl"] .landing-brand-zoom {
+  transform-origin: center right;
+}
+
 .pickup-fire-glow {
   background: radial-gradient(
     ellipse 70% 45% at 50% 85%,
@@ -221,7 +244,8 @@ html[dir="rtl"] body {
   .pickup-fire-drift,
   .menu-bg-drift,
   .pickup-fire-glow,
-  .landing-promo-fade {
+  .landing-promo-fade,
+  .landing-brand-zoom {
     animation: none !important;
   }
 }
