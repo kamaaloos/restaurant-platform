@@ -2,6 +2,8 @@
 const RESERVED_SUBDOMAINS = new Set([
   "www",
   "www2",
+  "customer",
+  "dugsi",
   "order",
   "orders",
   "admin",
@@ -57,4 +59,62 @@ export function getTenantSlugFromHost(
   if (!SLUG_RE.test(sub)) return null;
 
   return sub;
+}
+
+export function normalizeHostname(
+  host: string | null | undefined,
+): string {
+  return (host ?? "").split(":")[0]?.trim().toLowerCase() ?? "";
+}
+
+/** Apex or www — corporate multi-product home, not restaurant marketing. */
+export function isApexOrWwwHost(
+  host: string | null | undefined,
+  rootDomain: string | null | undefined,
+): boolean {
+  const root = rootDomain?.trim().toLowerCase();
+  if (!root) return false;
+  const hostname = normalizeHostname(host);
+  return hostname === root || hostname === `www.${root}`;
+}
+
+/**
+ * Host that serves the restaurant platform marketing landing
+ * (default: customer.{rootDomain}, e.g. customer.maylesoft.com).
+ */
+export function isRestaurantMarketingHost(
+  host: string | null | undefined,
+  rootDomain: string | null | undefined,
+  marketingHost?: string | null,
+): boolean {
+  const hostname = normalizeHostname(host);
+  const explicit = marketingHost?.trim().toLowerCase();
+  if (explicit) return hostname === explicit.split(":")[0];
+
+  const root = rootDomain?.trim().toLowerCase();
+  if (root && hostname === `customer.${root}`) return true;
+
+  // Local dev: show landing on localhost when not using tenant subdomains.
+  if (
+    !root &&
+    (hostname === "localhost" || hostname === "127.0.0.1")
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
+export function restaurantMarketingOrigin(
+  rootDomain: string | null | undefined,
+  marketingHost?: string | null,
+): string {
+  const explicit = marketingHost?.trim();
+  if (explicit) {
+    const host = explicit.replace(/^https?:\/\//i, "").split("/")[0];
+    return `https://${host}`;
+  }
+  const root = rootDomain?.trim().toLowerCase();
+  if (root) return `https://customer.${root}`;
+  return "http://localhost:3001";
 }

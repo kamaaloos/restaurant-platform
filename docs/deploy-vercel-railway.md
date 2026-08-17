@@ -147,6 +147,8 @@ Guest ordering can live on **one subdomain per restaurant**:
 
 | Host | App |
 |------|-----|
+| `maylesoft.com` / `www` | Customer — MayleSoft product hub (links to each product) |
+| `customer.maylesoft.com` | Customer — restaurant platform marketing landing |
 | `alhuda.maylesoft.com` | Customer (tenant home + `/w`, `/t`) |
 | `admin.maylesoft.com` | Admin |
 | `kitchen.maylesoft.com` | Kitchen |
@@ -159,14 +161,15 @@ Guest ordering can live on **one subdomain per restaurant**:
    - Type: **CNAME**
    - Name: `*`
    - Value: `cname.vercel-dns.com` (use the value Vercel shows)
-2. Add **app** subdomains the same way (`admin`, `kitchen`, `waiter`, `till`) pointing at their Vercel projects.
-3. Optional apex `maylesoft.com` → customer or a marketing site.
+2. Add **app** subdomains the same way (`admin`, `kitchen`, `waiter`, `till`, **`customer`**) pointing at their Vercel projects.
+3. Apex `maylesoft.com` → customer project (product hub). **`customer.maylesoft.com`** → same customer project (restaurant landing).
 
 ### Vercel (customer project)
 
-1. Domains → add `*.maylesoft.com` (and optionally `maylesoft.com`)
+1. Domains → add `*.maylesoft.com`, `maylesoft.com`, and **`customer.maylesoft.com`**
 2. Set env:
    - `NEXT_PUBLIC_ROOT_DOMAIN=maylesoft.com`
+   - `NEXT_PUBLIC_MARKETING_HOST=customer.maylesoft.com`
 3. Redeploy customer after adding the env var.
 
 ### Admin
@@ -177,8 +180,10 @@ Guest ordering can live on **one subdomain per restaurant**:
 ### How it works
 
 - Middleware reads the host; `alhuda.maylesoft.com` rewrites `/` → restaurant home (branches list).
+- `customer.maylesoft.com` serves the restaurant platform marketing page.
+- `maylesoft.com` serves a small product hub (Restaurant platform, Dugsi, …).
 - Public API: `GET /api/customer/tenants/:slug`
-- Reserved labels (`admin`, `kitchen`, `www`, …) are never treated as restaurant slugs.
+- Reserved labels (`admin`, `kitchen`, `customer`, `dugsi`, `www`, …) are never treated as restaurant slugs.
 
 ---
 

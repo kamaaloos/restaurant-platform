@@ -1,7 +1,25 @@
-"use client";
-
+import { headers } from "next/headers";
 import { LandingMarketing } from "@/components/landing-marketing";
+import { MayleSoftHub } from "@/components/maylesoft-hub";
+import {
+  isApexOrWwwHost,
+  isRestaurantMarketingHost,
+} from "@/lib/tenant-host";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const headerList = await headers();
+  const host = headerList.get("host");
+  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
+  const marketingHost = process.env.NEXT_PUBLIC_MARKETING_HOST;
+
+  if (isRestaurantMarketingHost(host, rootDomain, marketingHost)) {
+    return <LandingMarketing />;
+  }
+
+  if (isApexOrWwwHost(host, rootDomain)) {
+    return <MayleSoftHub />;
+  }
+
+  // Vercel previews and other non-tenant hosts: keep the restaurant landing.
   return <LandingMarketing />;
 }
