@@ -3,6 +3,8 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { adminApi } from "@/lib/api";
 import { clearSession, getAccessToken, getStoredUser } from "@/lib/session";
 import type { AuthUser } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -70,6 +72,15 @@ function AdminShell({
   const router = useRouter();
   const nav = navForRole(user.role);
 
+  const restaurantsQuery = useQuery({
+    queryKey: ["admin-restaurants"],
+    queryFn: () => adminApi.listRestaurants(),
+  });
+
+  const restaurant =
+    restaurantsQuery.data?.find((r) => r.id === user.restaurantId) ??
+    (user.role !== "PLATFORM_ADMIN" ? restaurantsQuery.data?.[0] : undefined);
+
   function logout() {
     clearSession();
     router.replace("/login");
@@ -78,13 +89,23 @@ function AdminShell({
   return (
     <div className="relative flex flex-1 flex-col md:grid md:grid-cols-[240px_1fr]">
       <aside className="border-b border-[var(--line)] bg-[var(--surface)]/88 backdrop-blur-md md:border-b-0 md:border-r">
-        <div className="px-5 py-6">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
-            Ops console
-          </p>
-          <h1 className="mt-1 font-[family-name:var(--font-display)] text-3xl tracking-wide">
-            Admin
-          </h1>
+        <div className="flex items-center gap-3 px-5 py-6">
+          {restaurant?.logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={restaurant.logoUrl}
+              alt=""
+              className="h-12 w-12 shrink-0 rounded-full object-cover ring-2 ring-[var(--accent)]/30"
+            />
+          ) : null}
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+              Ops console
+            </p>
+            <h1 className="mt-1 truncate font-[family-name:var(--font-display)] text-2xl tracking-wide">
+              {restaurant?.name ?? "Admin"}
+            </h1>
+          </div>
         </div>
         <nav className="flex gap-1 overflow-x-auto px-3 pb-4 md:flex-col">
           {nav.map((item) => {
@@ -124,9 +145,21 @@ function AdminShell({
 
       <div className="flex min-h-0 flex-1 flex-col">
         <header className="flex items-center justify-between border-b border-[var(--line)] bg-[var(--surface)]/85 px-5 py-3 backdrop-blur-md md:hidden">
-          <div>
-            <p className="text-sm font-medium">{user.email}</p>
-            <p className="text-xs text-[var(--muted)]">{user.role}</p>
+          <div className="flex min-w-0 items-center gap-2">
+            {restaurant?.logoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={restaurant.logoUrl}
+                alt=""
+                className="h-9 w-9 shrink-0 rounded-full object-cover ring-1 ring-[var(--accent)]/30"
+              />
+            ) : null}
+            <div className="min-w-0">
+              <p className="truncate text-sm font-medium">
+                {restaurant?.name ?? user.email}
+              </p>
+              <p className="text-xs text-[var(--muted)]">{user.role}</p>
+            </div>
           </div>
           <Button variant="outline" size="sm" onClick={logout}>
             Sign out
