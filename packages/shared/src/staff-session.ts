@@ -129,7 +129,9 @@ export function createStaffSession<TUser>(opts: StaffSessionOptions) {
 
   function subscribeAccessToken(listener: (token: string | null) => void) {
     listeners.add(listener);
-    return () => listeners.delete(listener);
+    return () => {
+      listeners.delete(listener);
+    };
   }
 
   function scheduleProactiveRefresh(token: string) {

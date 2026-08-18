@@ -9,7 +9,9 @@ export function useCashierRealtime(branchId: string | null) {
     typeof window !== "undefined" ? getAccessToken() : null,
   );
 
-  React.useEffect(() => subscribeAccessToken(setToken), []);
+  React.useEffect(() => {
+    return subscribeAccessToken(setToken);
+  }, []);
 
   return useRealtimeSocket({
     enabled: !!token && !!branchId,
