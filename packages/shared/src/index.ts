@@ -47,10 +47,21 @@ function normalizeAbsoluteUrl(raw: string | undefined, fallback: string): string
 }
 
 export function getApiBaseUrl() {
-  return normalizeAbsoluteUrl(
+  const url = normalizeAbsoluteUrl(
     process.env.NEXT_PUBLIC_API_URL,
     "http://localhost:3000/api",
   );
+  try {
+    const parsed = new URL(url);
+    // Nest is mounted at /api. A host-only env value 404s as /customer/tenants/:slug.
+    if (parsed.pathname === "" || parsed.pathname === "/") {
+      parsed.pathname = "/api";
+      return parsed.toString().replace(/\/$/, "");
+    }
+  } catch {
+    /* keep normalized host */
+  }
+  return url;
 }
 
 export function getWsBaseUrl() {

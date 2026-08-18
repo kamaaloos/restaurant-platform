@@ -113,6 +113,7 @@ export type MessageKey =
   | "loadingBranches"
   | "printScanToOrder"
   | "printButton"
+  | "printPopupBlocked"
   | "qrPrintTitle"
   | "statusAvailable"
   | "statusOccupied"
@@ -396,6 +397,7 @@ const en: Messages = {
   loadingBranches: "Loading branches…",
   printScanToOrder: "Scan to order",
   printButton: "Print",
+  printPopupBlocked: "Allow pop-ups for this site to print the QR code.",
   qrPrintTitle: "Table {number} QR",
   statusAvailable: "Available",
   statusOccupied: "Occupied",
@@ -692,6 +694,7 @@ const fi: Messages = {
   loadingBranches: "Ladataan toimipisteitä…",
   printScanToOrder: "Skannaa tilataksesi",
   printButton: "Tulosta",
+  printPopupBlocked: "Salli ponnahdusikkunat tälle sivustolle QR-koodin tulostamiseksi.",
   qrPrintTitle: "Pöytä {number} QR",
   statusAvailable: "Vapaa",
   statusOccupied: "Varattu",
@@ -988,6 +991,7 @@ const ar: Messages = {
   loadingBranches: "جارٍ تحميل الفروع…",
   printScanToOrder: "امسح للطلب",
   printButton: "طباعة",
+  printPopupBlocked: "اسمح بالنوافذ المنبثقة لهذا الموقع لطباعة رمز QR.",
   qrPrintTitle: "QR الطاولة {number}",
   statusAvailable: "متاحة",
   statusOccupied: "مشغولة",
@@ -1284,6 +1288,7 @@ const so: Messages = {
   loadingBranches: "Laamaha ayaa la soo rarayaa…",
   printScanToOrder: "Iskaanka si aad u dalbato",
   printButton: "Daabac",
+  printPopupBlocked: "Oggolow daaqadaha soo baxa si aad u daabacdo QR.",
   qrPrintTitle: "QR miiska {number}",
   statusAvailable: "Banaan",
   statusOccupied: "La isticmaalayo",

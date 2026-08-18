@@ -132,19 +132,27 @@ export function TablesPage() {
   }
 
   async function printTableQr(tableNumber: string, token: string) {
-    const url = `${guestOrigin}/t/${token}`;
-    const qr = await QRCode.toDataURL(url, {
-      width: 512,
-      margin: 2,
-      color: { dark: "#111111", light: "#ffffff" },
-    });
-    const w = window.open(
-      "",
-      "_blank",
-      "noopener,noreferrer,width=480,height=720",
+    // Open synchronously from the click. `noopener` makes window.open()
+    // return null while still leaving a blank about:blank tab.
+    const w = window.open("", "_blank", "width=480,height=720");
+    if (!w) {
+      setError(t("printPopupBlocked"));
+      return;
+    }
+    w.document.write(
+      `<!DOCTYPE html><html><body style="font-family:Georgia,serif;text-align:center;padding:48px;color:#444">${escapeHtml(t("loadingTables"))}</body></html>`,
     );
-    if (!w) return;
-    w.document.write(`<!DOCTYPE html>
+    w.document.close();
+
+    try {
+      const url = `${guestOrigin}/t/${token}`;
+      const qr = await QRCode.toDataURL(url, {
+        width: 512,
+        margin: 2,
+        color: { dark: "#111111", light: "#ffffff" },
+      });
+      w.document.open();
+      w.document.write(`<!DOCTYPE html>
 <html lang="${escapeHtml(locale)}" dir="${dir}">
 <head>
   <title>${escapeHtml(t("qrPrintTitle", { number: tableNumber }))}</title>
@@ -165,7 +173,12 @@ export function TablesPage() {
   <button onclick="window.print()">${escapeHtml(t("printButton"))}</button>
 </body>
 </html>`);
-    w.document.close();
+      w.document.close();
+      w.focus();
+    } catch (err) {
+      w.close();
+      setError(err instanceof Error ? err.message : t("printPopupBlocked"));
+    }
   }
 
   return (

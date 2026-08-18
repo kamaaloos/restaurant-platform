@@ -97,10 +97,10 @@ Each app includes a `vercel.json` that installs dependencies from the monorepo r
 
 | Variable | Value |
 |----------|-------|
-| `NEXT_PUBLIC_API_URL` | `https://YOUR-RAILWAY-HOST.up.railway.app/api` (must include `https://` and end with `/api`) |
+| `NEXT_PUBLIC_API_URL` | `https://YOUR-RAILWAY-HOST.up.railway.app/api` (must include `https://` **and** end with `/api`) |
 | `NEXT_PUBLIC_WS_URL` | `https://YOUR-RAILWAY-HOST.up.railway.app` |
 
-Do **not** set `NEXT_PUBLIC_API_URL` to `maylesoft.com` or `customer.maylesoft.com`. Those are Vercel frontends. Without `https://`, the browser resolves the request relative to the current page, e.g. `https://alhuda.maylesoft.com/t/maylesoft.com/customer/{token}/menu` → **404**.
+Do **not** set `NEXT_PUBLIC_API_URL` to `maylesoft.com` or a Railway host **without** `/api`. Nest routes live under `/api`. `https://….up.railway.app/customer/tenants/alhuda` returns 404; `https://….up.railway.app/api/customer/tenants/alhuda` is correct.
 
 ### Admin only
 
