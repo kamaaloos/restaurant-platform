@@ -209,12 +209,12 @@ export function TablesPage() {
     try {
       const url = `${guestOrigin}/t/${token}`;
       const frame = hexColor(qrFrameColor, DEFAULT_QR_FRAME);
-      const module = hexColor(qrModuleColor, DEFAULT_QR_MODULE);
+      const moduleColor = hexColor(qrModuleColor, DEFAULT_QR_MODULE);
       const qr = await QRCode.toDataURL(url, {
         width: 640,
         margin: 1,
         errorCorrectionLevel: "H",
-        color: { dark: module, light: "#ffffff" },
+        color: { dark: moduleColor, light: "#ffffff" },
       });
       const logoRaw = qrLogoUrl.trim();
       const logoUrl = logoRaw
