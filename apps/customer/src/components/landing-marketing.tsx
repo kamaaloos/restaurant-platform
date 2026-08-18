@@ -187,7 +187,7 @@ export function LandingMarketing() {
     <div className="landing-page bg-[var(--landing-cream)] text-[var(--landing-ink)]">
       <header className="absolute inset-x-0 top-0 z-20">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 sm:flex-nowrap sm:gap-4 sm:px-6 sm:py-5">
-          <a href="#" className="landing-brand-zoom flex items-center">
+          <a href="#" className="landing-brand-zoom order-1 flex items-center">
             <Image
               src="/images/brand/maylesoft-logo.png"
               alt="MayleSoft"
@@ -212,28 +212,33 @@ export function LandingMarketing() {
               {t("landingNavAbout")}
             </a>
           </nav>
-          <div className="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-end sm:gap-3">
-            <div className="min-w-0 flex-1 sm:flex-none [&_button]:border-white/30 [&_button]:bg-white/10 [&_button]:text-white [&_select]:border-white/30 [&_select]:bg-white/10 [&_select]:text-white">
+          <a
+            href={DEMO_MAIL}
+            className="order-2 shrink-0 rounded-full bg-[var(--landing-accent)] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
+          >
+            {t("landingNavDemo")}
+          </a>
+          <div className="order-3 w-full sm:hidden [&_select]:h-8 [&_select]:text-[11px]">
+            <div className="[&_button]:border-white/25 [&_button]:bg-white/8 [&_button]:text-white [&_select]:border-white/25 [&_select]:bg-white/8 [&_select]:text-white">
+              <LocaleControls className="justify-start" />
+            </div>
+          </div>
+          <div className="hidden items-center gap-3 sm:flex">
+            <div className="[&_button]:border-white/30 [&_button]:bg-white/10 [&_button]:text-white [&_select]:border-white/30 [&_select]:bg-white/10 [&_select]:text-white">
               <LocaleControls />
             </div>
             <a
               href={ADMIN_URL}
-              className="hidden text-sm text-white/90 transition hover:text-white sm:inline"
+              className="text-sm text-white/90 transition hover:text-white"
             >
               {t("landingNavLogin")}
-            </a>
-            <a
-              href={DEMO_MAIL}
-              className="shrink-0 rounded-full bg-[var(--landing-accent)] px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110"
-            >
-              {t("landingNavDemo")}
             </a>
           </div>
         </div>
       </header>
 
       {/* Hero */}
-      <section className="relative flex min-h-[100svh] flex-col overflow-hidden pt-24 sm:pt-32">
+      <section className="relative flex min-h-[100svh] flex-col overflow-hidden pt-28 sm:pt-32">
         <LandingPhotoBackdrop tone="hero" startIndex={0} />
         <div className="relative z-10 mx-auto grid w-full max-w-6xl flex-1 items-center gap-8 px-4 pb-8 sm:gap-12 sm:px-6 lg:grid-cols-[1fr_0.9fr] lg:gap-10 lg:pb-12">
           <div>
@@ -260,7 +265,7 @@ export function LandingMarketing() {
               />
             </div>
           </div>
-          <div className="landing-hero-mock mx-auto w-full max-w-sm lg:block lg:max-w-none">
+          <div className="landing-hero-mock mx-auto w-full max-w-[19rem] sm:max-w-sm lg:block lg:max-w-none">
             <ProductMock />
           </div>
         </div>
