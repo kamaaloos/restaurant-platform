@@ -256,6 +256,10 @@ export type MessageKey =
   | "noImage"
   | "customUrl"
   | "uploadMenuPhoto"
+  | "menuPhotoLibrary"
+  | "menuPhotoLibraryBody"
+  | "menuPhotoEmpty"
+  | "samplePhotos"
   | "pricePlaceholder"
   | "activeOnCustomerMenu"
   | "updateItem"
@@ -563,6 +567,11 @@ const en: Messages = {
   noImage: "No image",
   customUrl: "Custom URL…",
   uploadMenuPhoto: "Upload menu photo",
+  menuPhotoLibrary: "This restaurant’s photos",
+  menuPhotoLibraryBody:
+    "Upload once, then tap a photo to assign it to the dish. Each restaurant has its own library.",
+  menuPhotoEmpty: "No uploads yet. Add a photo for this restaurant.",
+  samplePhotos: "Sample photos",
   pricePlaceholder: "Price",
   activeOnCustomerMenu: "Active on customer menu",
   updateItem: "Update item",
@@ -869,6 +878,11 @@ const fi: Messages = {
   noImage: "Ei kuvaa",
   customUrl: "Oma URL…",
   uploadMenuPhoto: "Lataa menukuva",
+  menuPhotoLibrary: "Tämän ravintolan kuvat",
+  menuPhotoLibraryBody:
+    "Lataa kerran ja valitse kuva napauttamalla. Jokaisella ravintolalla on oma kuvakirjasto.",
+  menuPhotoEmpty: "Ei latauksia vielä. Lisää kuva tälle ravintolalle.",
+  samplePhotos: "Esimerkkikuvat",
   pricePlaceholder: "Hinta",
   activeOnCustomerMenu: "Näkyy asiakasmenussa",
   updateItem: "Päivitä annos",
@@ -1173,6 +1187,11 @@ const ar: Messages = {
   noImage: "بدون صورة",
   customUrl: "رابط مخصص…",
   uploadMenuPhoto: "رفع صورة القائمة",
+  menuPhotoLibrary: "صور هذا المطعم",
+  menuPhotoLibraryBody:
+    "ارفع الصورة مرة ثم اضغط عليها لتعيينها للصنف. لكل مطعم مكتبته الخاصة.",
+  menuPhotoEmpty: "لا توجد صور بعد. أضف صورة لهذا المطعم.",
+  samplePhotos: "صور جاهزة",
   pricePlaceholder: "السعر",
   activeOnCustomerMenu: "ظاهر في قائمة العملاء",
   updateItem: "تحديث الصنف",
@@ -1480,6 +1499,11 @@ const so: Messages = {
   noImage: "Sawir malaha",
   customUrl: "URL gaar ah…",
   uploadMenuPhoto: "Soo rar sawirka liiska",
+  menuPhotoLibrary: "Sawirada makhaayaddan",
+  menuPhotoLibraryBody:
+    "Soo rar mar, ka dib taabo si aad ugu xirto cuntada. Makhaayad walba waxay leedahay maktabadeeda.",
+  menuPhotoEmpty: "Weli lama soo rarin. Ku dar sawir makhaayaddan.",
+  samplePhotos: "Sawirada tusaalaha",
   pricePlaceholder: "Qiimaha",
   activeOnCustomerMenu: "Ka muuqda liiska macaamiisha",
   updateItem: "Cusbooneysii cuntada",

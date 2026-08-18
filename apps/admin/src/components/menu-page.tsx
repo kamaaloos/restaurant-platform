@@ -5,7 +5,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminApi } from "@/lib/api";
 import {
   LOCAL_MENU_IMAGE_OPTIONS,
+  isRemoteMenuImage,
   menuImagePreviewSrc,
+  uniqueRemoteMenuImages,
 } from "@/lib/menu-images";
 import type { MenuCategory, MenuItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
@@ -71,6 +73,20 @@ export function MenuPage() {
   });
 
   const categories = categoriesQuery.data ?? [];
+  const items = itemsQuery.data ?? [];
+  const selectedRestaurant = restaurants.find((r) => r.id === restaurantId);
+  const photoLibrary = uniqueRemoteMenuImages(
+    selectedRestaurant?.menuImageUrls,
+    items.map((item) => item.imageUrl),
+  );
+
+  async function persistPhotoLibrary(urls: string[]) {
+    if (!restaurantId) return;
+    await adminApi.updateRestaurant(restaurantId, {
+      menuImageUrls: uniqueRemoteMenuImages(urls).slice(0, 80),
+    });
+    void queryClient.invalidateQueries({ queryKey: ["admin-restaurants"] });
+  }
 
   React.useEffect(() => {
     setFilterCategoryId("all");
@@ -161,7 +177,10 @@ export function MenuPage() {
         restaurantId,
       });
     },
-    onSuccess: () => {
+    onSuccess: (item) => {
+      if (isRemoteMenuImage(item.imageUrl)) {
+        void persistPhotoLibrary([...photoLibrary, item.imageUrl!]);
+      }
       setEditingItemId(null);
       setItemForm(
         emptyItemForm(
@@ -261,8 +280,6 @@ export function MenuPage() {
     }
     deleteItem.mutate(item.id);
   }
-
-  const items = itemsQuery.data ?? [];
 
   return (
     <div>
@@ -405,39 +422,91 @@ export function MenuPage() {
             className="min-h-24 w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3 py-2"
           />
           <div className="space-y-2">
-            <select
-              value={
-                LOCAL_MENU_IMAGE_OPTIONS.some((o) => o.key === itemForm.imageUrl)
-                  ? itemForm.imageUrl
-                  : itemForm.imageUrl
-                    ? "__custom__"
+            <p className="text-sm font-medium">{t("menuPhotoLibrary")}</p>
+            <p className="text-xs text-[var(--muted)]">
+              {t("menuPhotoLibraryBody")}
+            </p>
+            {photoLibrary.length === 0 ? (
+              <p className="text-sm text-[var(--muted)]">{t("menuPhotoEmpty")}</p>
+            ) : (
+              <div className="grid grid-cols-4 gap-2 sm:grid-cols-6">
+                {photoLibrary.map((url) => {
+                  const selected = itemForm.imageUrl === url;
+                  return (
+                    <button
+                      key={url}
+                      type="button"
+                      onClick={() =>
+                        setItemForm((f) => ({
+                          ...f,
+                          imageUrl: selected ? "" : url,
+                        }))
+                      }
+                      className={`overflow-hidden rounded-lg ring-2 ${
+                        selected
+                          ? "ring-[var(--accent)]"
+                          : "ring-transparent hover:ring-[var(--line)]"
+                      }`}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={url}
+                        alt=""
+                        className="aspect-square h-16 w-full object-cover sm:h-20"
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+            <div className="flex flex-wrap items-center gap-2">
+              <ImageUploadButton
+                label={t("uploadMenuPhoto")}
+                restaurantId={restaurantId}
+                onUploaded={(url) => {
+                  setItemForm((f) => ({ ...f, imageUrl: url }));
+                  void persistPhotoLibrary([...photoLibrary, url]);
+                }}
+              />
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => setItemForm((f) => ({ ...f, imageUrl: "" }))}
+              >
+                {t("noImage")}
+              </Button>
+            </div>
+            <details className="rounded-md border border-[var(--line)] bg-[var(--paper)] px-3 py-2">
+              <summary className="cursor-pointer text-sm text-[var(--muted)]">
+                {t("samplePhotos")}
+              </summary>
+              <select
+                value={
+                  LOCAL_MENU_IMAGE_OPTIONS.some(
+                    (o) => o.key === itemForm.imageUrl,
+                  )
+                    ? itemForm.imageUrl
                     : ""
-              }
-              onChange={(e) => {
-                const v = e.target.value;
-                if (v === "__custom__") {
-                  setItemForm((f) => ({
-                    ...f,
-                    imageUrl: /^https?:\/\//i.test(f.imageUrl)
-                      ? f.imageUrl
-                      : "https://",
-                  }));
-                  return;
                 }
-                setItemForm((f) => ({ ...f, imageUrl: v }));
-              }}
-              className="h-11 w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
-            >
-              <option value="">{t("noImage")}</option>
-              {LOCAL_MENU_IMAGE_OPTIONS.map((opt) => (
-                <option key={opt.key} value={opt.key}>
-                  {opt.label}
-                </option>
-              ))}
-              <option value="__custom__">{t("customUrl")}</option>
-            </select>
+                onChange={(e) =>
+                  setItemForm((f) => ({ ...f, imageUrl: e.target.value }))
+                }
+                className="mt-2 h-11 w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
+              >
+                <option value="">{t("noImage")}</option>
+                {LOCAL_MENU_IMAGE_OPTIONS.map((opt) => (
+                  <option key={opt.key} value={opt.key}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </details>
             {itemForm.imageUrl &&
-            !LOCAL_MENU_IMAGE_OPTIONS.some((o) => o.key === itemForm.imageUrl) ? (
+            !LOCAL_MENU_IMAGE_OPTIONS.some(
+              (o) => o.key === itemForm.imageUrl,
+            ) &&
+            !photoLibrary.includes(itemForm.imageUrl) ? (
               <input
                 value={itemForm.imageUrl}
                 onChange={(e) =>
@@ -448,12 +517,6 @@ export function MenuPage() {
                 type="url"
               />
             ) : null}
-            <ImageUploadButton
-              label={t("uploadMenuPhoto")}
-              onUploaded={(url) =>
-                setItemForm((f) => ({ ...f, imageUrl: url }))
-              }
-            />
             {menuImagePreviewSrc(itemForm.imageUrl) ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img

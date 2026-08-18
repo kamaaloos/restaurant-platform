@@ -131,6 +131,27 @@ export function resolveMenuImage(
   return null;
 }
 
+export function isRemoteMenuImage(url: string | null | undefined): boolean {
+  return !!url && /^https?:\/\//i.test(url.trim());
+}
+
+export function uniqueRemoteMenuImages(
+  ...lists: Array<Iterable<string | null | undefined> | undefined | null>
+): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const list of lists) {
+    if (!list) continue;
+    for (const raw of list) {
+      const v = raw?.trim();
+      if (!v || !isRemoteMenuImage(v) || seen.has(v)) continue;
+      seen.add(v);
+      out.push(v);
+    }
+  }
+  return out;
+}
+
 export function menuImagePreviewSrc(
   imageUrl: string | null | undefined,
 ): string | null {

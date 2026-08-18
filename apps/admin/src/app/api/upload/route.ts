@@ -43,7 +43,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
-  const profile = (await profileRes.json()) as { role?: string };
+  const profile = (await profileRes.json()) as {
+    role?: string;
+    restaurantId?: string | null;
+  };
   if (!profile.role || !STAFF_ROLES.has(profile.role)) {
     return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
@@ -66,8 +69,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  const requestedRestaurant =
+    typeof form.get("restaurantId") === "string"
+      ? String(form.get("restaurantId")).trim()
+      : "";
+  const restaurantId =
+    profile.role === "PLATFORM_ADMIN"
+      ? requestedRestaurant
+      : (profile.restaurantId ?? requestedRestaurant);
+
   const safeName = file.name.replace(/[^\w.\-]+/g, "_").slice(0, 80);
-  const pathname = `restaurant-platform/${Date.now()}-${safeName}`;
+  const pathname = restaurantId
+    ? `restaurant-platform/${restaurantId}/menu/${Date.now()}-${safeName}`
+    : `restaurant-platform/${Date.now()}-${safeName}`;
 
   const blob = await put(pathname, file, {
     access: "public",

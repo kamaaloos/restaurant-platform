@@ -39,6 +39,7 @@ export type Restaurant = {
   brandBackgroundUrls?: string[];
   qrFrameColor?: string | null;
   qrModuleColor?: string | null;
+  menuImageUrls?: string[];
   active?: boolean;
 };
 

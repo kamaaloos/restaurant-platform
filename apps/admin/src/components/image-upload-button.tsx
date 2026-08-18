@@ -8,9 +8,11 @@ import { useLocale } from "@/lib/i18n/locale-provider";
 export function ImageUploadButton({
   onUploaded,
   label,
+  restaurantId,
 }: {
   onUploaded: (url: string) => void;
   label?: string;
+  restaurantId?: string;
 }) {
   const { t } = useLocale();
   const buttonLabel = label ?? t("uploadImage");
@@ -23,7 +25,10 @@ export function ImageUploadButton({
     setBusy(true);
     setError(null);
     try {
-      const result = await adminApi.uploadImage(file);
+      const result = await adminApi.uploadImage(
+        file,
+        restaurantId ? { restaurantId } : undefined,
+      );
       onUploaded(result.url);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("uploadFailed"));

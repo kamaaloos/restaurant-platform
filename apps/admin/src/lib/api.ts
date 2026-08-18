@@ -96,6 +96,7 @@ export const adminApi = {
       brandBackgroundUrls?: string[] | null;
       qrFrameColor?: string | null;
       qrModuleColor?: string | null;
+      menuImageUrls?: string[] | null;
     },
   ) =>
     request<Restaurant>(`/restaurants/${id}`, {
@@ -288,10 +289,11 @@ export const adminApi = {
         : "/orders/kitchen/dashboard",
     ),
 
-  uploadImage: async (file: File) => {
+  uploadImage: async (file: File, opts?: { restaurantId?: string }) => {
     const token = getAccessToken();
     const body = new FormData();
     body.append("file", file);
+    if (opts?.restaurantId) body.append("restaurantId", opts.restaurantId);
     const res = await fetch("/api/upload", {
       method: "POST",
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
