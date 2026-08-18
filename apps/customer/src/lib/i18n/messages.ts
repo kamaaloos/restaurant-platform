@@ -215,7 +215,83 @@ export type MessageKey =
   | "catSalads"
   | "catStarters"
   | "catMainDishes"
-  | "catMains";
+  | "catMains"
+  | "hubContact"
+  | "hubContactUs"
+  | "hubExploreProducts"
+  | "hubGetStarted"
+  | "hubHeroEyebrow"
+  | "hubHeroTitleBefore"
+  | "hubHeroTitleAfter"
+  | "hubHeroWordRestaurants"
+  | "hubHeroWordSchools"
+  | "hubHeroWordHealthcare"
+  | "hubHeroWordRetail"
+  | "hubHeroLead"
+  | "hubHeroPills"
+  | "hubWhyTitle"
+  | "hubFeatFast"
+  | "hubFeatSecure"
+  | "hubFeatMobile"
+  | "hubFeatLanguage"
+  | "hubFeatCloud"
+  | "hubFeatAnalytics"
+  | "hubProductsEyebrow"
+  | "hubProductsTitle"
+  | "hubProductRestaurant"
+  | "hubProductDugsi"
+  | "hubFeatureQr"
+  | "hubFeatureKds"
+  | "hubFeaturePos"
+  | "hubFeatureWaiter"
+  | "hubFeatureTables"
+  | "hubFeaturePickup"
+  | "hubFeatureStudents"
+  | "hubFeatureTeachers"
+  | "hubFeatureAttendance"
+  | "hubFeatureExams"
+  | "hubFeatureFinance"
+  | "hubFeatureReports"
+  | "hubCtaRestaurant"
+  | "hubCtaDugsi"
+  | "hubEcosystemTitle"
+  | "hubAvailableToday"
+  | "hubComingSoon"
+  | "hubSoonClinic"
+  | "hubSoonRetail"
+  | "hubSoonLogistics"
+  | "hubSoonHr"
+  | "hubTrustedEyebrow"
+  | "hubStatBusinesses"
+  | "hubStatUsers"
+  | "hubStatUptime"
+  | "hubStatSupport"
+  | "hubScreensTitle"
+  | "hubScreensBody"
+  | "hubRestaurantDash"
+  | "hubDugsiDash"
+  | "hubMockToday"
+  | "hubMockLiveFloor"
+  | "hubMockOpenOrders"
+  | "hubMockTables"
+  | "hubMockKitchenWait"
+  | "hubMockRevenue"
+  | "hubMockDashboard"
+  | "hubMockOrders"
+  | "hubMockMenu"
+  | "hubMockSpring"
+  | "hubMockStudents"
+  | "hubMockEnrolled"
+  | "hubMockAttendance"
+  | "hubCtaTitle"
+  | "hubCtaBody"
+  | "hubFooterBlurb"
+  | "hubFooterProducts"
+  | "hubFooterCompany"
+  | "hubFooterAbout"
+  | "hubFooterPrivacy"
+  | "hubFooterTerms"
+  | "hubFooterCredit";
 
 export type Messages = Record<MessageKey, string>;
 
@@ -454,6 +530,85 @@ const en: Messages = {
   catStarters: "Starters",
   catMainDishes: "Main dishes",
   catMains: "Mains",
+  hubContact: "Contact",
+  hubContactUs: "Contact us",
+  hubExploreProducts: "Explore products",
+  hubGetStarted: "Get started",
+  hubHeroEyebrow: "One platform. Multiple businesses.",
+  hubHeroTitleBefore: "Build smarter",
+  hubHeroTitleAfter: "with modern software.",
+  hubHeroWordRestaurants: "restaurants",
+  hubHeroWordSchools: "schools",
+  hubHeroWordHealthcare: "clinics",
+  hubHeroWordRetail: "stores",
+  hubHeroLead:
+    "Modern cloud software for restaurants, schools, healthcare, retail, and growing organizations.",
+  hubHeroPills: "Restaurant POS · School management · More coming",
+  hubWhyTitle: "Why MayleSoft?",
+  hubFeatFast: "Fast cloud platform",
+  hubFeatSecure: "Secure",
+  hubFeatMobile: "Mobile friendly",
+  hubFeatLanguage: "Multi-language",
+  hubFeatCloud: "Cloud hosted",
+  hubFeatAnalytics: "Real-time analytics",
+  hubProductsEyebrow: "Our products",
+  hubProductsTitle: "Premium platforms, ready today",
+  hubProductRestaurant: "Restaurant platform",
+  hubProductDugsi: "Dugsi",
+  hubFeatureQr: "QR ordering",
+  hubFeatureKds: "Kitchen display",
+  hubFeaturePos: "POS & till",
+  hubFeatureWaiter: "Waiter display",
+  hubFeatureTables: "Table management",
+  hubFeaturePickup: "Pickup TV",
+  hubFeatureStudents: "Students",
+  hubFeatureTeachers: "Teachers",
+  hubFeatureAttendance: "Attendance",
+  hubFeatureExams: "Exams",
+  hubFeatureFinance: "Finance",
+  hubFeatureReports: "Reports",
+  hubCtaRestaurant: "Open platform",
+  hubCtaDugsi: "Open Dugsi",
+  hubEcosystemTitle: "The MayleSoft ecosystem",
+  hubAvailableToday: "Available today",
+  hubComingSoon: "Coming soon",
+  hubSoonClinic: "Clinic management",
+  hubSoonRetail: "Retail POS",
+  hubSoonLogistics: "Logistics",
+  hubSoonHr: "HR & payroll",
+  hubTrustedEyebrow: "Trusted by growing businesses",
+  hubStatBusinesses: "Businesses",
+  hubStatUsers: "Users",
+  hubStatUptime: "Uptime",
+  hubStatSupport: "Support",
+  hubScreensTitle: "Built for real operations",
+  hubScreensBody:
+    "Clean dashboards your team actually uses — from the floor to the classroom.",
+  hubRestaurantDash: "Restaurant dashboard",
+  hubDugsiDash: "Dugsi dashboard",
+  hubMockToday: "Today",
+  hubMockLiveFloor: "Live floor",
+  hubMockOpenOrders: "Open orders",
+  hubMockTables: "Tables",
+  hubMockKitchenWait: "Kitchen wait",
+  hubMockRevenue: "Revenue",
+  hubMockDashboard: "Dashboard",
+  hubMockOrders: "Orders",
+  hubMockMenu: "Menu",
+  hubMockSpring: "Spring term",
+  hubMockStudents: "Students overview",
+  hubMockEnrolled: "enrolled",
+  hubMockAttendance: "attendance",
+  hubCtaTitle: "Ready to transform your business?",
+  hubCtaBody: "Explore our platforms today.",
+  hubFooterBlurb:
+    "Modern cloud software for restaurants, schools, and growing organizations.",
+  hubFooterProducts: "Products",
+  hubFooterCompany: "Company",
+  hubFooterAbout: "About",
+  hubFooterPrivacy: "Privacy",
+  hubFooterTerms: "Terms",
+  hubFooterCredit: "© 2026 MayleSoft · Designed by Eng. Hasan Kamaal",
 };
 
 const fi: Messages = {
@@ -694,6 +849,85 @@ const fi: Messages = {
   catStarters: "Alkuruuat",
   catMainDishes: "Pääruoat",
   catMains: "Pääruoat",
+  hubContact: "Yhteys",
+  hubContactUs: "Ota yhteyttä",
+  hubExploreProducts: "Tutustu tuotteisiin",
+  hubGetStarted: "Aloita",
+  hubHeroEyebrow: "Yksi alusta. Useita liiketoimintoja.",
+  hubHeroTitleBefore: "Rakenna fiksumpia",
+  hubHeroTitleAfter: "nykyaikaisella ohjelmistolla.",
+  hubHeroWordRestaurants: "ravintoloita",
+  hubHeroWordSchools: "kouluja",
+  hubHeroWordHealthcare: "klinikoita",
+  hubHeroWordRetail: "myymälöitä",
+  hubHeroLead:
+    "Nykyaikainen pilviohjelmisto ravintoloille, kouluille, terveydenhuollolle, vähittäiskaupalle ja kasvaville organisaatioille.",
+  hubHeroPills: "Ravintola-POS · Kouluhallinta · Lisää tulossa",
+  hubWhyTitle: "Miksi MayleSoft?",
+  hubFeatFast: "Nopea pilvialusta",
+  hubFeatSecure: "Turvallinen",
+  hubFeatMobile: "Mobiiliystävällinen",
+  hubFeatLanguage: "Monikielinen",
+  hubFeatCloud: "Pilvessä",
+  hubFeatAnalytics: "Reaaliaikainen analytiikka",
+  hubProductsEyebrow: "Tuotteemme",
+  hubProductsTitle: "Ensiluokkaiset alustat, käytössä jo tänään",
+  hubProductRestaurant: "Ravintola-alusta",
+  hubProductDugsi: "Dugsi",
+  hubFeatureQr: "QR-tilaus",
+  hubFeatureKds: "Keittiönäyttö",
+  hubFeaturePos: "Kassa",
+  hubFeatureWaiter: "Tarjoilijanäyttö",
+  hubFeatureTables: "Pöytähallinta",
+  hubFeaturePickup: "Nouto-TV",
+  hubFeatureStudents: "Oppilaat",
+  hubFeatureTeachers: "Opettajat",
+  hubFeatureAttendance: "Läsnäolo",
+  hubFeatureExams: "Kokeet",
+  hubFeatureFinance: "Talous",
+  hubFeatureReports: "Raportit",
+  hubCtaRestaurant: "Avaa alusta",
+  hubCtaDugsi: "Avaa Dugsi",
+  hubEcosystemTitle: "MayleSoft-ekosysteemi",
+  hubAvailableToday: "Saatavilla nyt",
+  hubComingSoon: "Tulossa",
+  hubSoonClinic: "Klinikkahallinta",
+  hubSoonRetail: "Vähittäiskaupan kassa",
+  hubSoonLogistics: "Logistiikka",
+  hubSoonHr: "HR ja palkanlaskenta",
+  hubTrustedEyebrow: "Kasvavien yritysten luottama",
+  hubStatBusinesses: "Yritystä",
+  hubStatUsers: "Käyttäjää",
+  hubStatUptime: "Käyttöaika",
+  hubStatSupport: "Tuki",
+  hubScreensTitle: "Rakennettu oikeaan arkeen",
+  hubScreensBody:
+    "Selkeät näkymät, joita tiimi oikeasti käyttää — salista luokkahuoneeseen.",
+  hubRestaurantDash: "Ravintolan hallinta",
+  hubDugsiDash: "Dugsi-hallinta",
+  hubMockToday: "Tänään",
+  hubMockLiveFloor: "Sali live",
+  hubMockOpenOrders: "Avoimet tilaukset",
+  hubMockTables: "Pöydät",
+  hubMockKitchenWait: "Keittiöjono",
+  hubMockRevenue: "Myynti",
+  hubMockDashboard: "Hallinta",
+  hubMockOrders: "Tilaukset",
+  hubMockMenu: "Lista",
+  hubMockSpring: "Kevätlukukausi",
+  hubMockStudents: "Oppilaskatsaus",
+  hubMockEnrolled: "ilmoittautunut",
+  hubMockAttendance: "läsnäolo",
+  hubCtaTitle: "Valmis uudistamaan liiketoimintasi?",
+  hubCtaBody: "Tutustu alustoihimme jo tänään.",
+  hubFooterBlurb:
+    "Nykyaikainen pilviohjelmisto ravintoloille, kouluille ja kasvaville organisaatioille.",
+  hubFooterProducts: "Tuotteet",
+  hubFooterCompany: "Yritys",
+  hubFooterAbout: "Tietoa",
+  hubFooterPrivacy: "Tietosuoja",
+  hubFooterTerms: "Ehdot",
+  hubFooterCredit: "© 2026 MayleSoft · Suunnittelu: ins. Hasan Kamaal",
 };
 
 const ar: Messages = {
@@ -929,6 +1163,85 @@ const ar: Messages = {
   catStarters: "مقبلات",
   catMainDishes: "أطباق رئيسية",
   catMains: "أطباق رئيسية",
+  hubContact: "تواصل",
+  hubContactUs: "تواصل معنا",
+  hubExploreProducts: "استكشف المنتجات",
+  hubGetStarted: "ابدأ الآن",
+  hubHeroEyebrow: "منصة واحدة. أعمال متعددة.",
+  hubHeroTitleBefore: "ابنِ",
+  hubHeroTitleAfter: "أذكى ببرمجيات حديثة.",
+  hubHeroWordRestaurants: "مطاعم",
+  hubHeroWordSchools: "مدارس",
+  hubHeroWordHealthcare: "عيادات",
+  hubHeroWordRetail: "متاجر",
+  hubHeroLead:
+    "برمجيات سحابية حديثة للمطاعم والمدارس والرعاية الصحية والتجزئة والمنظمات النامية.",
+  hubHeroPills: "نقطة بيع للمطاعم · إدارة المدارس · المزيد قادم",
+  hubWhyTitle: "لماذا MayleSoft؟",
+  hubFeatFast: "منصة سحابية سريعة",
+  hubFeatSecure: "آمنة",
+  hubFeatMobile: "متوافقة مع الجوال",
+  hubFeatLanguage: "متعددة اللغات",
+  hubFeatCloud: "مستضافة سحابياً",
+  hubFeatAnalytics: "تحليلات فورية",
+  hubProductsEyebrow: "منتجاتنا",
+  hubProductsTitle: "منصات متميزة، جاهزة اليوم",
+  hubProductRestaurant: "منصة المطاعم",
+  hubProductDugsi: "دُكسي",
+  hubFeatureQr: "طلب عبر QR",
+  hubFeatureKds: "شاشة المطبخ",
+  hubFeaturePos: "نقطة البيع",
+  hubFeatureWaiter: "شاشة النادل",
+  hubFeatureTables: "إدارة الطاولات",
+  hubFeaturePickup: "شاشة الاستلام",
+  hubFeatureStudents: "الطلاب",
+  hubFeatureTeachers: "المعلمون",
+  hubFeatureAttendance: "الحضور",
+  hubFeatureExams: "الاختبارات",
+  hubFeatureFinance: "المالية",
+  hubFeatureReports: "التقارير",
+  hubCtaRestaurant: "افتح المنصة",
+  hubCtaDugsi: "افتح دُكسي",
+  hubEcosystemTitle: "منظومة MayleSoft",
+  hubAvailableToday: "متاح اليوم",
+  hubComingSoon: "قريباً",
+  hubSoonClinic: "إدارة العيادات",
+  hubSoonRetail: "نقطة بيع للتجزئة",
+  hubSoonLogistics: "اللوجستيات",
+  hubSoonHr: "الموارد البشرية والرواتب",
+  hubTrustedEyebrow: "موثوق به من الشركات النامية",
+  hubStatBusinesses: "أعمال",
+  hubStatUsers: "مستخدمون",
+  hubStatUptime: "وقت التشغيل",
+  hubStatSupport: "دعم",
+  hubScreensTitle: "مصممة للتشغيل الحقيقي",
+  hubScreensBody:
+    "لوحات واضحة يستخدمها فريقك فعلاً — من صالة المطعم إلى الفصل.",
+  hubRestaurantDash: "لوحة المطعم",
+  hubDugsiDash: "لوحة دُكسي",
+  hubMockToday: "اليوم",
+  hubMockLiveFloor: "الصالة مباشرة",
+  hubMockOpenOrders: "طلبات مفتوحة",
+  hubMockTables: "طاولات",
+  hubMockKitchenWait: "انتظار المطبخ",
+  hubMockRevenue: "الإيرادات",
+  hubMockDashboard: "لوحة التحكم",
+  hubMockOrders: "الطلبات",
+  hubMockMenu: "القائمة",
+  hubMockSpring: "الفصل الربيعي",
+  hubMockStudents: "نظرة على الطلاب",
+  hubMockEnrolled: "مسجّل",
+  hubMockAttendance: "حضور",
+  hubCtaTitle: "هل أنت مستعد لتحويل عملك؟",
+  hubCtaBody: "استكشف منصاتنا اليوم.",
+  hubFooterBlurb:
+    "برمجيات سحابية حديثة للمطاعم والمدارس والمنظمات النامية.",
+  hubFooterProducts: "المنتجات",
+  hubFooterCompany: "الشركة",
+  hubFooterAbout: "حول",
+  hubFooterPrivacy: "الخصوصية",
+  hubFooterTerms: "الشروط",
+  hubFooterCredit: "© 2026 MayleSoft · تصميم المهندس حسن كمال",
 };
 
 const so: Messages = {
@@ -1168,6 +1481,85 @@ const so: Messages = {
   catStarters: "Bilow",
   catMainDishes: "Cuntooyinka waaweyn",
   catMains: "Cuntooyinka waaweyn",
+  hubContact: "Xiriir",
+  hubContactUs: "Nala soo xiriir",
+  hubExploreProducts: "Sahamin alaabta",
+  hubGetStarted: "Bilow",
+  hubHeroEyebrow: "Hal platform. Ganacsiyo badan.",
+  hubHeroTitleBefore: "Dhis",
+  hubHeroTitleAfter: "caqli badan software casri ah.",
+  hubHeroWordRestaurants: "makhaayado",
+  hubHeroWordSchools: "dugsiyo",
+  hubHeroWordHealthcare: "caafimaad",
+  hubHeroWordRetail: "dukaan",
+  hubHeroLead:
+    "Software daruur casri ah oo loogu talagalay makhaayadaha, dugsiyada, caafimaadka, tafaariiqda, iyo ururada koraya.",
+  hubHeroPills: "POS-ka makhaayadda · Maamulka dugsiga · Wax kale ayaa imanaya",
+  hubWhyTitle: "Maxaa MayleSoft?",
+  hubFeatFast: "Platform daruur degdeg ah",
+  hubFeatSecure: "Ammaan",
+  hubFeatMobile: "Ku habboon mobilka",
+  hubFeatLanguage: "Luqado badan",
+  hubFeatCloud: "Ku yaal daruurta",
+  hubFeatAnalytics: "Falanqayn waqtiga dhabta ah",
+  hubProductsEyebrow: "Alaabteenna",
+  hubProductsTitle: "Platform-yo heer sare ah, diyaar maanta",
+  hubProductRestaurant: "Platform-ka makhaayadda",
+  hubProductDugsi: "Dugsi",
+  hubFeatureQr: "Dalab QR",
+  hubFeatureKds: "Bandhigga jikada",
+  hubFeaturePos: "POS & khasnada",
+  hubFeatureWaiter: "Bandhigga adeegaha",
+  hubFeatureTables: "Maamulka miisaska",
+  hubFeaturePickup: "TV-ga qaadista",
+  hubFeatureStudents: "Ardayda",
+  hubFeatureTeachers: "Macallimiinta",
+  hubFeatureAttendance: "Imaanshaha",
+  hubFeatureExams: "Imtixaannada",
+  hubFeatureFinance: "Maaliyadda",
+  hubFeatureReports: "Warbixinno",
+  hubCtaRestaurant: "Fur platform-ka",
+  hubCtaDugsi: "Fur Dugsi",
+  hubEcosystemTitle: "Nidaamka MayleSoft",
+  hubAvailableToday: "Diyaar maanta",
+  hubComingSoon: "Dhawaan",
+  hubSoonClinic: "Maamulka rugta caafimaadka",
+  hubSoonRetail: "POS-ka tafaariiqda",
+  hubSoonLogistics: "Gaadiidka",
+  hubSoonHr: "HR iyo mushaharka",
+  hubTrustedEyebrow: "Ganacsiyada koraya ayaa ku kalsoon",
+  hubStatBusinesses: "Ganacsi",
+  hubStatUsers: "Isticmaalayaal",
+  hubStatUptime: "Waqtiga shaqada",
+  hubStatSupport: "Taageero",
+  hubScreensTitle: "Loo dhisay howlaha dhabta ah",
+  hubScreensBody:
+    "Dashboard-yo nadiif ah oo kooxdaadu run ahaantii isticmaasho — laga bilaabo dabaqa ilaa fasalka.",
+  hubRestaurantDash: "Dashboard-ka makhaayadda",
+  hubDugsiDash: "Dashboard-ka Dugsi",
+  hubMockToday: "Maanta",
+  hubMockLiveFloor: "Dabaqa tooska ah",
+  hubMockOpenOrders: "Dalabyo furan",
+  hubMockTables: "Miisas",
+  hubMockKitchenWait: "Sugitaanka jikada",
+  hubMockRevenue: "Dakhliga",
+  hubMockDashboard: "Dashboard",
+  hubMockOrders: "Dalabyo",
+  hubMockMenu: "Liiska",
+  hubMockSpring: "Xilliga gu'ga",
+  hubMockStudents: "Ardayda guud ahaan",
+  hubMockEnrolled: "diiwaangashan",
+  hubMockAttendance: "imaansho",
+  hubCtaTitle: "Diyaar ma u tahay inaad beddesho ganacsigaaga?",
+  hubCtaBody: "Sahamin platform-yadeenna maanta.",
+  hubFooterBlurb:
+    "Software daruur casri ah oo loogu talagalay makhaayadaha, dugsiyada, iyo ururada koraya.",
+  hubFooterProducts: "Alaabta",
+  hubFooterCompany: "Shirkadda",
+  hubFooterAbout: "Ku saabsan",
+  hubFooterPrivacy: "Asturnaanta",
+  hubFooterTerms: "Shuruudaha",
+  hubFooterCredit: "© 2026 MayleSoft · Naqshadeeyaha: Eng. Hasan Kamaal",
 };
 
 export const MESSAGES: Record<Locale, Messages> = { en, fi, ar, so };
