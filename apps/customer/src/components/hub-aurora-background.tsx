@@ -1,8 +1,10 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, type HTMLMotionProps } from "framer-motion";
 
-const BLOBS = [
+type BlobAnimate = Exclude<HTMLMotionProps<"div">["animate"], undefined>;
+
+const BLOBS: { className: string; animate: BlobAnimate; duration: number }[] = [
   {
     className:
       "absolute -left-[12%] top-[4%] h-[500px] w-[500px] rounded-full bg-[#e07a3a]/30 blur-[120px]",
@@ -33,7 +35,7 @@ const BLOBS = [
     animate: { x: [0, -40, 30, 0], y: [0, 30, -50, 0], scale: [1, 0.92, 1.18, 1] },
     duration: 34,
   },
-] as const;
+];
 
 const PARTICLES = [
   { left: "8%", size: 2, delay: 0, duration: 22 },
