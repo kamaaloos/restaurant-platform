@@ -289,8 +289,11 @@ export type MessageKey =
   | "hubFooterProducts"
   | "hubFooterCompany"
   | "hubFooterAbout"
+  | "hubFooterAboutBody"
   | "hubFooterPrivacy"
+  | "hubFooterPrivacyBody"
   | "hubFooterTerms"
+  | "hubFooterTermsBody"
   | "hubFooterCredit";
 
 export type Messages = Record<MessageKey, string>;
@@ -606,8 +609,14 @@ const en: Messages = {
   hubFooterProducts: "Products",
   hubFooterCompany: "Company",
   hubFooterAbout: "About",
+  hubFooterAboutBody:
+    "MayleSoft builds modern operational software for restaurants, schools, and growing service businesses.",
   hubFooterPrivacy: "Privacy",
+  hubFooterPrivacyBody:
+    "We only collect the information needed to deliver our services, support customers, and keep platforms secure.",
   hubFooterTerms: "Terms",
+  hubFooterTermsBody:
+    "Use of our platforms is subject to service availability, fair use, and each customer's active subscription.",
   hubFooterCredit: "© 2026 MayleSoft · Designed by Eng. Hasan Kamaal",
 };
 
@@ -925,8 +934,14 @@ const fi: Messages = {
   hubFooterProducts: "Tuotteet",
   hubFooterCompany: "Yritys",
   hubFooterAbout: "Tietoa",
+  hubFooterAboutBody:
+    "MayleSoft rakentaa moderneja toiminnanohjausohjelmistoja ravintoloille, kouluille ja kasvaville palveluyrityksille.",
   hubFooterPrivacy: "Tietosuoja",
+  hubFooterPrivacyBody:
+    "Keräämme vain palvelun toimittamiseen, asiakastukeen ja tietoturvan ylläpitoon tarvittavat tiedot.",
   hubFooterTerms: "Ehdot",
+  hubFooterTermsBody:
+    "Alustojemme käyttö edellyttää palvelun saatavuuden, kohtuullisen käytön ja asiakkaan aktiivisen tilauksen ehtojen hyväksymistä.",
   hubFooterCredit: "© 2026 MayleSoft · Suunnittelu: ins. Hasan Kamaal",
 };
 
@@ -1239,8 +1254,14 @@ const ar: Messages = {
   hubFooterProducts: "المنتجات",
   hubFooterCompany: "الشركة",
   hubFooterAbout: "حول",
+  hubFooterAboutBody:
+    "تطوّر MayleSoft برمجيات تشغيل حديثة للمطاعم والمدارس والشركات الخدمية النامية.",
   hubFooterPrivacy: "الخصوصية",
+  hubFooterPrivacyBody:
+    "نحن نجمع فقط البيانات اللازمة لتقديم خدماتنا ودعم العملاء والحفاظ على أمان المنصات.",
   hubFooterTerms: "الشروط",
+  hubFooterTermsBody:
+    "يخضع استخدام منصاتنا لتوفر الخدمة والاستخدام العادل واشتراك العميل النشط.",
   hubFooterCredit: "© 2026 MayleSoft · تصميم المهندس حسن كمال",
 };
 
@@ -1557,8 +1578,14 @@ const so: Messages = {
   hubFooterProducts: "Alaabta",
   hubFooterCompany: "Shirkadda",
   hubFooterAbout: "Ku saabsan",
+  hubFooterAboutBody:
+    "MayleSoft waxay dhistaa software hawlgal casri ah oo loogu talagalay makhaayadaha, dugsiyada, iyo ganacsiyada adeegga ee koraya.",
   hubFooterPrivacy: "Asturnaanta",
+  hubFooterPrivacyBody:
+    "Waxaan ururinnaa oo keliya xogta loo baahan yahay si aan u bixino adeegyada, u taageerno macaamiisha, una ilaalino amniga.",
   hubFooterTerms: "Shuruudaha",
+  hubFooterTermsBody:
+    "Isticmaalka platform-yadeenna wuxuu ku xiran yahay helitaanka adeegga, isticmaal cadaalad ah, iyo rukhsad firfircoon oo macaamilka ah.",
   hubFooterCredit: "© 2026 MayleSoft · Naqshadeeyaha: Eng. Hasan Kamaal",
 };
 

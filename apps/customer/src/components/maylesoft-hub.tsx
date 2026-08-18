@@ -509,22 +509,31 @@ export function MayleSoftHub() {
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-white/45">
               {t("hubFooterCompany")}
             </p>
-            <ul className="mt-4 space-y-2 text-sm">
-              <li>
+            <div className="mt-4 space-y-3 text-sm">
+              <div>
                 <Link href={CONTACT_MAIL} className="hover:text-white">
                   {t("hubContact")}
                 </Link>
-              </li>
-              <li>
-                <span className="text-white/40">{t("hubFooterAbout")}</span>
-              </li>
-              <li>
-                <span className="text-white/40">{t("hubFooterPrivacy")}</span>
-              </li>
-              <li>
-                <span className="text-white/40">{t("hubFooterTerms")}</span>
-              </li>
-            </ul>
+              </div>
+              <div>
+                <Link href="/about" className="font-medium text-white hover:text-white/80">
+                  {t("hubFooterAbout")}
+                </Link>
+              </div>
+              <div>
+                <Link
+                  href="/privacy"
+                  className="font-medium text-white hover:text-white/80"
+                >
+                  {t("hubFooterPrivacy")}
+                </Link>
+              </div>
+              <div>
+                <Link href="/terms" className="font-medium text-white hover:text-white/80">
+                  {t("hubFooterTerms")}
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
         <p className="mx-auto mt-12 max-w-6xl border-t border-white/10 pt-8 text-center text-xs text-white/40">
