@@ -16,6 +16,7 @@ import {
   UtensilsCrossed,
   Zap,
 } from "lucide-react";
+import { HubAuroraBackground } from "@/components/hub-aurora-background";
 import { restaurantMarketingOrigin } from "@/lib/tenant-host";
 
 const ROOT_DOMAIN =
@@ -164,10 +165,10 @@ function DugsiDashboardMock() {
 
 export function MayleSoftHub() {
   return (
-    <div className="hub-page bg-[#f8f5ef] text-[#1c1917]">
-      <div className="hub-mesh pointer-events-none fixed inset-0 -z-10" aria-hidden />
+    <div className="hub-page relative isolate min-h-screen overflow-x-hidden text-[#1c1917]">
+      <HubAuroraBackground />
 
-      <header className="sticky top-0 z-50 border-b border-[#1c1917]/6 bg-[#f8f5ef]/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-[#1c1917]/6 bg-[#f8f5ef]/55 backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
           <Link href="/" className="flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -182,17 +183,14 @@ export function MayleSoftHub() {
           </Link>
           <Link
             href={CONTACT_MAIL}
-            className="rounded-full border border-[#1c1917]/12 bg-white/70 px-4 py-2 text-sm font-medium transition hover:border-[#e07a3a]/40 hover:bg-white"
+            className="hub-glass rounded-full px-4 py-2 text-sm font-medium transition hover:border-[#e07a3a]/40 hover:bg-white/80"
           >
             Contact
           </Link>
         </div>
       </header>
 
-      <section className="relative overflow-hidden px-4 pb-20 pt-16 sm:px-6 sm:pt-24">
-        <div className="hub-blob hub-blob-a" aria-hidden />
-        <div className="hub-blob hub-blob-b" aria-hidden />
-
+      <section className="relative z-10 overflow-hidden px-4 pb-20 pt-16 sm:px-6 sm:pt-24">
         <div className="relative mx-auto max-w-6xl text-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
@@ -225,7 +223,7 @@ export function MayleSoftHub() {
             </a>
             <Link
               href={CONTACT_MAIL}
-              className="inline-flex items-center rounded-full border border-[#1c1917]/12 bg-white/80 px-6 py-3.5 text-sm font-semibold transition hover:bg-white"
+              className="hub-glass inline-flex items-center rounded-full px-6 py-3.5 text-sm font-semibold transition hover:bg-white/80"
             >
               Contact us
             </Link>
@@ -233,7 +231,7 @@ export function MayleSoftHub() {
         </div>
       </section>
 
-      <section className="border-y border-[#1c1917]/6 bg-white/40 px-4 py-16 sm:px-6">
+      <section className="relative z-10 border-y border-[#1c1917]/6 bg-white/20 px-4 py-16 sm:px-6">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-center font-[family-name:var(--font-display)] text-3xl tracking-tight sm:text-4xl">
             Why MayleSoft?
@@ -242,7 +240,7 @@ export function MayleSoftHub() {
             {TRUST_FEATURES.map(({ icon: Icon, label }) => (
               <li
                 key={label}
-                className="hub-card-lift flex items-center gap-4 rounded-2xl border border-[#1c1917]/8 bg-white/75 px-5 py-4 shadow-sm backdrop-blur-sm"
+                className="hub-card-lift hub-glass flex items-center gap-4 rounded-2xl px-5 py-4"
               >
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#e07a3a]/12 text-[#e07a3a]">
                   <Icon className="h-5 w-5" strokeWidth={1.75} />
@@ -254,7 +252,7 @@ export function MayleSoftHub() {
         </div>
       </section>
 
-      <section id="products" className="px-4 py-20 sm:px-6 sm:py-28">
+      <section id="products" className="relative z-10 px-4 py-20 sm:px-6 sm:py-28">
         <div className="mx-auto max-w-6xl">
           <p className="text-center text-xs font-semibold uppercase tracking-[0.22em] text-[#e07a3a]">
             Our products
@@ -266,16 +264,18 @@ export function MayleSoftHub() {
           <ul className="mt-12 grid gap-6 lg:grid-cols-2">
             {PRODUCTS.map(({ icon: Icon, name, gradient, features, href, cta }) => (
               <li key={name}>
-                <article
-                  className={`hub-card-lift group flex h-full flex-col rounded-3xl border border-[#1c1917]/8 bg-gradient-to-br ${gradient} bg-white/90 p-8 shadow-xl shadow-[#1c1917]/6`}
-                >
-                  <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1c1917] text-white shadow-md">
+                <article className="hub-card-lift hub-glass group relative flex h-full flex-col overflow-hidden rounded-3xl p-8">
+                  <div
+                    className={`pointer-events-none absolute inset-0 bg-linear-to-br ${gradient}`}
+                    aria-hidden
+                  />
+                  <span className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1c1917] text-white shadow-md">
                     <Icon className="h-7 w-7" strokeWidth={1.5} />
                   </span>
-                  <h3 className="mt-6 text-2xl font-semibold tracking-tight">
+                  <h3 className="relative mt-6 text-2xl font-semibold tracking-tight">
                     {name}
                   </h3>
-                  <ul className="mt-5 flex flex-1 flex-col gap-2.5">
+                  <ul className="relative mt-5 flex flex-1 flex-col gap-2.5">
                     {features.map((f) => (
                       <li
                         key={f}
@@ -288,7 +288,7 @@ export function MayleSoftHub() {
                   </ul>
                   <Link
                     href={href}
-                    className="mt-8 inline-flex w-fit items-center gap-2 rounded-full bg-[#1c1917] px-5 py-3 text-sm font-semibold text-white transition group-hover:bg-[#e07a3a]"
+                    className="relative mt-8 inline-flex w-fit items-center gap-2 rounded-full bg-[#1c1917] px-5 py-3 text-sm font-semibold text-white transition group-hover:bg-[#e07a3a]"
                   >
                     {cta}
                     <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
@@ -300,7 +300,7 @@ export function MayleSoftHub() {
         </div>
       </section>
 
-      <section className="border-y border-[#1c1917]/6 bg-[#f3efe8] px-4 py-16 sm:px-6">
+      <section className="relative z-10 border-y border-[#1c1917]/6 bg-[#1c1917]/3 px-4 py-16 sm:px-6">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-center font-[family-name:var(--font-display)] text-3xl tracking-tight">
             The MayleSoft ecosystem
@@ -314,7 +314,7 @@ export function MayleSoftHub() {
                 {PRODUCTS.map(({ icon: Icon, name }) => (
                   <li
                     key={name}
-                    className="flex items-center gap-3 rounded-2xl border border-[#1c1917]/8 bg-white/80 px-4 py-3 shadow-sm"
+                    className="hub-glass flex items-center gap-3 rounded-2xl px-4 py-3"
                   >
                     <Icon className="h-5 w-5 text-[#e07a3a]" strokeWidth={1.75} />
                     <span className="font-medium">{name}</span>
@@ -330,7 +330,7 @@ export function MayleSoftHub() {
                 {COMING_SOON.map(({ icon: Icon, name }) => (
                   <li
                     key={name}
-                    className="flex items-center gap-3 rounded-2xl border border-dashed border-[#1c1917]/15 bg-white/50 px-4 py-3 text-[#6b6560]"
+                    className="flex items-center gap-3 rounded-2xl border border-dashed border-[#1c1917]/15 bg-white/30 px-4 py-3 text-[#6b6560] backdrop-blur-md"
                   >
                     <Icon className="h-5 w-5 opacity-60" strokeWidth={1.75} />
                     <span>{name}</span>
@@ -342,7 +342,7 @@ export function MayleSoftHub() {
         </div>
       </section>
 
-      <section className="px-4 py-16 sm:px-6">
+      <section className="relative z-10 px-4 py-16 sm:px-6">
         <div className="mx-auto max-w-6xl">
           <p className="text-center text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6560]">
             Trusted by growing businesses
@@ -351,7 +351,7 @@ export function MayleSoftHub() {
             {STATS.map(({ value, label }) => (
               <li
                 key={label}
-                className="rounded-3xl border border-[#1c1917]/8 bg-white/80 px-4 py-8 text-center shadow-sm"
+                className="hub-glass rounded-3xl px-4 py-8 text-center"
               >
                 <p className="font-[family-name:var(--font-display)] text-3xl tracking-tight text-[#e07a3a] sm:text-4xl">
                   {value}
@@ -365,7 +365,7 @@ export function MayleSoftHub() {
         </div>
       </section>
 
-      <section className="bg-white/50 px-4 py-20 sm:px-6">
+      <section className="relative z-10 bg-white/15 px-4 py-20 sm:px-6">
         <div className="mx-auto max-w-6xl">
           <h2 className="text-center font-[family-name:var(--font-display)] text-3xl tracking-tight sm:text-4xl">
             Built for real operations
@@ -391,7 +391,7 @@ export function MayleSoftHub() {
         </div>
       </section>
 
-      <section className="relative overflow-hidden px-4 py-24 sm:px-6">
+      <section className="relative z-10 overflow-hidden px-4 py-24 sm:px-6">
         <div className="hub-cta-glow absolute inset-0 -z-10" aria-hidden />
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="font-[family-name:var(--font-display)] text-3xl tracking-tight sm:text-4xl">
@@ -410,7 +410,7 @@ export function MayleSoftHub() {
         </div>
       </section>
 
-      <footer className="border-t border-[#1c1917]/8 bg-[#1c1917] px-4 py-14 text-white/75 sm:px-6">
+      <footer className="relative z-10 border-t border-[#1c1917]/8 bg-[#1c1917] px-4 py-14 text-white/75 sm:px-6">
         <div className="mx-auto grid max-w-6xl gap-10 sm:grid-cols-2 lg:grid-cols-4">
           <div className="sm:col-span-2 lg:col-span-1">
             <p className="font-[family-name:var(--font-display)] text-2xl text-white">
