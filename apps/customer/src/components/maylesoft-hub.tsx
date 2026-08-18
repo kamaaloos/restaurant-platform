@@ -95,9 +95,9 @@ function HeroWording() {
   const word = t(HERO_WORDS[index]);
 
   return (
-    <h1 className="mx-auto mt-5 max-w-4xl font-[family-name:var(--font-display)] text-[2.75rem] leading-[1.15] tracking-tight sm:text-6xl lg:text-[4.25rem]">
+    <h1 className="mx-auto mt-4 max-w-4xl text-balance font-[family-name:var(--font-display)] text-[2.2rem] leading-[1.08] tracking-tight sm:mt-5 sm:text-6xl lg:text-[4.25rem]">
       <span className="landing-hero-line2">{t("hubHeroTitleBefore")} </span>
-      <span className="relative inline-flex h-[1.2em] min-w-[4.5ch] items-center overflow-hidden align-bottom">
+      <span className="relative inline-flex h-[1.2em] min-w-[5.5ch] items-center justify-center overflow-hidden align-bottom sm:min-w-[4.5ch]">
         <AnimatePresence mode="wait" initial={false}>
           <motion.span
             key={`${locale}-${HERO_WORDS[index]}`}
@@ -241,25 +241,25 @@ export function MayleSoftHub() {
       <HubAuroraBackground />
 
       <header className="sticky top-0 z-50 border-b border-[#1c1917]/6 bg-[#f8f5ef]/55 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:px-6">
-          <Link href="/" className="flex items-center gap-3">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:flex-nowrap sm:px-6 sm:py-4">
+          <Link href="/" className="min-w-0 flex items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/brand/maylesoft-logo.png"
               alt="MayleSoft"
               className="h-11 w-11 rounded-2xl object-cover shadow-sm"
             />
-            <span className="font-[family-name:var(--font-display)] text-xl tracking-tight sm:text-2xl">
+            <span className="truncate font-[family-name:var(--font-display)] text-lg tracking-tight sm:text-2xl">
               MayleSoft
             </span>
           </Link>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="hub-lang">
+          <div className="flex w-full items-center gap-2 sm:w-auto sm:justify-end sm:gap-3">
+            <div className="hub-lang min-w-0 flex-1 sm:flex-none">
               <LanguageSwitcher />
             </div>
             <Link
               href={CONTACT_MAIL}
-              className="hub-glass rounded-full px-4 py-2 text-sm font-medium transition hover:border-[#e07a3a]/40 hover:bg-white/80"
+              className="hub-glass inline-flex shrink-0 items-center justify-center rounded-full px-4 py-2 text-sm font-medium transition hover:border-[#e07a3a]/40 hover:bg-white/80"
             >
               {t("hubContact")}
             </Link>
@@ -267,37 +267,37 @@ export function MayleSoftHub() {
         </div>
       </header>
 
-      <section className="relative z-10 overflow-hidden px-4 pb-20 pt-16 sm:px-6 sm:pt-24">
+      <section className="relative z-10 overflow-hidden px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-24">
         <div className="relative mx-auto max-w-6xl text-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/images/brand/maylesoft-logo.png"
             alt=""
-            className="landing-brand-zoom mx-auto h-20 w-20 rounded-3xl object-cover shadow-lg ring-4 ring-white/60 sm:h-24 sm:w-24"
+            className="landing-brand-zoom mx-auto h-16 w-16 rounded-3xl object-cover shadow-lg ring-4 ring-white/60 sm:h-24 sm:w-24"
           />
 
-          <p className="landing-hero-line1 mt-8 text-xs font-semibold uppercase tracking-[0.28em] text-[#e07a3a]">
+          <p className="landing-hero-line1 mt-6 text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-[#e07a3a] sm:mt-8 sm:text-xs sm:tracking-[0.28em]">
             {t("hubHeroEyebrow")}
           </p>
           <HeroWording />
-          <p className="landing-hero-lead mx-auto mt-6 max-w-2xl text-base leading-relaxed text-[#6b6560] sm:text-lg">
+          <p className="landing-hero-lead mx-auto mt-5 max-w-xl text-sm leading-relaxed text-[#6b6560] sm:mt-6 sm:max-w-2xl sm:text-lg">
             {t("hubHeroLead")}
           </p>
-          <p className="landing-hero-lead mt-4 text-sm font-medium text-[#1c1917]/70 sm:text-base">
+          <p className="landing-hero-lead mt-3 text-xs font-medium text-[#1c1917]/70 sm:mt-4 sm:text-base">
             {t("hubHeroPills")}
           </p>
 
-          <div className="landing-hero-cta mt-10 flex flex-wrap items-center justify-center gap-3">
+          <div className="landing-hero-cta mt-8 flex flex-col items-stretch justify-center gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center">
             <a
               href="#products"
-              className="inline-flex items-center gap-2 rounded-full bg-[#e07a3a] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#e07a3a]/25 transition hover:brightness-110"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#e07a3a] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#e07a3a]/25 transition hover:brightness-110 sm:w-auto"
             >
               {t("hubExploreProducts")}
               <ArrowRight className="h-4 w-4" />
             </a>
             <Link
               href={CONTACT_MAIL}
-              className="hub-glass inline-flex items-center rounded-full px-6 py-3.5 text-sm font-semibold transition hover:bg-white/80"
+              className="hub-glass inline-flex w-full items-center justify-center rounded-full px-6 py-3.5 text-sm font-semibold transition hover:bg-white/80 sm:w-auto"
             >
               {t("hubContactUs")}
             </Link>
@@ -305,16 +305,16 @@ export function MayleSoftHub() {
         </div>
       </section>
 
-      <section className="relative z-10 border-y border-[#1c1917]/6 bg-white/20 px-4 py-16 sm:px-6">
+      <section className="relative z-10 border-y border-[#1c1917]/6 bg-white/20 px-4 py-12 sm:px-6 sm:py-16">
         <div className="mx-auto max-w-6xl">
-          <h2 className="text-center font-[family-name:var(--font-display)] text-3xl tracking-tight sm:text-4xl">
+          <h2 className="text-center font-[family-name:var(--font-display)] text-2xl tracking-tight sm:text-4xl">
             {t("hubWhyTitle")}
           </h2>
-          <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-8 grid gap-3 sm:mt-10 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
             {TRUST_FEATURES.map(({ icon: Icon, key }) => (
               <li
                 key={key}
-                className="hub-card-lift hub-glass flex items-center gap-4 rounded-2xl px-5 py-4"
+                className="hub-card-lift hub-glass flex items-center gap-3 rounded-2xl px-4 py-3.5 sm:gap-4 sm:px-5 sm:py-4"
               >
                 <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#e07a3a]/12 text-[#e07a3a]">
                   <Icon className="h-5 w-5" strokeWidth={1.75} />
@@ -326,20 +326,20 @@ export function MayleSoftHub() {
         </div>
       </section>
 
-      <section id="products" className="relative z-10 px-4 py-20 sm:px-6 sm:py-28">
+      <section id="products" className="relative z-10 px-4 py-16 sm:px-6 sm:py-28">
         <div className="mx-auto max-w-6xl">
           <p className="text-center text-xs font-semibold uppercase tracking-[0.22em] text-[#e07a3a]">
             {t("hubProductsEyebrow")}
           </p>
-          <h2 className="mt-3 text-center font-[family-name:var(--font-display)] text-3xl tracking-tight sm:text-4xl">
+          <h2 className="mt-3 text-center font-[family-name:var(--font-display)] text-2xl tracking-tight sm:text-4xl">
             {t("hubProductsTitle")}
           </h2>
 
-          <ul className="mt-12 grid gap-6 lg:grid-cols-2">
+          <ul className="mt-8 grid gap-4 sm:mt-12 sm:gap-6 lg:grid-cols-2">
             {products.map(
               ({ icon: Icon, nameKey, gradient, features, href, ctaKey }) => (
                 <li key={nameKey}>
-                  <article className="hub-card-lift hub-glass group relative flex h-full flex-col overflow-hidden rounded-3xl p-8">
+                  <article className="hub-card-lift hub-glass group relative flex h-full flex-col overflow-hidden rounded-3xl p-5 sm:p-8">
                     <div
                       className={`pointer-events-none absolute inset-0 bg-linear-to-br ${gradient}`}
                       aria-hidden
@@ -347,14 +347,14 @@ export function MayleSoftHub() {
                     <span className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1c1917] text-white shadow-md">
                       <Icon className="h-7 w-7" strokeWidth={1.5} />
                     </span>
-                    <h3 className="relative mt-6 text-2xl font-semibold tracking-tight">
+                    <h3 className="relative mt-5 text-xl font-semibold tracking-tight sm:mt-6 sm:text-2xl">
                       {t(nameKey)}
                     </h3>
-                    <ul className="relative mt-5 flex flex-1 flex-col gap-2.5">
+                    <ul className="relative mt-4 flex flex-1 flex-col gap-2 sm:mt-5 sm:gap-2.5">
                       {features.map((f) => (
                         <li
                           key={f}
-                          className="flex items-center gap-2 text-sm text-[#6b6560]"
+                          className="flex items-center gap-2 text-sm leading-relaxed text-[#6b6560]"
                         >
                           <span className="h-1.5 w-1.5 rounded-full bg-[#e07a3a]" />
                           {t(f)}
@@ -363,7 +363,7 @@ export function MayleSoftHub() {
                     </ul>
                     <Link
                       href={href}
-                      className="relative mt-8 inline-flex w-fit items-center gap-2 rounded-full bg-[#1c1917] px-5 py-3 text-sm font-semibold text-white transition group-hover:bg-[#e07a3a]"
+                      className="relative mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#1c1917] px-5 py-3 text-sm font-semibold text-white transition group-hover:bg-[#e07a3a] sm:mt-8 sm:w-fit"
                     >
                       {t(ctaKey)}
                       <ArrowRight className="h-4 w-4 transition group-hover:translate-x-0.5" />
@@ -376,12 +376,12 @@ export function MayleSoftHub() {
         </div>
       </section>
 
-      <section className="relative z-10 border-y border-[#1c1917]/6 bg-[#1c1917]/3 px-4 py-16 sm:px-6">
+      <section className="relative z-10 border-y border-[#1c1917]/6 bg-[#1c1917]/3 px-4 py-12 sm:px-6 sm:py-16">
         <div className="mx-auto max-w-6xl">
-          <h2 className="text-center font-[family-name:var(--font-display)] text-3xl tracking-tight">
+          <h2 className="text-center font-[family-name:var(--font-display)] text-2xl tracking-tight sm:text-3xl">
             {t("hubEcosystemTitle")}
           </h2>
-          <div className="mt-12 grid gap-10 lg:grid-cols-2">
+          <div className="mt-8 grid gap-8 sm:mt-12 sm:gap-10 lg:grid-cols-2">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#2d6a4f]">
                 {t("hubAvailableToday")}
@@ -418,33 +418,33 @@ export function MayleSoftHub() {
         </div>
       </section>
 
-      <section className="relative z-10 px-4 py-16 sm:px-6">
+      <section className="relative z-10 px-4 py-12 sm:px-6 sm:py-16">
         <div className="mx-auto max-w-6xl">
           <p className="text-center text-xs font-semibold uppercase tracking-[0.22em] text-[#6b6560]">
             {t("hubTrustedEyebrow")}
           </p>
-          <ul className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <ul className="mt-8 grid grid-cols-2 gap-3 sm:mt-10 sm:gap-4 sm:grid-cols-4">
             {STATS.map(({ value, key }) => (
-              <li key={key} className="hub-glass rounded-3xl px-4 py-8 text-center">
-                <p className="font-[family-name:var(--font-display)] text-3xl tracking-tight text-[#e07a3a] sm:text-4xl">
+              <li key={key} className="hub-glass rounded-3xl px-3 py-6 text-center sm:px-4 sm:py-8">
+                <p className="font-[family-name:var(--font-display)] text-2xl tracking-tight text-[#e07a3a] sm:text-4xl">
                   {value}
                 </p>
-                <p className="mt-2 text-sm font-medium text-[#6b6560]">{t(key)}</p>
+                <p className="mt-1.5 text-xs font-medium text-[#6b6560] sm:mt-2 sm:text-sm">{t(key)}</p>
               </li>
             ))}
           </ul>
         </div>
       </section>
 
-      <section className="relative z-10 bg-white/15 px-4 py-20 sm:px-6">
+      <section className="relative z-10 bg-white/15 px-4 py-16 sm:px-6 sm:py-20">
         <div className="mx-auto max-w-6xl">
-          <h2 className="text-center font-[family-name:var(--font-display)] text-3xl tracking-tight sm:text-4xl">
+          <h2 className="text-center font-[family-name:var(--font-display)] text-2xl tracking-tight sm:text-4xl">
             {t("hubScreensTitle")}
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-center text-[#6b6560]">
             {t("hubScreensBody")}
           </p>
-          <div className="mt-12 grid gap-8 lg:grid-cols-2">
+          <div className="mt-8 grid gap-6 sm:mt-12 sm:gap-8 lg:grid-cols-2">
             <div>
               <p className="mb-4 text-sm font-semibold text-[#1c1917]">
                 {t("hubRestaurantDash")}
@@ -461,16 +461,16 @@ export function MayleSoftHub() {
         </div>
       </section>
 
-      <section className="relative z-10 overflow-hidden px-4 py-24 sm:px-6">
+      <section className="relative z-10 overflow-hidden px-4 py-16 sm:px-6 sm:py-24">
         <div className="hub-cta-glow absolute inset-0 -z-10" aria-hidden />
         <div className="mx-auto max-w-3xl text-center">
-          <h2 className="font-[family-name:var(--font-display)] text-3xl tracking-tight sm:text-4xl">
+          <h2 className="font-[family-name:var(--font-display)] text-2xl tracking-tight sm:text-4xl">
             {t("hubCtaTitle")}
           </h2>
-          <p className="mt-4 text-lg text-[#6b6560]">{t("hubCtaBody")}</p>
+          <p className="mt-3 text-base text-[#6b6560] sm:mt-4 sm:text-lg">{t("hubCtaBody")}</p>
           <a
             href="#products"
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-[#e07a3a] px-8 py-4 text-base font-semibold text-white shadow-xl shadow-[#e07a3a]/30 transition hover:brightness-110"
+            className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#e07a3a] px-8 py-4 text-base font-semibold text-white shadow-xl shadow-[#e07a3a]/30 transition hover:brightness-110 sm:mt-8 sm:w-auto"
           >
             {t("hubGetStarted")}
             <ArrowRight className="h-5 w-5" />
@@ -478,8 +478,8 @@ export function MayleSoftHub() {
         </div>
       </section>
 
-      <footer className="relative z-10 border-t border-[#1c1917]/8 bg-[#1c1917] px-4 py-14 text-white/75 sm:px-6">
-        <div className="mx-auto grid max-w-6xl gap-10 sm:grid-cols-2 lg:grid-cols-4">
+      <footer className="relative z-10 border-t border-[#1c1917]/8 bg-[#1c1917] px-4 py-12 text-white/75 sm:px-6 sm:py-14">
+        <div className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
           <div className="sm:col-span-2 lg:col-span-1">
             <p className="font-[family-name:var(--font-display)] text-2xl text-white">
               MayleSoft
