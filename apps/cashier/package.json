@@ -1,6 +1,8 @@
 {
   "name": "cashier",
   "version": "0.1.0",
+  "description": "MayleSoft till — walk-in checkout, payments, and pickup board pairing.",
+  "author": "Eng. Hassan Kamal",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack --port 3005",

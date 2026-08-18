@@ -1,6 +1,8 @@
 {
   "name": "kitchen",
   "version": "0.1.0",
+  "description": "MayleSoft kitchen display — live tickets, prep status, and order timing.",
+  "author": "Eng. Hassan Kamal",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack --port 3002",

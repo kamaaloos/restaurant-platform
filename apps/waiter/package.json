@@ -1,6 +1,8 @@
 {
   "name": "waiter",
   "version": "0.1.0",
+  "description": "MayleSoft waiter app — table service, floor requests, and order follow-up.",
+  "author": "Eng. Hassan Kamal",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack --port 3003",

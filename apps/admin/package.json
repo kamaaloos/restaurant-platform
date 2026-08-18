@@ -1,6 +1,8 @@
 {
   "name": "admin",
   "version": "0.1.0",
+  "description": "MayleSoft admin console — restaurants, menus, tables, devices, and branding.",
+  "author": "Eng. Hassan Kamal",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack --port 3004",
