@@ -71,6 +71,8 @@ export const adminApi = {
     brandPaper?: string | null;
     brandBackgroundUrl?: string | null;
     brandBackgroundUrls?: string[] | null;
+    qrFrameColor?: string | null;
+    qrModuleColor?: string | null;
   }) =>
     request<Restaurant>("/restaurants", {
       method: "POST",
@@ -92,6 +94,8 @@ export const adminApi = {
       brandPaper?: string | null;
       brandBackgroundUrl?: string | null;
       brandBackgroundUrls?: string[] | null;
+      qrFrameColor?: string | null;
+      qrModuleColor?: string | null;
     },
   ) =>
     request<Restaurant>(`/restaurants/${id}`, {

@@ -10,6 +10,7 @@ import { PageHeader } from "@/components/page-header";
 import { ImageUploadButton } from "@/components/image-upload-button";
 import { BrandBackgroundGallery } from "@/components/brand-background-gallery";
 import { restaurantGuestOrigin } from "@/lib/guest-origin";
+import { DEFAULT_QR_FRAME, DEFAULT_QR_MODULE, qrPrintColors } from "@/lib/qr-print-card";
 import { useLocale } from "@/lib/i18n/locale-provider";
 
 /** Apex used for Pattern B tenant hosts (alhuda.maylesoft.com). */
@@ -36,6 +37,8 @@ type RestaurantFormState = {
   brandButton: string;
   brandPaper: string;
   brandBackgroundUrls: string[];
+  qrFrameColor: string;
+  qrModuleColor: string;
   active: boolean;
 };
 
@@ -50,6 +53,8 @@ const emptyForm: RestaurantFormState = {
   brandButton: DEFAULT_BRAND.button,
   brandPaper: DEFAULT_BRAND.paper,
   brandBackgroundUrls: [],
+  qrFrameColor: DEFAULT_QR_FRAME,
+  qrModuleColor: DEFAULT_QR_MODULE,
   active: true,
 };
 
@@ -66,13 +71,18 @@ function brandFieldsFromRestaurant(restaurant: Restaurant): Pick<
   | "brandButton"
   | "brandPaper"
   | "brandBackgroundUrls"
+  | "qrFrameColor"
+  | "qrModuleColor"
 > {
+  const qr = qrPrintColors(restaurant);
   return {
     logoUrl: restaurant.logoUrl ?? "",
     brandAccent: restaurant.brandAccent ?? DEFAULT_BRAND.accent,
     brandButton: restaurant.brandButton ?? DEFAULT_BRAND.button,
     brandPaper: restaurant.brandPaper ?? DEFAULT_BRAND.paper,
     brandBackgroundUrls: backgroundUrlsFromRestaurant(restaurant),
+    qrFrameColor: qr.frame,
+    qrModuleColor: qr.module,
   };
 }
 
@@ -138,6 +148,8 @@ export function RestaurantsPage() {
         brandPaper: form.brandPaper.trim() || null,
         brandBackgroundUrls: form.brandBackgroundUrls,
         brandBackgroundUrl: form.brandBackgroundUrls[0] ?? null,
+        qrFrameColor: form.qrFrameColor.trim() || null,
+        qrModuleColor: form.qrModuleColor.trim() || null,
       };
       if (editingId) {
         return adminApi.updateRestaurant(editingId, {
@@ -229,12 +241,16 @@ export function RestaurantsPage() {
     brandButton: string;
     brandPaper: string;
     brandBackgroundUrls: string[];
+    qrFrameColor: string;
+    qrModuleColor: string;
   }>({
     logoUrl: "",
     brandAccent: DEFAULT_BRAND.accent,
     brandButton: DEFAULT_BRAND.button,
     brandPaper: DEFAULT_BRAND.paper,
     brandBackgroundUrls: [],
+    qrFrameColor: DEFAULT_QR_FRAME,
+    qrModuleColor: DEFAULT_QR_MODULE,
   });
   const [brandError, setBrandError] = React.useState<string | null>(null);
   const [brandSuccess, setBrandSuccess] = React.useState<string | null>(null);
@@ -263,6 +279,8 @@ export function RestaurantsPage() {
     ownedRestaurant?.brandPaper,
     ownedRestaurant?.brandBackgroundUrl,
     ownedRestaurant?.brandBackgroundUrls,
+    ownedRestaurant?.qrFrameColor,
+    ownedRestaurant?.qrModuleColor,
   ]);
 
   const saveOwnerBrand = useMutation({
@@ -275,6 +293,8 @@ export function RestaurantsPage() {
         brandPaper: ownerBrand.brandPaper.trim() || null,
         brandBackgroundUrls: ownerBrand.brandBackgroundUrls,
         brandBackgroundUrl: ownerBrand.brandBackgroundUrls[0] ?? null,
+        qrFrameColor: ownerBrand.qrFrameColor.trim() || null,
+        qrModuleColor: ownerBrand.qrModuleColor.trim() || null,
       });
     },
     onSuccess: () => {
@@ -479,6 +499,54 @@ export function RestaurantsPage() {
               </div>
             </label>
           </div>
+          <div className="md:col-span-2 space-y-2">
+            <p className="text-sm font-medium">{t("qrStyleTitle")}</p>
+            <p className="text-xs text-[var(--muted)]">{t("qrStyleBody")}</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="space-y-1.5 text-sm">
+                <span className="font-medium text-[var(--muted)]">{t("qrFrameColor")}</span>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={form.qrFrameColor}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, qrFrameColor: e.target.value }))
+                    }
+                    className="h-10 w-12 cursor-pointer rounded border border-[var(--line)] bg-transparent p-1"
+                  />
+                  <input
+                    value={form.qrFrameColor}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, qrFrameColor: e.target.value }))
+                    }
+                    className={inputClass}
+                    pattern="^#[0-9A-Fa-f]{6}$"
+                  />
+                </div>
+              </label>
+              <label className="space-y-1.5 text-sm">
+                <span className="font-medium text-[var(--muted)]">{t("qrModuleColor")}</span>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={form.qrModuleColor}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, qrModuleColor: e.target.value }))
+                    }
+                    className="h-10 w-12 cursor-pointer rounded border border-[var(--line)] bg-transparent p-1"
+                  />
+                  <input
+                    value={form.qrModuleColor}
+                    onChange={(e) =>
+                      setForm((f) => ({ ...f, qrModuleColor: e.target.value }))
+                    }
+                    className={inputClass}
+                    pattern="^#[0-9A-Fa-f]{6}$"
+                  />
+                </div>
+              </label>
+            </div>
+          </div>
           <BrandBackgroundGallery
             urls={form.brandBackgroundUrls}
             onChange={(brandBackgroundUrls) =>
@@ -643,6 +711,66 @@ export function RestaurantsPage() {
                 />
               </div>
             </label>
+          </div>
+          <div className="md:col-span-2 space-y-2">
+            <p className="text-sm font-medium">{t("qrStyleTitle")}</p>
+            <p className="text-xs text-[var(--muted)]">{t("qrStyleBody")}</p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <label className="space-y-1.5 text-sm">
+                <span className="font-medium text-[var(--muted)]">{t("qrFrameColor")}</span>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={ownerBrand.qrFrameColor}
+                    onChange={(e) =>
+                      setOwnerBrand((b) => ({
+                        ...b,
+                        qrFrameColor: e.target.value,
+                      }))
+                    }
+                    className="h-10 w-12 cursor-pointer rounded border border-[var(--line)] bg-transparent p-1"
+                  />
+                  <input
+                    value={ownerBrand.qrFrameColor}
+                    onChange={(e) =>
+                      setOwnerBrand((b) => ({
+                        ...b,
+                        qrFrameColor: e.target.value,
+                      }))
+                    }
+                    className={inputClass}
+                    pattern="^#[0-9A-Fa-f]{6}$"
+                  />
+                </div>
+              </label>
+              <label className="space-y-1.5 text-sm">
+                <span className="font-medium text-[var(--muted)]">{t("qrModuleColor")}</span>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={ownerBrand.qrModuleColor}
+                    onChange={(e) =>
+                      setOwnerBrand((b) => ({
+                        ...b,
+                        qrModuleColor: e.target.value,
+                      }))
+                    }
+                    className="h-10 w-12 cursor-pointer rounded border border-[var(--line)] bg-transparent p-1"
+                  />
+                  <input
+                    value={ownerBrand.qrModuleColor}
+                    onChange={(e) =>
+                      setOwnerBrand((b) => ({
+                        ...b,
+                        qrModuleColor: e.target.value,
+                      }))
+                    }
+                    className={inputClass}
+                    pattern="^#[0-9A-Fa-f]{6}$"
+                  />
+                </div>
+              </label>
+            </div>
           </div>
           <BrandBackgroundGallery
             urls={ownerBrand.brandBackgroundUrls}

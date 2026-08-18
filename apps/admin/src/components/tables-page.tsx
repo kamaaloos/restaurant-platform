@@ -16,15 +16,46 @@ import {
   useSelectedRestaurant,
 } from "@/hooks/use-selected-restaurant";
 import { restaurantGuestOrigin } from "@/lib/guest-origin";
+import {
+  buildTableQrPrintHtml,
+  escapeHtml,
+  hexColor,
+  qrPrintColors,
+  DEFAULT_QR_FRAME,
+  DEFAULT_QR_MODULE,
+} from "@/lib/qr-print-card";
 import { useLocale } from "@/lib/i18n/locale-provider";
 import { TABLE_STATUS_MESSAGE } from "@/lib/i18n/labels";
+import { ImageUploadButton } from "@/components/image-upload-button";
 
-function escapeHtml(value: string) {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;");
+function ColorField({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label className="space-y-1.5 text-sm">
+      <span className="font-medium text-[var(--muted)]">{label}</span>
+      <div className="flex items-center gap-2">
+        <input
+          type="color"
+          value={hexColor(value, "#000000")}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-10 w-12 cursor-pointer rounded border border-[var(--line)] bg-transparent p-1"
+        />
+        <input
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-11 min-w-0 flex-1 rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
+          pattern="^#[0-9A-Fa-f]{6}$"
+        />
+      </div>
+    </label>
+  );
 }
 
 export function TablesPage() {
@@ -43,6 +74,9 @@ export function TablesPage() {
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [copied, setCopied] = React.useState<string | null>(null);
+  const [qrFrameColor, setQrFrameColor] = React.useState(DEFAULT_QR_FRAME);
+  const [qrModuleColor, setQrModuleColor] = React.useState(DEFAULT_QR_MODULE);
+  const [qrLogoUrl, setQrLogoUrl] = React.useState("");
 
   const tablesQuery = useQuery({
     queryKey: ["admin-tables", branchId],
@@ -124,6 +158,34 @@ export function TablesPage() {
   const branchName = branches.find((b) => b.id === branchId)?.name ?? "";
   const guestOrigin = restaurantGuestOrigin(selectedRestaurant?.slug);
 
+  React.useEffect(() => {
+    const colors = qrPrintColors(selectedRestaurant);
+    setQrFrameColor(colors.frame);
+    setQrModuleColor(colors.module);
+    setQrLogoUrl(selectedRestaurant?.logoUrl ?? "");
+  }, [
+    selectedRestaurant?.id,
+    selectedRestaurant?.qrFrameColor,
+    selectedRestaurant?.qrModuleColor,
+    selectedRestaurant?.logoUrl,
+  ]);
+
+  const saveQrStyle = useMutation({
+    mutationFn: () => {
+      if (!restaurantId) throw new Error(t("selectRestaurantFirst"));
+      return adminApi.updateRestaurant(restaurantId, {
+        qrFrameColor: hexColor(qrFrameColor, DEFAULT_QR_FRAME),
+        qrModuleColor: hexColor(qrModuleColor, DEFAULT_QR_MODULE),
+        logoUrl: qrLogoUrl.trim() || null,
+      });
+    },
+    onSuccess: () => {
+      setError(null);
+      void queryClient.invalidateQueries({ queryKey: ["admin-restaurants"] });
+    },
+    onError: (err: Error) => setError(err.message),
+  });
+
   async function copyQrLink(token: string) {
     const url = `${guestOrigin}/t/${token}`;
     await navigator.clipboard.writeText(url);
@@ -134,45 +196,47 @@ export function TablesPage() {
   async function printTableQr(tableNumber: string, token: string) {
     // Open synchronously from the click. `noopener` makes window.open()
     // return null while still leaving a blank about:blank tab.
-    const w = window.open("", "_blank", "width=480,height=720");
+    const w = window.open("", "_blank", "width=480,height=780");
     if (!w) {
       setError(t("printPopupBlocked"));
       return;
     }
     w.document.write(
-      `<!DOCTYPE html><html><body style="font-family:Georgia,serif;text-align:center;padding:48px;color:#444">${escapeHtml(t("loadingTables"))}</body></html>`,
+      `<!DOCTYPE html><html><body style="font-family:Arial,sans-serif;text-align:center;padding:48px;color:#444">${escapeHtml(t("loadingTables"))}</body></html>`,
     );
     w.document.close();
 
     try {
       const url = `${guestOrigin}/t/${token}`;
+      const frame = hexColor(qrFrameColor, DEFAULT_QR_FRAME);
+      const module = hexColor(qrModuleColor, DEFAULT_QR_MODULE);
       const qr = await QRCode.toDataURL(url, {
-        width: 512,
-        margin: 2,
-        color: { dark: "#111111", light: "#ffffff" },
+        width: 640,
+        margin: 1,
+        errorCorrectionLevel: "H",
+        color: { dark: module, light: "#ffffff" },
       });
+      const logoRaw = qrLogoUrl.trim();
+      const logoUrl = logoRaw
+        ? new URL(logoRaw, window.location.origin).href
+        : "";
+      const placeLine = [restaurantName, branchName].filter(Boolean).join(" · ");
       w.document.open();
-      w.document.write(`<!DOCTYPE html>
-<html lang="${escapeHtml(locale)}" dir="${dir}">
-<head>
-  <title>${escapeHtml(t("qrPrintTitle", { number: tableNumber }))}</title>
-  <style>
-    body { font-family: Georgia, serif; text-align: center; padding: 32px; color: #111; }
-    h1 { font-size: 28px; margin: 0 0 4px; }
-    p { margin: 4px 0; color: #444; }
-    img { width: 280px; height: 280px; margin: 24px 0; }
-    .hint { font-size: 13px; }
-    @media print { button { display: none; } }
-  </style>
-</head>
-<body>
-  <h1>${escapeHtml(t("colTable"))} ${escapeHtml(tableNumber)}</h1>
-  <p>${escapeHtml(restaurantName)}${branchName ? ` · ${escapeHtml(branchName)}` : ""}</p>
-  <img src="${qr}" alt="${escapeHtml(t("qrPrintTitle", { number: tableNumber }))}" />
-  <p class="hint">${escapeHtml(t("printScanToOrder"))}</p>
-  <button onclick="window.print()">${escapeHtml(t("printButton"))}</button>
-</body>
-</html>`);
+      w.document.write(
+        buildTableQrPrintHtml({
+          locale,
+          dir,
+          title: t("qrPrintTitle", { number: tableNumber }),
+          scanLabel: t("qrScanMe"),
+          tableLabel: t("colTable"),
+          tableNumber,
+          placeLine,
+          printLabel: t("printButton"),
+          qrDataUrl: qr,
+          logoUrl: logoUrl || null,
+          frameColor: frame,
+        }),
+      );
       w.document.close();
       w.focus();
     } catch (err) {
@@ -202,6 +266,63 @@ export function TablesPage() {
           disabled={branchesLoading || !restaurantId}
         />
       </div>
+
+      <section className="mb-8 max-w-3xl space-y-3 rounded-xl border border-[var(--line)] bg-[var(--surface)] p-4">
+        <div>
+          <h2 className="text-lg font-semibold">{t("qrStyleTitle")}</h2>
+          <p className="mt-1 text-sm text-[var(--muted)]">{t("qrStyleBody")}</p>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <ColorField
+            label={t("qrFrameColor")}
+            value={qrFrameColor}
+            onChange={setQrFrameColor}
+          />
+          <ColorField
+            label={t("qrModuleColor")}
+            value={qrModuleColor}
+            onChange={setQrModuleColor}
+          />
+        </div>
+        <div className="space-y-2">
+          <span className="text-sm font-medium text-[var(--muted)]">
+            {t("logo")}
+          </span>
+          <p className="text-xs text-[var(--muted)]">{t("qrLogoHint")}</p>
+          <div className="flex flex-wrap items-center gap-2">
+            <ImageUploadButton
+              label={t("uploadLogo")}
+              onUploaded={(url) => setQrLogoUrl(url)}
+            />
+            <input
+              value={qrLogoUrl}
+              onChange={(e) => setQrLogoUrl(e.target.value)}
+              placeholder={t("pasteLogoUrl")}
+              className="h-11 min-w-[12rem] flex-1 rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
+            />
+          </div>
+          {qrLogoUrl.trim() ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={qrLogoUrl.trim()}
+              alt=""
+              className="h-14 w-14 rounded-lg bg-white object-contain p-1 ring-2 ring-[var(--line)]"
+            />
+          ) : null}
+        </div>
+        <Button
+          type="button"
+          variant="outline"
+          disabled={!restaurantId || saveQrStyle.isPending}
+          onClick={() => saveQrStyle.mutate()}
+        >
+          {saveQrStyle.isPending
+            ? t("saving")
+            : saveQrStyle.isSuccess
+              ? t("qrStyleSaved")
+              : t("saveQrStyle")}
+        </Button>
+      </section>
 
       <form
         className="mb-8 grid gap-3 rounded-xl border border-[var(--line)] bg-[var(--surface)] p-4 md:grid-cols-[1fr_120px_auto_auto]"

@@ -115,6 +115,14 @@ export type MessageKey =
   | "printButton"
   | "printPopupBlocked"
   | "qrPrintTitle"
+  | "qrScanMe"
+  | "qrStyleTitle"
+  | "qrStyleBody"
+  | "qrFrameColor"
+  | "qrModuleColor"
+  | "qrLogoHint"
+  | "saveQrStyle"
+  | "qrStyleSaved"
   | "statusAvailable"
   | "statusOccupied"
   | "statusReserved"
@@ -399,6 +407,15 @@ const en: Messages = {
   printButton: "Print",
   printPopupBlocked: "Allow pop-ups for this site to print the QR code.",
   qrPrintTitle: "Table {number} QR",
+  qrScanMe: "Scan Me",
+  qrStyleTitle: "QR card style",
+  qrStyleBody:
+    "Colors and logo for printed table QR cards (Scan Me + tray).",
+  qrFrameColor: "Frame & heading",
+  qrModuleColor: "QR color",
+  qrLogoHint: "Shown in the center of the code. Use a square logo.",
+  saveQrStyle: "Save QR style",
+  qrStyleSaved: "QR print style saved.",
   statusAvailable: "Available",
   statusOccupied: "Occupied",
   statusReserved: "Reserved",
@@ -696,6 +713,15 @@ const fi: Messages = {
   printButton: "Tulosta",
   printPopupBlocked: "Salli ponnahdusikkunat tälle sivustolle QR-koodin tulostamiseksi.",
   qrPrintTitle: "Pöytä {number} QR",
+  qrScanMe: "Skannaa",
+  qrStyleTitle: "QR-kortin tyyli",
+  qrStyleBody:
+    "Värit ja logo tulostettaville pöytä-QR-korteille (Skannaa + tarjotin).",
+  qrFrameColor: "Kehys ja otsikko",
+  qrModuleColor: "QR-väri",
+  qrLogoHint: "Näkyy koodin keskellä. Käytä neliölogoa.",
+  saveQrStyle: "Tallenna QR-tyyli",
+  qrStyleSaved: "QR-tulostustyyli tallennettu.",
   statusAvailable: "Vapaa",
   statusOccupied: "Varattu",
   statusReserved: "Varattu etukäteen",
@@ -993,6 +1019,14 @@ const ar: Messages = {
   printButton: "طباعة",
   printPopupBlocked: "اسمح بالنوافذ المنبثقة لهذا الموقع لطباعة رمز QR.",
   qrPrintTitle: "QR الطاولة {number}",
+  qrScanMe: "امسحني",
+  qrStyleTitle: "أسلوب بطاقة QR",
+  qrStyleBody: "الألوان والشعار لبطاقات QR المطبوعة على الطاولات.",
+  qrFrameColor: "الإطار والعنوان",
+  qrModuleColor: "لون QR",
+  qrLogoHint: "يظهر في وسط الرمز. استخدم شعاراً مربعاً.",
+  saveQrStyle: "حفظ أسلوب QR",
+  qrStyleSaved: "تم حفظ أسلوب طباعة QR.",
   statusAvailable: "متاحة",
   statusOccupied: "مشغولة",
   statusReserved: "محجوزة",
@@ -1290,6 +1324,14 @@ const so: Messages = {
   printButton: "Daabac",
   printPopupBlocked: "Oggolow daaqadaha soo baxa si aad u daabacdo QR.",
   qrPrintTitle: "QR miiska {number}",
+  qrScanMe: "Iskaanka",
+  qrStyleTitle: "Qaabka kaadhka QR",
+  qrStyleBody: "Midabada iyo calaamadda kaadhadhka QR ee miiska.",
+  qrFrameColor: "Birinta iyo cinwaanka",
+  qrModuleColor: "Midabka QR",
+  qrLogoHint: "Waxaa lagu dhex muujiyaa koodhka. Isticmaal calaamad laba jibbaaran.",
+  saveQrStyle: "Kaydi qaabka QR",
+  qrStyleSaved: "Qaabka daabacaadda QR waa la kaydiyay.",
   statusAvailable: "Banaan",
   statusOccupied: "La isticmaalayo",
   statusReserved: "La sii qabsaday",
