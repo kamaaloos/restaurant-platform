@@ -413,8 +413,105 @@ html[dir="rtl"] body {
   .landing-hero-cta,
   .landing-hero-mock,
   .landing-fade-up,
-  .landing-float {
+  .landing-float,
+  .hub-blob,
+  .hub-card-lift {
     animation: none !important;
   }
+
+  .hub-card-lift {
+    transform: none !important;
+  }
+}
+
+/* —— MayleSoft corporate hub (maylesoft.com) —— */
+.hub-page {
+  --hub-cream: #f8f5ef;
+  --hub-ink: #1c1917;
+  --hub-muted: #6b6560;
+  --hub-accent: #e07a3a;
+}
+
+.hub-mesh {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(224, 122, 58, 0.18), transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 10%, rgba(45, 106, 79, 0.12), transparent 50%),
+    linear-gradient(180deg, #faf6ef 0%, #f8f5ef 40%, #f3efe8 100%);
+}
+
+@keyframes hub-blob-float {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(2%, -3%) scale(1.05);
+  }
+  66% {
+    transform: translate(-2%, 2%) scale(0.98);
+  }
+}
+
+.hub-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.5;
+  animation: hub-blob-float 18s ease-in-out infinite;
+  will-change: transform;
+}
+
+.hub-blob-a {
+  top: 8%;
+  left: 5%;
+  width: min(420px, 55vw);
+  height: min(420px, 55vw);
+  background: radial-gradient(circle, rgba(224, 122, 58, 0.35), transparent 70%);
+}
+
+.hub-blob-b {
+  top: 20%;
+  right: 0;
+  width: min(360px, 45vw);
+  height: min(360px, 45vw);
+  background: radial-gradient(circle, rgba(64, 145, 108, 0.28), transparent 70%);
+  animation-delay: -6s;
+}
+
+.hub-card-lift {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease;
+}
+
+.hub-card-lift:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 28px 56px rgba(28, 25, 23, 0.12),
+    0 0 0 1px rgba(28, 25, 23, 0.04);
+}
+
+.hub-glass {
+  background: color-mix(in oklab, white 82%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid color-mix(in oklab, #1c1917 8%, transparent);
+}
+
+.hub-screenshot-mock {
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.hub-screenshot-mock:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 32px 64px rgba(28, 25, 23, 0.14);
+}
+
+.hub-cta-glow {
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 50%,
+    rgba(224, 122, 58, 0.12),
+    transparent 70%
+  );
 }
 
