@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { clearSession, getAccessToken, getStoredUser } from "@/lib/session";
+import { getAccessToken, getStoredUser, logoutSession, restoreSession } from "@/lib/session";
 import type { AuthUser } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 
@@ -19,19 +19,34 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<AuthUser | null>(null);
 
   React.useEffect(() => {
-    const token = getAccessToken();
-    const stored = getStoredUser();
-    if (!token || !stored) {
-      router.replace("/login");
-      return;
+    let cancelled = false;
+
+    async function hydrate() {
+      const token = getAccessToken();
+      let stored = getStoredUser();
+      if (!token || !stored) {
+        const ok = await restoreSession();
+        stored = getStoredUser();
+        if (!ok || !stored) {
+          if (!cancelled) router.replace("/login");
+          return;
+        }
+      }
+      if (!CASHIER_ROLES.has(stored.role)) {
+        await logoutSession();
+        if (!cancelled) router.replace("/login");
+        return;
+      }
+      if (!cancelled) {
+        setUser(stored);
+        setReady(true);
+      }
     }
-    if (!CASHIER_ROLES.has(stored.role)) {
-      clearSession();
-      router.replace("/login");
-      return;
-    }
-    setUser(stored);
-    setReady(true);
+
+    void hydrate();
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
   if (!ready || !user) {
@@ -54,8 +69,8 @@ function CashierShell({
 }) {
   const router = useRouter();
 
-  function logout() {
-    clearSession();
+  async function logout() {
+    await logoutSession();
     router.replace("/login");
   }
 

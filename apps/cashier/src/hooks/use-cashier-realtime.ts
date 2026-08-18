@@ -1,10 +1,15 @@
 "use client";
 
+import * as React from "react";
 import { useRealtimeSocket } from "@org/realtime";
-import { getAccessToken } from "@/lib/session";
+import { getAccessToken, subscribeAccessToken } from "@/lib/session";
 
 export function useCashierRealtime(branchId: string | null) {
-  const token = typeof window !== "undefined" ? getAccessToken() : null;
+  const [token, setToken] = React.useState<string | null>(() =>
+    typeof window !== "undefined" ? getAccessToken() : null,
+  );
+
+  React.useEffect(() => subscribeAccessToken(setToken), []);
 
   return useRealtimeSocket({
     enabled: !!token && !!branchId,

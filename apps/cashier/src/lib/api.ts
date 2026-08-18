@@ -1,5 +1,5 @@
 import { ApiError, createHttpClient } from "@org/shared";
-import { clearSession, getAccessToken } from "./session";
+import { clearSession, getAccessToken, refreshAccessToken } from "./session";
 import type {
   AuthUser,
   Branch,
@@ -12,6 +12,7 @@ export { ApiError };
 
 const request = createHttpClient({
   getAccessToken,
+  refreshAccessToken,
   onUnauthorized: () => {
     clearSession();
     if (
@@ -25,11 +26,14 @@ const request = createHttpClient({
 
 export const cashierApi = {
   login: (email: string, password: string) =>
-    request<{ access_token: string; user: AuthUser }>("/auth/login", {
-      method: "POST",
-      auth: false,
-      body: JSON.stringify({ email, password }),
-    }),
+    request<{ access_token: string; user: AuthUser; expires_in: number }>(
+      "/auth/login",
+      {
+        method: "POST",
+        auth: false,
+        body: JSON.stringify({ email, password }),
+      },
+    ),
 
   profile: () => request<AuthUser>("/profile"),
 

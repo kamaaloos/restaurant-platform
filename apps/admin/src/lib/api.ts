@@ -1,5 +1,5 @@
 import { ApiError, createHttpClient } from "@org/shared";
-import { clearSession, getAccessToken } from "./session";
+import { clearSession, getAccessToken, refreshAccessToken } from "./session";
 import type {
   AuthUser,
   Branch,
@@ -16,6 +16,7 @@ export { ApiError };
 
 const request = createHttpClient({
   getAccessToken,
+  refreshAccessToken,
   onUnauthorized: () => {
     clearSession();
     if (
@@ -29,11 +30,14 @@ const request = createHttpClient({
 
 export const adminApi = {
   login: (email: string, password: string) =>
-    request<{ access_token: string; user: AuthUser }>("/auth/login", {
-      method: "POST",
-      auth: false,
-      body: JSON.stringify({ email, password }),
-    }),
+    request<{ access_token: string; user: AuthUser; expires_in: number }>(
+      "/auth/login",
+      {
+        method: "POST",
+        auth: false,
+        body: JSON.stringify({ email, password }),
+      },
+    ),
 
   profile: () => request<AuthUser>("/profile"),
 
@@ -290,17 +294,25 @@ export const adminApi = {
     ),
 
   uploadImage: async (file: File, opts?: { restaurantId?: string }) => {
-    const token = getAccessToken();
-    const body = new FormData();
-    body.append("file", file);
-    if (opts?.restaurantId) body.append("restaurantId", opts.restaurantId);
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      body,
-    }).catch(() => {
-      throw new ApiError(0, "Cannot reach upload endpoint");
-    });
+    const send = async (token: string | null) => {
+      const body = new FormData();
+      body.append("file", file);
+      if (opts?.restaurantId) body.append("restaurantId", opts.restaurantId);
+      return fetch("/api/upload", {
+        method: "POST",
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+        body,
+      }).catch(() => {
+        throw new ApiError(0, "Cannot reach upload endpoint");
+      });
+    };
+
+    let token = getAccessToken();
+    let res = await send(token);
+    if (res.status === 401) {
+      token = await refreshAccessToken();
+      if (token) res = await send(token);
+    }
     if (res.status === 401) {
       clearSession();
       if (

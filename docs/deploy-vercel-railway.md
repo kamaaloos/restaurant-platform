@@ -51,6 +51,7 @@ Copy from `backend/.env.example`. Minimum for production:
 | `NODE_ENV` | `production` |
 | `DATABASE_URL` | Neon pooled URL |
 | `JWT_SECRET` | long random string |
+| `JWT_EXPIRES_IN` | `15m` (access token; refresh cookie is 14 days) |
 | `CORS_ORIGIN` | comma-separated Vercel production URLs (no trailing slash) |
 | `CORS_ALLOW_VERCEL_PREVIEWS` | `1` (allows `https://*.vercel.app` for PR previews) |
 | `CUSTOMER_APP_URL` | `https://your-customer.vercel.app` |

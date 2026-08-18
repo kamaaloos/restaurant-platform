@@ -4,7 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, UtensilsCrossed } from "lucide-react";
 import { adminApi } from "@/lib/api";
-import { clearSession, getAccessToken, setSession } from "@/lib/session";
+import { logoutSession, restoreSession, setSession } from "@/lib/session";
 import { Button } from "@/components/ui/button";
 import { useLocale } from "@/lib/i18n/locale-provider";
 
@@ -24,7 +24,13 @@ export function LoginForm() {
   const [pending, setPending] = React.useState(false);
 
   React.useEffect(() => {
-    if (getAccessToken()) router.replace("/");
+    let cancelled = false;
+    void restoreSession().then((ok) => {
+      if (!cancelled && ok) router.replace("/");
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
   async function onSubmit(event: React.FormEvent) {
@@ -34,7 +40,7 @@ export function LoginForm() {
     try {
       const result = await adminApi.login(email.trim(), password);
       if (!ADMIN_ROLES.has(result.user.role)) {
-        clearSession();
+        await logoutSession();
         setError(
           result.user.role === "CASHIER"
             ? t("loginCashierHint")

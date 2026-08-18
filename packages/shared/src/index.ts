@@ -1,5 +1,9 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { getApiBaseUrl, getWsBaseUrl } from "./api-url";
+
+export { getApiBaseUrl, getWsBaseUrl };
+export { createStaffSession } from "./staff-session";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -35,42 +39,6 @@ export function formatMoney(
   }).format(value);
 }
 
-/**
- * Browser `fetch` treats a host without `http(s)://` as a relative path.
- * From `/t/{token}` that becomes `/t/maylesoft.com/customer/...` (404).
- */
-function normalizeAbsoluteUrl(raw: string | undefined, fallback: string): string {
-  const value = (raw ?? fallback).trim();
-  if (!value) return fallback.replace(/\/$/, "");
-  const withScheme = /^https?:\/\//i.test(value) ? value : `https://${value}`;
-  return withScheme.replace(/\/$/, "");
-}
-
-export function getApiBaseUrl() {
-  const url = normalizeAbsoluteUrl(
-    process.env.NEXT_PUBLIC_API_URL,
-    "http://localhost:3000/api",
-  );
-  try {
-    const parsed = new URL(url);
-    // Nest is mounted at /api. A host-only env value 404s as /customer/tenants/:slug.
-    if (parsed.pathname === "" || parsed.pathname === "/") {
-      parsed.pathname = "/api";
-      return parsed.toString().replace(/\/$/, "");
-    }
-  } catch {
-    /* keep normalized host */
-  }
-  return url;
-}
-
-export function getWsBaseUrl() {
-  return normalizeAbsoluteUrl(
-    process.env.NEXT_PUBLIC_WS_URL,
-    "http://localhost:3000",
-  );
-}
-
 export class ApiError extends Error {
   status: number;
 
@@ -99,14 +67,18 @@ export type CreateHttpClientOptions = {
   getAccessToken?: () => string | null;
   getExtraHeaders?: () => Record<string, string>;
   onUnauthorized?: () => void;
+  /** Rotate the in-memory access JWT using the httpOnly refresh cookie. */
+  refreshAccessToken?: () => Promise<string | null>;
+  credentials?: RequestCredentials;
 };
 
 export function createHttpClient(options: CreateHttpClientOptions = {}) {
   const baseUrl = options.baseUrl ?? getApiBaseUrl();
 
-  return async function request<T>(
+  async function request<T>(
     path: string,
     init?: HttpRequestInit,
+    retried = false,
   ): Promise<T> {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
@@ -120,9 +92,13 @@ export function createHttpClient(options: CreateHttpClientOptions = {}) {
       if (token) headers.Authorization = `Bearer ${token}`;
     }
 
+    const { auth: _auth, ...fetchInit } = init ?? {};
+    void _auth;
+
     const res = await fetch(`${baseUrl}${path}`, {
-      ...init,
+      ...fetchInit,
       headers,
+      credentials: fetchInit.credentials ?? options.credentials ?? "include",
       cache: "no-store",
     }).catch(() => {
       throw new ApiError(
@@ -130,6 +106,22 @@ export function createHttpClient(options: CreateHttpClientOptions = {}) {
         `Cannot reach API at ${baseUrl}. Is the backend running?`,
       );
     });
+
+    const canRefresh =
+      res.status === 401 &&
+      useAuth &&
+      !retried &&
+      !!options.refreshAccessToken &&
+      !path.startsWith("/auth/refresh") &&
+      !path.startsWith("/auth/login") &&
+      !path.startsWith("/auth/logout");
+
+    if (canRefresh) {
+      const nextToken = await options.refreshAccessToken?.();
+      if (nextToken) {
+        return request<T>(path, init, true);
+      }
+    }
 
     if (res.status === 401 && useAuth) {
       options.onUnauthorized?.();
@@ -145,7 +137,9 @@ export function createHttpClient(options: CreateHttpClientOptions = {}) {
 
     if (res.status === 204) return undefined as T;
     return res.json() as Promise<T>;
-  };
+  }
+
+  return request;
 }
 
 /** Device-authenticated HTTP helper (`x-device-token`). */

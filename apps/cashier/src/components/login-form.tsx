@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { cashierApi } from "@/lib/api";
-import { clearSession, getAccessToken, setSession } from "@/lib/session";
+import { logoutSession, restoreSession, setSession } from "@/lib/session";
 import { Button } from "@/components/ui/button";
 
 const CASHIER_ROLES = new Set([
@@ -21,7 +21,13 @@ export function LoginForm() {
   const [pending, setPending] = React.useState(false);
 
   React.useEffect(() => {
-    if (getAccessToken()) router.replace("/");
+    let cancelled = false;
+    void restoreSession().then((ok) => {
+      if (!cancelled && ok) router.replace("/");
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [router]);
 
   async function onSubmit(event: React.FormEvent) {
@@ -31,7 +37,7 @@ export function LoginForm() {
     try {
       const result = await cashierApi.login(email.trim(), password);
       if (!CASHIER_ROLES.has(result.user.role)) {
-        clearSession();
+        await logoutSession();
         setError(
           `Role ${result.user.role} cannot access the Cashier till. Use the Admin console instead.`,
         );
