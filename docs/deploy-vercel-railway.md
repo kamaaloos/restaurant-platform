@@ -97,8 +97,10 @@ Each app includes a `vercel.json` that installs dependencies from the monorepo r
 
 | Variable | Value |
 |----------|-------|
-| `NEXT_PUBLIC_API_URL` | `https://YOUR-RAILWAY-HOST.up.railway.app/api` |
+| `NEXT_PUBLIC_API_URL` | `https://YOUR-RAILWAY-HOST.up.railway.app/api` (must include `https://` and end with `/api`) |
 | `NEXT_PUBLIC_WS_URL` | `https://YOUR-RAILWAY-HOST.up.railway.app` |
+
+Do **not** set `NEXT_PUBLIC_API_URL` to `maylesoft.com` or `customer.maylesoft.com`. Those are Vercel frontends. Without `https://`, the browser resolves the request relative to the current page, e.g. `https://alhuda.maylesoft.com/t/maylesoft.com/customer/{token}/menu` → **404**.
 
 ### Admin only
 
@@ -185,6 +187,8 @@ Guest ordering can live on **one subdomain per restaurant**:
 - `maylesoft.com` serves a small product hub (Restaurant platform, Dugsi, …).
 - Public API: `GET /api/customer/tenants/:slug`
 - Reserved labels (`admin`, `kitchen`, `customer`, `dugsi`, `www`, …) are never treated as restaurant slugs.
+
+Guest menu/service-request 404s on `/t/maylesoft.com/customer/...` mean the **customer** Vercel project’s `NEXT_PUBLIC_API_URL` is a relative host. Fix it to the Railway URL, then **redeploy** (Next inlines `NEXT_PUBLIC_*` at build time).
 
 ---
 
