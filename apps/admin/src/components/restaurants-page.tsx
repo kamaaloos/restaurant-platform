@@ -9,19 +9,14 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import { ImageUploadButton } from "@/components/image-upload-button";
 import { BrandBackgroundGallery } from "@/components/brand-background-gallery";
+import { restaurantGuestOrigin } from "@/lib/guest-origin";
 import { useLocale } from "@/lib/i18n/locale-provider";
-
-const CUSTOMER_URL =
-  process.env.NEXT_PUBLIC_CUSTOMER_URL ?? "http://localhost:3001";
 
 /** Apex used for Pattern B tenant hosts (alhuda.maylesoft.com). */
 const ROOT_DOMAIN = process.env.NEXT_PUBLIC_ROOT_DOMAIN?.trim() || "";
 
 function guestBaseUrl(restaurantSlug?: string | null) {
-  if (ROOT_DOMAIN && restaurantSlug) {
-    return `https://${restaurantSlug}.${ROOT_DOMAIN}`;
-  }
-  return CUSTOMER_URL.replace(/\/$/, "");
+  return restaurantGuestOrigin(restaurantSlug);
 }
 
 const DEFAULT_BRAND = {

@@ -15,11 +15,9 @@ import {
   RestaurantSelect,
   useSelectedRestaurant,
 } from "@/hooks/use-selected-restaurant";
+import { restaurantGuestOrigin } from "@/lib/guest-origin";
 import { useLocale } from "@/lib/i18n/locale-provider";
 import { TABLE_STATUS_MESSAGE } from "@/lib/i18n/labels";
-
-const CUSTOMER_URL =
-  process.env.NEXT_PUBLIC_CUSTOMER_URL ?? "http://localhost:3001";
 
 function escapeHtml(value: string) {
   return value
@@ -121,19 +119,20 @@ export function TablesPage() {
     onError: (err: Error) => setError(err.message),
   });
 
-  const restaurantName =
-    restaurants.find((r) => r.id === restaurantId)?.name ?? t("restaurant");
+  const selectedRestaurant = restaurants.find((r) => r.id === restaurantId);
+  const restaurantName = selectedRestaurant?.name ?? t("restaurant");
   const branchName = branches.find((b) => b.id === branchId)?.name ?? "";
+  const guestOrigin = restaurantGuestOrigin(selectedRestaurant?.slug);
 
   async function copyQrLink(token: string) {
-    const url = `${CUSTOMER_URL}/t/${token}`;
+    const url = `${guestOrigin}/t/${token}`;
     await navigator.clipboard.writeText(url);
     setCopied(token);
     window.setTimeout(() => setCopied(null), 2000);
   }
 
   async function printTableQr(tableNumber: string, token: string) {
-    const url = `${CUSTOMER_URL}/t/${token}`;
+    const url = `${guestOrigin}/t/${token}`;
     const qr = await QRCode.toDataURL(url, {
       width: 512,
       margin: 2,

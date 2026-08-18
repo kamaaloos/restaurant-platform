@@ -1,17 +1,44 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getTenantSlugFromHost } from "@/lib/tenant-host";
+import {
+  getTenantSlugFromHost,
+  isApexOrWwwHost,
+  restaurantMarketingOrigin,
+} from "@/lib/tenant-host";
+
+function isGuestOrderingPath(pathname: string) {
+  return (
+    pathname === "/t" ||
+    pathname === "/w" ||
+    pathname === "/pickup" ||
+    pathname.startsWith("/t/") ||
+    pathname.startsWith("/w/") ||
+    pathname.startsWith("/pickup/")
+  );
+}
 
 export function middleware(request: NextRequest) {
   const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
   const host = request.headers.get("host");
+  const { pathname } = request.nextUrl;
+
+  // Apex/www is the product hub. Guest QR routes belong on customer.{root}.
+  if (isApexOrWwwHost(host, rootDomain) && isGuestOrderingPath(pathname)) {
+    const dest = restaurantMarketingOrigin(
+      rootDomain,
+      process.env.NEXT_PUBLIC_MARKETING_HOST,
+    );
+    return NextResponse.redirect(
+      new URL(`${pathname}${request.nextUrl.search}`, dest),
+      308,
+    );
+  }
+
   const slug = getTenantSlugFromHost(host, rootDomain);
 
   if (!slug) {
     return NextResponse.next();
   }
-
-  const { pathname } = request.nextUrl;
 
   // Already on tenant route, or static / Next internals
   if (

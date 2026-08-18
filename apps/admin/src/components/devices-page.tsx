@@ -15,6 +15,7 @@ import {
   RestaurantSelect,
   useSelectedRestaurant,
 } from "@/hooks/use-selected-restaurant";
+import { restaurantGuestOrigin } from "@/lib/guest-origin";
 import { useLocale } from "@/lib/i18n/locale-provider";
 import { DEVICE_TYPE_MESSAGE } from "@/lib/i18n/labels";
 
@@ -22,8 +23,6 @@ const KITCHEN_URL =
   process.env.NEXT_PUBLIC_KITCHEN_URL ?? "http://localhost:3002";
 const WAITER_URL =
   process.env.NEXT_PUBLIC_WAITER_URL ?? "http://localhost:3003";
-const CUSTOMER_URL =
-  process.env.NEXT_PUBLIC_CUSTOMER_URL ?? "http://localhost:3001";
 
 const EXPIRY_WARN_MS = 2 * 24 * 60 * 60 * 1000;
 
@@ -115,13 +114,17 @@ export function DevicesPage() {
     );
   }
 
+  const guestOrigin = restaurantGuestOrigin(
+    restaurants.find((r) => r.id === restaurantId)?.slug,
+  );
+
   function pairUrl(type: string, code: string, deviceBranchId: string) {
     if (type === "KITCHEN")
       return `${KITCHEN_URL}/?code=${encodeURIComponent(code)}`;
     if (type === "WAITER")
       return `${WAITER_URL}/?code=${encodeURIComponent(code)}`;
     if (type === "CUSTOMER_DISPLAY")
-      return `${CUSTOMER_URL}/pickup/${walkInKey(deviceBranchId)}?code=${encodeURIComponent(code)}`;
+      return `${guestOrigin}/pickup/${walkInKey(deviceBranchId)}?code=${encodeURIComponent(code)}`;
     return null;
   }
 
@@ -129,7 +132,7 @@ export function DevicesPage() {
     if (type === "KITCHEN") return KITCHEN_URL;
     if (type === "WAITER") return WAITER_URL;
     if (type === "CUSTOMER_DISPLAY")
-      return `${CUSTOMER_URL}/pickup/${walkInKey(deviceBranchId)}`;
+      return `${guestOrigin}/pickup/${walkInKey(deviceBranchId)}`;
     return null;
   }
 

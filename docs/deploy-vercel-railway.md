@@ -104,7 +104,7 @@ Each app includes a `vercel.json` that installs dependencies from the monorepo r
 
 | Variable | Purpose |
 |----------|---------|
-| `NEXT_PUBLIC_CUSTOMER_URL` | QR / table links |
+| `NEXT_PUBLIC_CUSTOMER_URL` | QR / table links — use `https://customer.maylesoft.com`, **not** `www` / apex |
 | `NEXT_PUBLIC_KITCHEN_URL` | Kitchen device pairing links |
 | `NEXT_PUBLIC_WAITER_URL` | Waiter device pairing links |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob — menu / brand image uploads (Storage → Blob → token) |
@@ -175,7 +175,8 @@ Guest ordering can live on **one subdomain per restaurant**:
 ### Admin
 
 1. Set `NEXT_PUBLIC_ROOT_DOMAIN=maylesoft.com` so walk-in copy links use `https://{slug}.maylesoft.com/w/...`
-2. In Restaurants, set each restaurant **slug** (e.g. `alhuda`) — this is the subdomain label.
+2. Set `NEXT_PUBLIC_CUSTOMER_URL=https://customer.maylesoft.com` (or `NEXT_PUBLIC_MARKETING_HOST=customer.maylesoft.com`) so table QR codes do not point at the product hub on `www`.
+3. In Restaurants, set each restaurant **slug** (e.g. `alhuda`) — this is the subdomain label.
 
 ### How it works
 
