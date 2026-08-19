@@ -92,7 +92,24 @@ export const customerApi = {
     }),
 
   getMenu: (token: string) =>
-    request<CustomerMenu>(`/customer/${token}/menu`, { auth: false }),
+    request<CustomerMenu>(`/customer/${token}/menu`, {
+      auth: false,
+      credentials: "include",
+    }),
+
+  getTablePresence: (token: string) =>
+    request<{ verified: boolean; pinConfigured: boolean }>(
+      `/customer/${token}/presence`,
+      { auth: false, credentials: "include" },
+    ),
+
+  verifyTablePin: (token: string, tablePin: string) =>
+    request<{ ok: true }>(`/customer/${token}/verify-pin`, {
+      method: "POST",
+      auth: false,
+      credentials: "include",
+      body: JSON.stringify({ tablePin }),
+    }),
 
   getMenuItem: (token: string, itemId: string) =>
     request<{ currency: string; item: MenuItem }>(
@@ -106,6 +123,7 @@ export const customerApi = {
       customerName?: string;
       isRush?: boolean;
       isVip?: boolean;
+      tablePin?: string;
       items: Array<{
         menuItemId: string;
         quantity: number;
@@ -119,11 +137,15 @@ export const customerApi = {
     request<CustomerOrder>(`/customer/${token}/orders`, {
       method: "POST",
       auth: false,
+      credentials: "include",
       body: JSON.stringify(body),
     }),
 
   listOrders: (token: string) =>
-    request<CustomerOrder[]>(`/customer/${token}/orders`, { auth: false }),
+    request<CustomerOrder[]>(`/customer/${token}/orders`, {
+      auth: false,
+      credentials: "include",
+    }),
 
   getOrder: (token: string, orderId: string) =>
     request<CustomerOrder>(`/customer/${token}/orders/${orderId}`, {
@@ -152,6 +174,7 @@ export const customerApi = {
     request<CustomerServiceRequest>(`/customer/${token}/service-requests`, {
       method: "POST",
       auth: false,
+      credentials: "include",
       body: JSON.stringify(body),
     }),
 };

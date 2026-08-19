@@ -52,6 +52,9 @@ export type RestaurantTable = {
   qrToken: string | null;
   qrCode: string | null;
   qrTokenExpiresAt?: string | null;
+  orderPinVersion?: number;
+  /** Plaintext PIN — only on create / rotate responses. */
+  orderPin?: string;
   notes: string | null;
   branchId: string;
   active: boolean;

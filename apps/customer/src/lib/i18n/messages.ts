@@ -43,6 +43,13 @@ export type MessageKey =
   | "emptyCartBody"
   | "backToMenu"
   | "placeOrder"
+  | "tablePinTitle"
+  | "tablePinBody"
+  | "tablePinLabel"
+  | "tablePinSubmit"
+  | "tablePinInvalid"
+  | "tablePinNotConfiguredTitle"
+  | "tablePinNotConfiguredBody"
   | "confirmOrder"
   | "confirmOrderBody"
   | "confirmOrderBodyWalkIn"
@@ -344,6 +351,13 @@ const en: Messages = {
   emptyCartBody: "Browse the menu to add something delicious.",
   backToMenu: "Back to Menu",
   placeOrder: "Place order",
+  tablePinTitle: "Enter table PIN",
+  tablePinBody: "Find the PIN on your table card to start ordering. You only need to enter it once per day.",
+  tablePinLabel: "Table PIN",
+  tablePinSubmit: "Continue",
+  tablePinInvalid: "Incorrect PIN. Check the number on your table card.",
+  tablePinNotConfiguredTitle: "Ordering not ready",
+  tablePinNotConfiguredBody: "This table is not set up for ordering yet. Please ask staff for help.",
   confirmOrder: "Confirm order?",
   confirmOrderBody: "Send this order to the kitchen?",
   confirmOrderBodyWalkIn: "Create this order? You’ll pay next, then kitchen starts.",
@@ -669,6 +683,13 @@ const fi: Messages = {
   emptyCartBody: "Selaa ruokalistaa ja lisää jotain herkullista.",
   backToMenu: "Takaisin listalle",
   placeOrder: "Tilaa",
+  tablePinTitle: "Syötä pöydän PIN",
+  tablePinBody: "PIN-koodi on pöytäkortissa. Syötät sen kerran päivässä.",
+  tablePinLabel: "Pöydän PIN",
+  tablePinSubmit: "Jatka",
+  tablePinInvalid: "Väärä PIN. Tarkista numero pöytäkortista.",
+  tablePinNotConfiguredTitle: "Tilaaminen ei ole valmis",
+  tablePinNotConfiguredBody: "Pöytää ei ole vielä otettu käyttöön. Pyydä apua henkilökunnalta.",
   confirmOrder: "Vahvista tilaus?",
   confirmOrderBody: "Lähetetäänkö tilaus keittiöön?",
   confirmOrderBodyWalkIn:
@@ -995,6 +1016,13 @@ const ar: Messages = {
   emptyCartBody: "تصفّح القائمة لإضافة شيء لذيذ.",
   backToMenu: "العودة للقائمة",
   placeOrder: "إرسال الطلب",
+  tablePinTitle: "أدخل رمز الطاولة",
+  tablePinBody: "رمز PIN موجود على بطاقة الطاولة. تحتاج لإدخاله مرة واحدة يوميًا.",
+  tablePinLabel: "رمز الطاولة",
+  tablePinSubmit: "متابعة",
+  tablePinInvalid: "رمز غير صحيح. تحقق من الرقم على بطاقة الطاولة.",
+  tablePinNotConfiguredTitle: "الطلب غير جاهز",
+  tablePinNotConfiguredBody: "هذه الطاولة غير مهيأة للطلب بعد. اطلب المساعدة من الموظفين.",
   confirmOrder: "تأكيد الطلب؟",
   confirmOrderBody: "إرسال هذا الطلب إلى المطبخ؟",
   confirmOrderBodyWalkIn: "إنشاء الطلب؟ ستدفع بعد ذلك ثم يبدأ المطبخ.",
@@ -1320,6 +1348,13 @@ const so: Messages = {
   emptyCartBody: "Baadh liiska oo ku dar wax macaan.",
   backToMenu: "Ku noqo liiska",
   placeOrder: "Dir dalabka",
+  tablePinTitle: "Geli PIN-ka miiska",
+  tablePinBody: "PIN-ka waxaa ku qoran kaadhka miiska. Hal mar maalintii ayaad gelinaysaa.",
+  tablePinLabel: "PIN-ka miiska",
+  tablePinSubmit: "Sii wad",
+  tablePinInvalid: "PIN khaldan. Hubi lambarka kaadhka miiska.",
+  tablePinNotConfiguredTitle: "Dalabka diyaar ma aha",
+  tablePinNotConfiguredBody: "Miiskan weli looma diyaarin dalbashada. Fadlan weydii shaqaalaha.",
   confirmOrder: "Xaqiiji dalabka?",
   confirmOrderBody: "Dalabkan ma u dirnaa jikada?",
   confirmOrderBodyWalkIn:

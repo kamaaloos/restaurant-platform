@@ -100,9 +100,11 @@ export type MessageKey =
   | "colTable"
   | "colSeats"
   | "colQrToken"
+  | "colOrderPin"
   | "colManage"
   | "colQr"
   | "copyQrLink"
+  | "copyTablePin"
   | "printQr"
   | "rotateQr"
   | "deleteTable"
@@ -116,6 +118,9 @@ export type MessageKey =
   | "printPopupBlocked"
   | "qrPrintTitle"
   | "qrScanMe"
+  | "qrPinLabel"
+  | "orderPinRotateHint"
+  | "printNeedsPin"
   | "qrStyleTitle"
   | "qrStyleBody"
   | "qrFrameColor"
@@ -394,9 +399,11 @@ const en: Messages = {
   colTable: "Table",
   colSeats: "Seats",
   colQrToken: "QR token",
+  colOrderPin: "Order PIN",
   colManage: "Manage",
   colQr: "QR",
   copyQrLink: "Copy QR link",
+  copyTablePin: "Copy PIN",
   printQr: "Print QR",
   rotateQr: "Rotate QR",
   deleteTable: "Delete table",
@@ -412,6 +419,9 @@ const en: Messages = {
   printPopupBlocked: "Allow pop-ups for this site to print the QR code.",
   qrPrintTitle: "Table {number} QR",
   qrScanMe: "Scan Me",
+  qrPinLabel: "Table PIN",
+  orderPinRotateHint: "Rotate QR to generate a new PIN for the printed card.",
+  printNeedsPin: "Rotate QR first to reveal the table PIN for printing.",
   qrStyleTitle: "QR card style",
   qrStyleBody:
     "Colors and logo for printed table QR cards (Scan Me + tray).",
@@ -705,9 +715,11 @@ const fi: Messages = {
   colTable: "Pöytä",
   colSeats: "Paikat",
   colQrToken: "QR-tunnus",
+  colOrderPin: "Tilaus-PIN",
   colManage: "Hallinta",
   colQr: "QR",
   copyQrLink: "Kopioi QR-linkki",
+  copyTablePin: "Kopioi PIN",
   printQr: "Tulosta QR",
   rotateQr: "Vaihda QR",
   deleteTable: "Poista pöytä",
@@ -723,6 +735,9 @@ const fi: Messages = {
   printPopupBlocked: "Salli ponnahdusikkunat tälle sivustolle QR-koodin tulostamiseksi.",
   qrPrintTitle: "Pöytä {number} QR",
   qrScanMe: "Skannaa",
+  qrPinLabel: "Pöydän PIN",
+  orderPinRotateHint: "Vaihda QR, jotta saat uuden PIN-koodin painettavaan korttiin.",
+  printNeedsPin: "Vaihda QR ensin, jotta PIN näkyy tulostusta varten.",
   qrStyleTitle: "QR-kortin tyyli",
   qrStyleBody:
     "Värit ja logo tulostettaville pöytä-QR-korteille (Skannaa + tarjotin).",
@@ -1016,9 +1031,11 @@ const ar: Messages = {
   colTable: "الطاولة",
   colSeats: "المقاعد",
   colQrToken: "رمز QR",
+  colOrderPin: "PIN الطاولة",
   colManage: "إدارة",
   colQr: "QR",
   copyQrLink: "نسخ رابط QR",
+  copyTablePin: "نسخ PIN",
   printQr: "طباعة QR",
   rotateQr: "تغيير QR",
   deleteTable: "حذف الطاولة",
@@ -1034,6 +1051,9 @@ const ar: Messages = {
   printPopupBlocked: "اسمح بالنوافذ المنبثقة لهذا الموقع لطباعة رمز QR.",
   qrPrintTitle: "QR الطاولة {number}",
   qrScanMe: "امسحني",
+  qrPinLabel: "رمز PIN للطاولة",
+  orderPinRotateHint: "غيّر QR لتوليد PIN جديد للبطاقة المطبوعة.",
+  printNeedsPin: "غيّر QR أولاً لإظهار PIN الطاولة للطباعة.",
   qrStyleTitle: "أسلوب بطاقة QR",
   qrStyleBody: "الألوان والشعار لبطاقات QR المطبوعة على الطاولات.",
   qrFrameColor: "الإطار والعنوان",
@@ -1326,9 +1346,11 @@ const so: Messages = {
   colTable: "Miis",
   colSeats: "Kuraasta",
   colQrToken: "Calaamada QR",
+  colOrderPin: "PIN-ka dalabka",
   colManage: "Maamul",
   colQr: "QR",
   copyQrLink: "Koobi xiriirka QR",
+  copyTablePin: "Koobi PIN",
   printQr: "Daabac QR",
   rotateQr: "Beddel QR",
   deleteTable: "Tirtir miiska",
@@ -1344,6 +1366,9 @@ const so: Messages = {
   printPopupBlocked: "Oggolow daaqadaha soo baxa si aad u daabacdo QR.",
   qrPrintTitle: "QR miiska {number}",
   qrScanMe: "Iskaanka",
+  qrPinLabel: "PIN-ka miiska",
+  orderPinRotateHint: "Beddel QR si aad u hesho PIN cusub kaadhka la daabaco.",
+  printNeedsPin: "Marka hore beddel QR si PIN u muuqdo daabacaadda.",
   qrStyleTitle: "Qaabka kaadhka QR",
   qrStyleBody: "Midabada iyo calaamadda kaadhadhka QR ee miiska.",
   qrFrameColor: "Birinta iyo cinwaanka",

@@ -1,4 +1,5 @@
 import { CartExperience } from "@/components/cart-experience";
+import { TablePinGate } from "@/components/table-pin-gate";
 
 export default async function CartPage({
   params,
@@ -6,5 +7,9 @@ export default async function CartPage({
   params: Promise<{ token: string }>;
 }) {
   const { token } = await params;
-  return <CartExperience token={token} />;
+  return (
+    <TablePinGate token={token}>
+      <CartExperience token={token} />
+    </TablePinGate>
+  );
 }

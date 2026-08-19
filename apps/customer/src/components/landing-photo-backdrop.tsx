@@ -23,7 +23,7 @@ type LandingMedia =
 export const LANDING_MEDIA: readonly LandingMedia[] = [
   {
     type: "video",
-    src: "/images/landing/hero-video.mp4",
+    src: "https://ndlusjtskjlzjn0c.public.blob.vercel-storage.com/restaurant-platform/video/landing.mp4",
     poster: "/images/landing/hero-poster.jpg",
   },
   { type: "image", src: "/images/landing/dining-room.jpg" },

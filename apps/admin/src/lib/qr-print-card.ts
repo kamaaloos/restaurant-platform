@@ -50,6 +50,8 @@ export function buildTableQrPrintHtml(opts: {
   scanLabel: string;
   tableLabel: string;
   tableNumber: string;
+  pinLabel: string;
+  orderPin: string;
   placeLine: string;
   printLabel: string;
   qrDataUrl: string;
@@ -110,6 +112,8 @@ export function buildTableQrPrintHtml(opts: {
     }
     .hand { width: 210px; height: 78px; margin-top: 2px; }
     .table { margin: 18px 0 0; font-size: 18px; font-weight: 700; }
+    .pin { margin: 10px 0 0; font-size: 28px; font-weight: 800; letter-spacing: 0.2em; color: ${frame}; }
+    .pin-label { margin: 0; font-size: 13px; color: #555; }
     .place { margin: 4px 0 0; font-size: 13px; color: #555; }
     button {
       margin-top: 24px;
@@ -135,6 +139,8 @@ export function buildTableQrPrintHtml(opts: {
     <div class="tray"></div>
     ${servingHandSvg(opts.frameColor)}
     <p class="table">${escapeHtml(opts.tableLabel)} ${escapeHtml(opts.tableNumber)}</p>
+    <p class="pin-label">${escapeHtml(opts.pinLabel)}</p>
+    <p class="pin">${escapeHtml(opts.orderPin)}</p>
     <p class="place">${escapeHtml(opts.placeLine)}</p>
   </div>
   <div>

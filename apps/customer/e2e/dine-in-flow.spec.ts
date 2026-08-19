@@ -29,6 +29,8 @@ const WAITER_TOKEN =
 const TABLE_TOKEN =
   process.env.TABLE_E2E_TOKEN?.trim() ||
   "c295c2df-cc43-49bd-8bd5-5f7484fa9061";
+const TABLE_E2E_PIN =
+  process.env.TABLE_E2E_PIN?.trim() || "1234";
 const CASHIER_EMAIL =
   process.env.CASHIER_E2E_EMAIL ?? "cashier@restaurant.local";
 const CASHIER_PASSWORD =
@@ -44,6 +46,26 @@ function uniqueGuest(prefix: string) {
   return `${prefix}-${Date.now().toString(36)}`;
 }
 
+async function verifyTablePinViaApi(request: APIRequestContext) {
+  const res = await request.post(
+    `${API_BASE}/customer/${TABLE_TOKEN}/verify-pin`,
+    { data: { tablePin: TABLE_E2E_PIN } },
+  );
+  expect(
+    res.ok(),
+    `Verify table PIN failed: ${res.status()} ${await res.text()}`,
+  ).toBeTruthy();
+}
+
+async function enterTablePinIfNeeded(page: Page) {
+  const pinInput = page.locator('input[inputmode="numeric"]');
+  if (await pinInput.isVisible({ timeout: 3000 }).catch(() => false)) {
+    await pinInput.fill(TABLE_E2E_PIN);
+    await page.getByRole("button", { name: /Continue|Jatka|متابعة|Sii wad/i }).click();
+    await expect(pinInput).toBeHidden({ timeout: 15_000 });
+  }
+}
+
 async function placeDineInViaUi(page: Page, guestName: string) {
   const menuPromise = page.waitForResponse(
     (res) =>
@@ -56,6 +78,7 @@ async function placeDineInViaUi(page: Page, guestName: string) {
   await expect(page).toHaveURL(new RegExp(`/t/${TABLE_TOKEN}`), {
     timeout: 20_000,
   });
+  await enterTablePinIfNeeded(page);
   const menuBody = (await (await menuPromise).json()) as {
     table: { number: string };
   };
@@ -117,6 +140,8 @@ async function placeMultiCourseViaApi(
     .flatMap((c) => c.menuItems ?? [])
     .map((i) => i.id)[0];
   expect(itemId, "seeded menu should have an item").toBeTruthy();
+
+  await verifyTablePinViaApi(request);
 
   const orderRes = await request.post(
     `${API_BASE}/customer/${TABLE_TOKEN}/orders`,

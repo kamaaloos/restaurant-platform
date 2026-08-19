@@ -74,6 +74,10 @@ export function TablesPage() {
   const [editingId, setEditingId] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
   const [copied, setCopied] = React.useState<string | null>(null);
+  const [copiedPin, setCopiedPin] = React.useState<string | null>(null);
+  const [orderPinByTableId, setOrderPinByTableId] = React.useState<
+    Record<string, string>
+  >({});
   const [qrFrameColor, setQrFrameColor] = React.useState(DEFAULT_QR_FRAME);
   const [qrModuleColor, setQrModuleColor] = React.useState(DEFAULT_QR_MODULE);
   const [qrLogoUrl, setQrLogoUrl] = React.useState("");
@@ -91,10 +95,16 @@ export function TablesPage() {
         seats: Number(seats),
         branchId,
       }),
-    onSuccess: () => {
+    onSuccess: (table) => {
       setNumber("");
       setSeats("4");
       setError(null);
+      if (table.orderPin) {
+        setOrderPinByTableId((prev) => ({
+          ...prev,
+          [table.id]: table.orderPin!,
+        }));
+      }
       void queryClient.invalidateQueries({ queryKey: ["admin-tables"] });
     },
     onError: (err: Error) => setError(err.message),
@@ -146,8 +156,14 @@ export function TablesPage() {
 
   const rotateQr = useMutation({
     mutationFn: (id: string) => adminApi.rotateTableQr(id),
-    onSuccess: () => {
+    onSuccess: (table) => {
       setError(null);
+      if (table.orderPin) {
+        setOrderPinByTableId((prev) => ({
+          ...prev,
+          [table.id]: table.orderPin!,
+        }));
+      }
       void queryClient.invalidateQueries({ queryKey: ["admin-tables"] });
     },
     onError: (err: Error) => setError(err.message),
@@ -193,7 +209,22 @@ export function TablesPage() {
     window.setTimeout(() => setCopied(null), 2000);
   }
 
-  async function printTableQr(tableNumber: string, token: string) {
+  async function copyTablePin(tableId: string, pin: string) {
+    await navigator.clipboard.writeText(pin);
+    setCopiedPin(tableId);
+    window.setTimeout(() => setCopiedPin(null), 2000);
+  }
+
+  async function printTableQr(
+    tableId: string,
+    tableNumber: string,
+    token: string,
+  ) {
+    const orderPin = orderPinByTableId[tableId];
+    if (!orderPin) {
+      setError(t("printNeedsPin"));
+      return;
+    }
     // Open synchronously from the click. `noopener` makes window.open()
     // return null while still leaving a blank about:blank tab.
     const w = window.open("", "_blank", "width=480,height=780");
@@ -230,6 +261,8 @@ export function TablesPage() {
           scanLabel: t("qrScanMe"),
           tableLabel: t("colTable"),
           tableNumber,
+          pinLabel: t("qrPinLabel"),
+          orderPin,
           placeLine,
           printLabel: t("printButton"),
           qrDataUrl: qr,
@@ -385,13 +418,14 @@ export function TablesPage() {
         </p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-[var(--line)]">
-          <table className="w-full min-w-[860px] text-left text-sm">
+          <table className="w-full min-w-[980px] text-left text-sm">
             <thead className="bg-[var(--surface-2)] text-[var(--muted)]">
               <tr>
                 <th className="px-4 py-3 font-medium">{t("colTable")}</th>
                 <th className="px-4 py-3 font-medium">{t("colSeats")}</th>
                 <th className="px-4 py-3 font-medium">{t("status")}</th>
                 <th className="px-4 py-3 font-medium">{t("colQrToken")}</th>
+                <th className="px-4 py-3 font-medium">{t("colOrderPin")}</th>
                 <th className="px-4 py-3 font-medium">{t("colManage")}</th>
                 <th className="px-4 py-3 font-medium">{t("colQr")}</th>
               </tr>
@@ -411,6 +445,33 @@ export function TablesPage() {
                   </td>
                   <td className="px-4 py-3 font-mono text-xs">
                     {shortId(table.qrToken)}
+                  </td>
+                  <td className="px-4 py-3">
+                    {orderPinByTableId[table.id] ? (
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-mono text-sm tracking-widest">
+                          {orderPinByTableId[table.id]}
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() =>
+                            void copyTablePin(
+                              table.id,
+                              orderPinByTableId[table.id]!,
+                            )
+                          }
+                        >
+                          {copiedPin === table.id
+                            ? t("copied")
+                            : t("copyTablePin")}
+                        </Button>
+                      </div>
+                    ) : (
+                      <span className="text-xs text-[var(--muted)]">
+                        {t("orderPinRotateHint")}
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex flex-nowrap gap-2">
@@ -461,7 +522,11 @@ export function TablesPage() {
                             size="sm"
                             variant="outline"
                             onClick={() =>
-                              void printTableQr(table.number, table.qrToken!)
+                              void printTableQr(
+                                table.id,
+                                table.number,
+                                table.qrToken!,
+                              )
                             }
                           >
                             {t("printQr")}
