@@ -22,7 +22,11 @@ check() {
 
 echo "=== API ==="
 check "health" curl -sf --max-time 5 "$API/health" >/dev/null
-check "metrics" curl -sf --max-time 5 "$API/metrics" | grep -q restaurant_prep_duration_seconds
+METRICS_AUTH=()
+if [ -n "${METRICS_TOKEN:-}" ]; then
+  METRICS_AUTH=(-H "Authorization: Bearer ${METRICS_TOKEN}")
+fi
+check "metrics" curl -sf --max-time 5 "${METRICS_AUTH[@]}" "$API/metrics" | grep -q restaurant_prep_duration_seconds
 
 echo "=== Payments / Terminal ==="
 if curl -sf --max-time 5 "$API/payments/config" >/tmp/pay-config.json 2>/dev/null; then

@@ -13,6 +13,9 @@ alerting:
 scrape_configs:
   - job_name: restaurant-api
     metrics_path: /api/metrics
+    authorization:
+      type: Bearer
+      credentials_file: /tmp/metrics_token
     static_configs:
       # API runs on the host (Nest :3000). Docker Desktop: host.docker.internal
       - targets: ['host.docker.internal:3000']

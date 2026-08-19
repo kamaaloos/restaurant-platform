@@ -26,7 +26,7 @@ services:
   # Optional APM + SLOs:
   #   docker compose --env-file .env.observability --profile observability up -d
   # Copy observability/env.example → .env.observability and set ALERTMANAGER_WEBHOOK_URL.
-  # Metrics: GET http://localhost:3000/api/metrics
+  # Metrics: GET http://localhost:3000/api/metrics (Bearer METRICS_TOKEN in production)
   # Prometheus :9090 · Grafana :3006 · Alertmanager :9093
   # Ops checklist: observability/OPS.md
   jaeger:
@@ -65,14 +65,19 @@ services:
     container_name: restaurant-prometheus
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    environment:
+      METRICS_TOKEN: ${METRICS_TOKEN:-}
     volumes:
       - ./observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./observability/alerts:/etc/prometheus/alerts:ro
     ports:
       - "9090:9090"
+    entrypoint: ["/bin/sh", "-c"]
     command:
-      - --config.file=/etc/prometheus/prometheus.yml
-      - --web.enable-lifecycle
+      - |
+        set -e
+        printf '%s' "$${METRICS_TOKEN:-}" > /tmp/metrics_token
+        exec /bin/prometheus --config.file=/etc/prometheus/prometheus.yml --web.enable-lifecycle
     depends_on:
       - alertmanager
 

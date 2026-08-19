@@ -72,5 +72,5 @@ Simulated mode remains the default (local + CI); no hardware needed until you sw
 bash scripts/ops-verify.sh
 ```
 
-Checks: API health, metrics scrape, payment config exposes `terminalLocationId`,
+Checks: API health, metrics scrape (send `Authorization: Bearer $METRICS_TOKEN` in production), payment config exposes `terminalLocationId`,
 Alertmanager up, Prometheus targeting Alertmanager.
