@@ -293,6 +293,50 @@ export const adminApi = {
         : "/orders/kitchen/dashboard",
     ),
 
+  ledgerEntries: (params?: {
+    branchId?: string;
+    from?: string;
+    to?: string;
+    skip?: number;
+    take?: number;
+  }) => {
+    const q = new URLSearchParams();
+    if (params?.branchId) q.set("branchId", params.branchId);
+    if (params?.from) q.set("from", params.from);
+    if (params?.to) q.set("to", params.to);
+    if (params?.skip != null) q.set("skip", String(params.skip));
+    if (params?.take != null) q.set("take", String(params.take));
+    const qs = q.toString();
+    return request<{
+      entries: Array<{
+        id: string;
+        date: string;
+        category: string;
+        description: string;
+        debit: number;
+        credit: number;
+        paymentId: string | null;
+        branchId: string | null;
+      }>;
+      total: number;
+    }>(`/ledger${qs ? `?${qs}` : ""}`);
+  },
+
+  ledgerSummary: (params?: {
+    branchId?: string;
+    from?: string;
+    to?: string;
+  }) => {
+    const q = new URLSearchParams();
+    if (params?.branchId) q.set("branchId", params.branchId);
+    if (params?.from) q.set("from", params.from);
+    if (params?.to) q.set("to", params.to);
+    const qs = q.toString();
+    return request<
+      Array<{ category: string; totalDebit: number; totalCredit: number }>
+    >(`/ledger/summary${qs ? `?${qs}` : ""}`);
+  },
+
   uploadImage: async (file: File, opts?: { restaurantId?: string }) => {
     const send = async (token: string | null) => {
       const body = new FormData();

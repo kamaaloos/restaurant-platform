@@ -45,6 +45,11 @@ function overviewLinks(
       title: t("navMenu"),
       body: t("overviewLinkMenuBody"),
     },
+    {
+      href: "/ledger",
+      title: "Ledger",
+      body: "View journal entries and financial summaries",
+    },
   ];
 }
 
