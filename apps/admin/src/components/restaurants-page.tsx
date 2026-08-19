@@ -1056,6 +1056,11 @@ export function RestaurantsPage() {
                   <p className="mt-2 break-all font-mono text-xs text-[var(--muted)]">
                     {walkInUrl}
                   </p>
+                  {branch.walkInTokenExpiresAt ? (
+                    <p className="mt-1 text-xs text-[var(--muted)]">
+                      {new Date(branch.walkInTokenExpiresAt).toLocaleDateString()}
+                    </p>
+                  ) : null}
                   <div className="mt-3 flex flex-wrap gap-2">
                     <Button
                       size="sm"

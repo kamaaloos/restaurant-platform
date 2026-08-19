@@ -124,7 +124,8 @@ export type CustomerTenant = {
   branches: Array<{
     id: string;
     name: string;
-    walkInToken: string;
+    address?: string | null;
+    phone?: string | null;
   }>;
 };
 

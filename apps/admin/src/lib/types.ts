@@ -21,6 +21,7 @@ export type Branch = {
   restaurantId: string;
   active: boolean;
   walkInToken: string;
+  walkInTokenExpiresAt?: string | null;
 };
 
 export type Restaurant = {

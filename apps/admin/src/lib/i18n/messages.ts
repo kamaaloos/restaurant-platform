@@ -511,7 +511,7 @@ const en: Messages = {
   noBranchesYet: "No branches yet. Create one above.",
   walkInGuestLinks: "Walk-in guest links",
   walkInGuestLinksBody:
-    "Share these opaque URLs with guests. Rotating invalidates the old link. Pickup TV pairing uses the same token in the path.",
+    "Share these opaque URLs with guests (printed QR / pickup TV). They expire automatically; rotating invalidates the old link immediately.",
   copyWalkInUrl: "Copy walk-in URL",
   rotateWalkInToken: "Rotate walk-in token",
   colBranch: "Branch",
@@ -822,7 +822,7 @@ const fi: Messages = {
   noBranchesYet: "Ei vielä toimipisteitä. Luo yksi yllä.",
   walkInGuestLinks: "Walk-in-asiakaslinkit",
   walkInGuestLinksBody:
-    "Jaa nämä URL-osoitteet vieraille. Vaihto mitätöi vanhan linkin. Noutotelevisio käyttää samaa tunnusta polussa.",
+    "Jaa nämä URL-osoitteet vieraille (tulostettu QR / noutotelevisio). Ne vanhenevat automaattisesti; vaihto mitätöi vanhan linkin heti.",
   copyWalkInUrl: "Kopioi walk-in-URL",
   rotateWalkInToken: "Vaihda walk-in-tunnus",
   colBranch: "Toimipiste",
@@ -1131,7 +1131,7 @@ const ar: Messages = {
   noBranchesYet: "لا توجد فروع بعد. أنشئ واحداً أعلاه.",
   walkInGuestLinks: "روابط دخول الضيوف",
   walkInGuestLinksBody:
-    "شارك هذه الروابط مع الضيوف. التغيير يُلغي الرابط القديم. تلفزيون الاستلام يستخدم نفس الرمز في المسار.",
+    "شارك هذه الروابط مع الضيوف (QR مطبوع / شاشة الاستلام). تنتهي صلاحيتها تلقائياً؛ التغيير يلغي الرابط القديم فوراً.",
   copyWalkInUrl: "نسخ رابط الدخول",
   rotateWalkInToken: "تغيير رمز الدخول",
   colBranch: "الفرع",
@@ -1443,7 +1443,7 @@ const so: Messages = {
   noBranchesYet: "Weli laamo malaha. Koren ku abuur mid.",
   walkInGuestLinks: "Xiriirada martida socod-gal",
   walkInGuestLinksBody:
-    "La wadaag URL-yadan martida. Beddeliddu waxay burisaa xiriirkii hore. TV-ga qaadashada wuxuu isticmaalaa isla calaamadda.",
+    "La wadaag URL-yadan martida (QR daabacan / TV qaadis). Si toos ah ayey u dhacaan; beddeliddu isla markiiba way burisaa xiriirkii hore.",
   copyWalkInUrl: "Koobi URL-ka socod-gal",
   rotateWalkInToken: "Beddel calaamadda socod-gal",
   colBranch: "Laanta",

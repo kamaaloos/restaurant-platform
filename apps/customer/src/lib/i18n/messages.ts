@@ -165,6 +165,7 @@ export type MessageKey =
   | "tenantBody"
   | "tenantBranches"
   | "tenantNoBranches"
+  | "tenantScanHint"
   | "tenantOrderHere"
   | "tenantNotFoundTitle"
   | "tenantNotFoundBody"
@@ -476,10 +477,13 @@ const en: Messages = {
   landingFinalTitle: "Ready to grow your restaurant?",
   landingFinalBody: "Join MayleSoft and see the difference on the floor.",
   landingFinalNote: "No credit card required to start a conversation · Cancel anytime",
-  tenantEyebrow: "Order online",
-  tenantBody: "Choose a branch to browse the menu and place a walk-in order.",
+  tenantEyebrow: "Our locations",
+  tenantBody:
+    "Visit a location and scan the table or walk-in QR in the restaurant to order.",
   tenantBranches: "Branches",
   tenantNoBranches: "No branches are available yet. Please ask staff for a QR code.",
+  tenantScanHint:
+    "Ordering links live on printed QR codes only. They expire, and staff can rotate them from Admin.",
   tenantOrderHere: "Order",
   tenantNotFoundTitle: "Restaurant not found",
   tenantNotFoundBody:
@@ -800,11 +804,14 @@ const fi: Messages = {
   landingFinalTitle: "Valmis kasvattamaan ravintolaasi?",
   landingFinalBody: "Liity MayleSoftiin ja näe ero salissa.",
   landingFinalNote: "Ei korttia keskustelun aloittamiseen · Peru milloin tahansa",
-  tenantEyebrow: "Tilaa verkossa",
-  tenantBody: "Valitse toimipiste nähdäksesi menun ja tehdäksesi walk-in-tilauksen.",
+  tenantEyebrow: "Toimipisteemme",
+  tenantBody:
+    "Tilaa skannaamalla pöydän tai walk-in-QR ravintolassa.",
   tenantBranches: "Toimipisteet",
   tenantNoBranches:
     "Ei toimipisteitä vielä. Pyydä henkilökunnalta QR-koodi.",
+  tenantScanHint:
+    "Tilaaminen tapahtuu vain tulostetuista QR-koodeista. Linkit vanhenevat, ja henkilökunta voi vaihtaa ne Adminissa.",
   tenantOrderHere: "Tilaa",
   tenantNotFoundTitle: "Ravintolaa ei löydy",
   tenantNotFoundBody:
@@ -1121,10 +1128,13 @@ const ar: Messages = {
   landingFinalTitle: "جاهز لتنمية مطعمك؟",
   landingFinalBody: "انضم إلى MayleSoft وشاهد الفرق في الصالة.",
   landingFinalNote: "لا بطاقة لبدء الحديث · ألغِ في أي وقت",
-  tenantEyebrow: "اطلب عبر الإنترنت",
-  tenantBody: "اختر فرعاً لتصفح القائمة وتقديم طلب وقوف.",
+  tenantEyebrow: "فروعنا",
+  tenantBody:
+    "زر الفرع وامسح رمز الطاولة أو رمز الوقوف في المطعم للطلب.",
   tenantBranches: "الفروع",
   tenantNoBranches: "لا توجد فروع بعد. اطلب رمز QR من الموظفين.",
+  tenantScanHint:
+    "روابط الطلب موجودة فقط على رموز QR المطبوعة. تنتهي صلاحيتها ويمكن للموظفين تغييرها من لوحة الإدارة.",
   tenantOrderHere: "اطلب",
   tenantNotFoundTitle: "المطعم غير موجود",
   tenantNotFoundBody:
@@ -1445,10 +1455,13 @@ const so: Messages = {
   landingFinalTitle: "Diyaar ma u tahay inaad kor u qaaddo makhaayaddaada?",
   landingFinalBody: "Ku biir MayleSoft oo arag farqiga dabaqa.",
   landingFinalNote: "Kaarka looma baahna bilowga wadahadalka · Jooji markaad doonto",
-  tenantEyebrow: "Dalbo online",
-  tenantBody: "Dooro laanta si aad u aragto menu-ga oo aad u sameyso dalab walk-in.",
+  tenantEyebrow: "Goobahaannu",
+  tenantBody:
+    "Booqo laanta oo scan-garee QR-ka miiska ama walk-in-ka si aad u dalbato.",
   tenantBranches: "Laamaha",
   tenantNoBranches: "Weli ma jiraan laamo. Weydii shaqaalaha QR.",
+  tenantScanHint:
+    "Xiriirada dalabku waxay ku yaalaan QR-yada daabacan oo keliya. Way dhacaan, shaqaaluhuna way beddeli karaan Admin-ka.",
   tenantOrderHere: "Dalbo",
   tenantNotFoundTitle: "Makhaayadda lama helin",
   tenantNotFoundBody:

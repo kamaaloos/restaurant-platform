@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { customerApi } from "@/lib/api";
@@ -83,22 +82,25 @@ export default function TenantHomePage() {
         ) : (
           <ul className="mt-4 divide-y divide-[var(--line)] border-y border-[var(--line)]">
             {branches.map((branch) => (
-              <li key={branch.id}>
-                <Link
-                  href={`/w/${branch.walkInToken}`}
-                  className="flex items-center justify-between gap-3 py-4 transition-colors hover:text-[var(--accent)]"
-                >
-                  <span className="font-[family-name:var(--font-display)] text-xl">
-                    {branch.name}
-                  </span>
-                  <span className="text-sm text-[var(--muted)]">
-                    {t("tenantOrderHere")} →
-                  </span>
-                </Link>
+              <li key={branch.id} className="py-4">
+                <p className="font-[family-name:var(--font-display)] text-xl">
+                  {branch.name}
+                </p>
+                {branch.address ? (
+                  <p className="mt-1 text-sm text-[var(--muted)]">
+                    {branch.address}
+                  </p>
+                ) : null}
+                {branch.phone ? (
+                  <p className="mt-1 text-sm text-[var(--muted)]">
+                    {branch.phone}
+                  </p>
+                ) : null}
               </li>
             ))}
           </ul>
         )}
+        <p className="mt-6 text-sm text-[var(--muted)]">{t("tenantScanHint")}</p>
       </section>
     </main>
   );
