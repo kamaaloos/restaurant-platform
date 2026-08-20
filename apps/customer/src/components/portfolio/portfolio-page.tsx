@@ -178,8 +178,9 @@ export function PortfolioPage() {
         id="hero"
         className="relative z-10 flex min-h-screen flex-col justify-center px-4 pb-16 pt-28 sm:px-6"
       >
-        <div className="mx-auto grid w-full max-w-6xl items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10">
+        <div className="mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10">
           <motion.div
+            className="order-2 lg:order-1"
             initial={reduceMotion ? false : { opacity: 0, y: 28 }}
             animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
@@ -249,7 +250,7 @@ export function PortfolioPage() {
           </motion.div>
 
           <motion.div
-            className="hidden sm:block"
+            className="order-1 mx-auto w-full max-w-[320px] sm:max-w-[380px] lg:order-2 lg:mx-0 lg:max-w-none"
             initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
             animate={reduceMotion ? undefined : { opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.12 }}

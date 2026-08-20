@@ -1,111 +1,82 @@
 "use client";
 
+import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
-import { HERO_TECH_ICONS } from "@/components/portfolio/portfolio-data";
+import { PORTFOLIO_HERO } from "@/components/portfolio/portfolio-data";
 
 const FLOATERS = [
-  { label: "React", top: "8%", left: "12%", delay: 0 },
-  { label: "Next.js", top: "18%", right: "8%", delay: 0.4 },
-  { label: "NestJS", top: "42%", left: "2%", delay: 0.8 },
-  { label: "TypeScript", bottom: "28%", right: "4%", delay: 1.2 },
-  { label: "Java", bottom: "12%", left: "18%", delay: 0.6 },
-  { label: "Docker", top: "58%", right: "18%", delay: 1.5 },
+  { label: "React", top: "6%", left: "4%", delay: 0 },
+  { label: "Next.js", top: "14%", right: "0%", delay: 0.4 },
+  { label: "NestJS", top: "48%", left: "-2%", delay: 0.8 },
+  { label: "TypeScript", bottom: "22%", right: "-2%", delay: 1.2 },
+  { label: "Java", bottom: "8%", left: "10%", delay: 0.6 },
+  { label: "Docker", top: "62%", right: "8%", delay: 1.5 },
 ] as const;
 
 export function PortfolioHeroVisual() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[440px] lg:max-w-none">
-      {/* Soft orb */}
+    <div className="relative mx-auto aspect-[4/5] w-full max-w-[380px] sm:max-w-[420px] lg:max-w-none">
       <div
-        className="absolute inset-[12%] rounded-full bg-gradient-to-br from-teal-400/25 via-sky-500/10 to-transparent blur-2xl"
+        className="absolute inset-[8%] rounded-[2rem] bg-gradient-to-br from-teal-400/30 via-sky-500/15 to-transparent blur-2xl"
         aria-hidden
       />
       <motion.div
-        className="absolute inset-[18%] rounded-full border border-teal-400/20"
-        animate={
-          reduceMotion
-            ? undefined
-            : { rotate: 360 }
-        }
+        className="absolute inset-[4%] rounded-[2.2rem] border border-teal-400/20"
+        animate={reduceMotion ? undefined : { rotate: 360 }}
         transition={
           reduceMotion
             ? undefined
-            : { duration: 48, repeat: Infinity, ease: "linear" }
+            : { duration: 56, repeat: Infinity, ease: "linear" }
         }
         aria-hidden
       />
       <motion.div
-        className="absolute inset-[28%] rounded-full border border-dashed border-sky-400/15"
-        animate={
-          reduceMotion
-            ? undefined
-            : { rotate: -360 }
-        }
+        className="absolute inset-[10%] rounded-[1.8rem] border border-dashed border-sky-400/15"
+        animate={reduceMotion ? undefined : { rotate: -360 }}
         transition={
           reduceMotion
             ? undefined
-            : { duration: 64, repeat: Infinity, ease: "linear" }
+            : { duration: 72, repeat: Infinity, ease: "linear" }
         }
         aria-hidden
       />
 
-      {/* Core architecture card */}
-      <div className="absolute inset-[22%] flex flex-col justify-center gap-3 rounded-[2rem] border border-white/10 bg-[#0f172a]/80 p-5 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl sm:p-6">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-teal-400/80">
-          Architecture
-        </p>
-        <div className="space-y-2 font-mono text-[11px] leading-relaxed text-slate-400 sm:text-xs">
-          <p>
-            <span className="text-sky-300">client</span>
-            <span className="text-slate-600"> → </span>
-            Next.js / React
+      <div className="absolute inset-[12%] overflow-hidden rounded-[1.6rem] border border-white/12 bg-[#0f172a]/70 shadow-[0_28px_80px_rgba(0,0,0,0.5)]">
+        <Image
+          src={PORTFOLIO_HERO.photoSrc}
+          alt={PORTFOLIO_HERO.photoAlt}
+          fill
+          priority
+          sizes="(max-width: 1024px) 380px, 440px"
+          className="object-cover object-[50%_18%]"
+        />
+        <div
+          className="absolute inset-0 bg-gradient-to-t from-[#0b1120]/85 via-[#0b1120]/15 to-transparent"
+          aria-hidden
+        />
+        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
+          <p className="portfolio-display text-xl font-semibold text-white sm:text-2xl">
+            {PORTFOLIO_HERO.displayName}
           </p>
-          <p>
-            <span className="text-teal-300">api</span>
-            <span className="text-slate-600"> → </span>
-            NestJS · REST
+          <p className="mt-1 text-xs text-teal-300/90 sm:text-sm">
+            Senior Software Engineer · Quality Leader
           </p>
-          <p>
-            <span className="text-violet-300">data</span>
-            <span className="text-slate-600"> → </span>
-            PostgreSQL
-          </p>
-          <p>
-            <span className="text-amber-300">quality</span>
-            <span className="text-slate-600"> → </span>
-            CI · Tests · UAT
-          </p>
-        </div>
-        <div className="mt-2 flex flex-wrap gap-1.5">
-          {HERO_TECH_ICONS.slice(0, 4).map((tech) => (
-            <span
-              key={tech}
-              className="rounded-md border border-white/8 bg-white/5 px-2 py-0.5 text-[10px] text-slate-400"
-            >
-              {tech}
-            </span>
-          ))}
         </div>
       </div>
 
-      {/* Floating tech chips */}
       {FLOATERS.map((item) => (
         <motion.span
           key={item.label}
-          className="absolute z-10 rounded-full border border-white/10 bg-[#0b1120]/90 px-3 py-1.5 text-[11px] font-medium text-slate-300 shadow-lg backdrop-blur-sm"
+          className="absolute z-10 rounded-full border border-white/10 bg-[#0b1120]/92 px-3 py-1.5 text-[11px] font-medium text-slate-300 shadow-lg backdrop-blur-sm"
           style={{
             top: "top" in item ? item.top : undefined,
             left: "left" in item ? item.left : undefined,
             right: "right" in item ? item.right : undefined,
             bottom: "bottom" in item ? item.bottom : undefined,
           }}
-          animate={
-            reduceMotion
-              ? undefined
-              : { y: [0, -8, 0] }
-          }
+          animate={reduceMotion ? undefined : { y: [0, -8, 0] }}
           transition={
             reduceMotion
               ? undefined

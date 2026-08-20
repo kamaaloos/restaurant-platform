@@ -153,7 +153,7 @@ Guest ordering can live on **one subdomain per restaurant**:
 |------|-----|
 | `maylesoft.com` / `www` | Customer — MayleSoft product hub (links to each product) |
 | `customer.maylesoft.com` | Customer — restaurant platform marketing landing |
-| `hkamal.maylesoft.com` | Customer — personal portfolio (Eng. Hassan Kamal) |
+| `hkamal.maylesoft.com` | Customer — personal portfolio (Hasan Kamal) |
 | `alhuda.maylesoft.com` | Customer (tenant home + `/w`, `/t`) |
 | `admin.maylesoft.com` | Admin |
 | `kitchen.maylesoft.com` | Kitchen |

@@ -26,7 +26,9 @@ export const PORTFOLIO_CONTACT = {
 } as const;
 
 export const PORTFOLIO_HERO = {
-  displayName: "Hassan Kamal",
+  displayName: "Hasan Kamal",
+  photoSrc: "/images/portfolio/hasan-kamal.png",
+  photoAlt: "Portrait of Hasan Kamal",
   headline: "Building Reliable Software. Delivering Quality at Scale.",
   roles: [
     "Senior Software Engineer",
@@ -489,15 +491,4 @@ export const NAV_SECTIONS = [
   { id: "skills", label: "Skills" },
   { id: "projects", label: "Projects" },
   { id: "contact", label: "Contact" },
-] as const;
-
-export const HERO_TECH_ICONS = [
-  "React",
-  "Next.js",
-  "NestJS",
-  "TypeScript",
-  "Java",
-  "Python",
-  "Docker",
-  "CI/CD",
 ] as const;
