@@ -27,7 +27,7 @@ export const PORTFOLIO_CONTACT = {
 } as const;
 
 export const PORTFOLIO_HERO = {
-  name: "Eng. Hassan Kamal",
+  name: "Engineer Hasan Kamal",
   headline: "Building Reliable Software. Delivering Quality at Scale.",
   roles:
     "Senior Software Engineer • Full-Stack Developer • Test Manager • Quality Engineering Leader",
