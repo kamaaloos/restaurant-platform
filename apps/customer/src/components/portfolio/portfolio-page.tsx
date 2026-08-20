@@ -19,6 +19,7 @@ import {
   EXPERTISE_PILLARS,
   FEATURED_PROJECTS,
   NAV_SECTIONS,
+  PLATFORM_PRODUCTS,
   PORTFOLIO_CONTACT,
   PORTFOLIO_HERO,
   PORTFOLIO_STATS,
@@ -29,6 +30,10 @@ import {
 const ROOT_DOMAIN =
   process.env.NEXT_PUBLIC_ROOT_DOMAIN?.trim() || "maylesoft.com";
 const MAYLESOFT_HREF = `https://${ROOT_DOMAIN}`;
+const PLATFORM_LINKS: Record<string, string> = {
+  restaurant: `https://customer.${ROOT_DOMAIN}`,
+  dugsi: `https://dugsi.${ROOT_DOMAIN}`,
+};
 
 const fadeUp = {
   hidden: { opacity: 0, y: 28 },
@@ -199,7 +204,7 @@ export function PortfolioPage() {
                 type="button"
                 onClick={() =>
                   document
-                    .getElementById("projects")
+                    .getElementById("platforms")
                     ?.scrollIntoView({ behavior: "smooth" })
                 }
                 className="portfolio-btn-primary inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold"
@@ -416,6 +421,127 @@ export function PortfolioPage() {
         </motion.div>
       </section>
 
+      {/* Platforms */}
+      <section id="platforms" className="relative z-10 px-4 py-24 sm:px-6 sm:py-28">
+        <motion.div
+          className="mx-auto max-w-6xl"
+          variants={fadeUp}
+          {...motionProps}
+        >
+          <SectionHeading
+            eyebrow="MayleSoft Platforms"
+            title="Software platforms built and shipping"
+            description="Multi-product platforms I've designed and developed—live products today, with the next verticals already on the roadmap."
+          />
+
+          <div className="mt-14">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-400/90">
+              Live
+            </p>
+            <div className="mt-5 grid gap-6 md:grid-cols-2">
+              {PLATFORM_PRODUCTS.filter((p) => p.status === "live").map(
+                (product, index) => {
+                  const Icon = product.icon;
+                  return (
+                    <motion.article
+                      key={product.id}
+                      className="portfolio-glass portfolio-card-lift rounded-3xl p-6 sm:p-7"
+                      variants={fadeUp}
+                      initial={reduceMotion ? false : "hidden"}
+                      whileInView={reduceMotion ? undefined : "visible"}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.5, delay: index * 0.08 }}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div
+                          className="flex h-12 w-12 items-center justify-center rounded-2xl"
+                          style={{ backgroundColor: `${product.accent}22` }}
+                        >
+                          <Icon
+                            className="h-6 w-6"
+                            style={{ color: product.accent }}
+                          />
+                        </div>
+                        <span className="rounded-full border border-teal-400/30 bg-teal-400/10 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-teal-300">
+                          Live
+                        </span>
+                      </div>
+                      <h3 className="portfolio-display mt-5 text-2xl font-semibold text-white">
+                        {product.name}
+                      </h3>
+                      <p className="mt-2 text-sm leading-relaxed text-slate-400">
+                        {product.description}
+                      </p>
+                      <ul className="mt-5 flex flex-wrap gap-2">
+                        {product.highlights.map((item) => (
+                          <span
+                            key={item}
+                            className="rounded-full border border-white/8 bg-white/5 px-2.5 py-1 text-xs text-slate-400"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </ul>
+                      {PLATFORM_LINKS[product.id] ? (
+                        <a
+                          href={PLATFORM_LINKS[product.id]}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-teal-300/90 transition-colors hover:text-teal-200"
+                        >
+                          Visit platform
+                          <ArrowUpRight className="h-3.5 w-3.5" />
+                        </a>
+                      ) : null}
+                    </motion.article>
+                  );
+                },
+              )}
+            </div>
+          </div>
+
+          <div className="mt-12">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+              Coming Soon
+            </p>
+            <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              {PLATFORM_PRODUCTS.filter((p) => p.status === "coming").map(
+                (product, index) => {
+                  const Icon = product.icon;
+                  return (
+                    <motion.article
+                      key={product.id}
+                      className="portfolio-glass rounded-2xl p-5"
+                      variants={fadeUp}
+                      initial={reduceMotion ? false : "hidden"}
+                      whileInView={reduceMotion ? undefined : "visible"}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.45, delay: index * 0.06 }}
+                    >
+                      <div
+                        className="flex h-10 w-10 items-center justify-center rounded-xl"
+                        style={{ backgroundColor: `${product.accent}18` }}
+                      >
+                        <Icon
+                          className="h-5 w-5"
+                          style={{ color: product.accent }}
+                        />
+                      </div>
+                      <h3 className="mt-4 text-base font-semibold text-white">
+                        {product.name}
+                      </h3>
+                      <p className="mt-2 text-xs leading-relaxed text-slate-500">
+                        {product.description}
+                      </p>
+                    </motion.article>
+                  );
+                },
+              )}
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
       {/* Skills */}
       <section id="skills" className="relative z-10 px-4 py-24 sm:px-6 sm:py-28">
         <motion.div
@@ -429,7 +555,7 @@ export function PortfolioPage() {
             description="Technologies, methodologies, and leadership capabilities shaped by decades of enterprise delivery."
           />
 
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {SKILL_CATEGORIES.map((category, index) => {
               const Icon = category.icon;
               return (

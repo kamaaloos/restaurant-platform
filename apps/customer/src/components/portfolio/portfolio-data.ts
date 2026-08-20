@@ -4,12 +4,17 @@ import {
   Code2,
   FlaskConical,
   Globe2,
+  GraduationCap,
   Layers,
   Radio,
   Rocket,
   Satellite,
   ShieldCheck,
+  ShoppingCart,
+  Stethoscope,
+  Truck,
   Users,
+  UtensilsCrossed,
   Zap,
 } from "lucide-react";
 
@@ -76,11 +81,12 @@ export const CAREER_ROLES: CareerRole[] = [
     technologies: [
       "Java",
       "JavaScript",
+      "TypeScript",
+      "React",
+      "Next.js",
+      "NestJS",
       "PHP",
       "MySQL",
-      "Apache",
-      "Tomcat",
-      "XML",
       "REST APIs",
     ],
   },
@@ -167,19 +173,36 @@ export type SkillCategory = {
 
 export const SKILL_CATEGORIES: SkillCategory[] = [
   {
-    title: "Development",
+    title: "Languages",
     icon: Code2,
     items: [
       "Java",
-      "Spring",
       "JavaScript",
+      "TypeScript",
+      "C / C++",
+      "C#",
+      "Python",
+      "Ada",
       "PHP",
+      "SQL",
+      "XML",
+    ],
+  },
+  {
+    title: "Development",
+    icon: Layers,
+    items: [
+      "React",
+      "Next.js",
+      "NestJS",
+      "React Native",
+      "Expo",
+      "Spring",
       "REST APIs",
       "MySQL",
       "Oracle",
       "Apache",
       "Tomcat",
-      "XML",
       "Git",
     ],
   },
@@ -191,6 +214,8 @@ export const SKILL_CATEGORIES: SkillCategory[] = [
       "Test Automation",
       "Selenium",
       "JUnit",
+      "Jest",
+      "Playwright",
       "Integration Testing",
       "Performance Testing",
       "Load Testing",
@@ -212,6 +237,88 @@ export const SKILL_CATEGORIES: SkillCategory[] = [
       "Risk Management",
       "Mentoring",
     ],
+  },
+];
+
+export type PlatformProduct = {
+  id: string;
+  name: string;
+  status: "live" | "coming";
+  description: string;
+  icon: LucideIcon;
+  accent: string;
+  href?: string;
+  highlights: string[];
+};
+
+export const PLATFORM_PRODUCTS: PlatformProduct[] = [
+  {
+    id: "restaurant",
+    name: "MayleSoft Restaurant",
+    status: "live",
+    description:
+      "End-to-end restaurant operations — QR dine-in, kitchen display, waiter, cashier, and walk-in pickup in one platform.",
+    icon: UtensilsCrossed,
+    accent: "#2dd4bf",
+    highlights: [
+      "QR table ordering",
+      "Kitchen display system",
+      "POS / cashier",
+      "Waiter & table management",
+      "Walk-in pickup",
+    ],
+  },
+  {
+    id: "dugsi",
+    name: "MayleSoft Dugsi",
+    status: "live",
+    description:
+      "School management for attendance, exams, finance, teachers, and student records.",
+    icon: GraduationCap,
+    accent: "#38bdf8",
+    highlights: [
+      "Students & teachers",
+      "Attendance",
+      "Exams & grades",
+      "Finance",
+      "Reporting",
+    ],
+  },
+  {
+    id: "clinic",
+    name: "Clinic / Healthcare",
+    status: "coming",
+    description: "Practice operations for clinics and outpatient care.",
+    icon: Stethoscope,
+    accent: "#a78bfa",
+    highlights: ["Appointments", "Patient records", "Billing"],
+  },
+  {
+    id: "retail",
+    name: "Retail",
+    status: "coming",
+    description: "Inventory, sales, and store operations for retail businesses.",
+    icon: ShoppingCart,
+    accent: "#f472b6",
+    highlights: ["Inventory", "POS", "Stock control"],
+  },
+  {
+    id: "logistics",
+    name: "Logistics",
+    status: "coming",
+    description: "Fleet, delivery, and warehouse coordination.",
+    icon: Truck,
+    accent: "#fbbf24",
+    highlights: ["Dispatch", "Tracking", "Warehousing"],
+  },
+  {
+    id: "hr",
+    name: "HR / Workforce",
+    status: "coming",
+    description: "People operations for growing organizations.",
+    icon: Building2,
+    accent: "#94a3b8",
+    highlights: ["People ops", "Scheduling", "Payroll-ready"],
   },
 ];
 
@@ -271,7 +378,16 @@ export const FEATURED_PROJECTS: FeaturedProject[] = [
       "REST API design and database architecture",
       "Long-term consulting and production support",
     ],
-    technologies: ["Java", "PHP", "JavaScript", "MySQL", "REST APIs"],
+    technologies: [
+      "Java",
+      "TypeScript",
+      "React",
+      "Next.js",
+      "NestJS",
+      "PHP",
+      "MySQL",
+      "REST APIs",
+    ],
   },
 ];
 
@@ -295,6 +411,7 @@ export const EXPERTISE_PILLARS = [
 export const NAV_SECTIONS = [
   { id: "about", label: "About" },
   { id: "career", label: "Career" },
+  { id: "platforms", label: "Platforms" },
   { id: "skills", label: "Skills" },
   { id: "projects", label: "Projects" },
   { id: "contact", label: "Contact" },
