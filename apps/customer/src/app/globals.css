@@ -633,6 +633,18 @@ html[dir="rtl"] body {
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
+.portfolio-logo-mark {
+  font-family: var(--font-display), "Cormorant Garamond", Georgia, serif;
+  letter-spacing: 0.04em;
+  opacity: 0.72;
+  filter: grayscale(1);
+}
+
+.portfolio-logo-mark:hover {
+  opacity: 1;
+  filter: grayscale(0);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .portfolio-mesh {
     animation: none;

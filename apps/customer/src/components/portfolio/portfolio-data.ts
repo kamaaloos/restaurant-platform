@@ -13,7 +13,6 @@ import {
   ShoppingCart,
   Stethoscope,
   Truck,
-  Users,
   UtensilsCrossed,
   Zap,
 } from "lucide-react";
@@ -27,23 +26,65 @@ export const PORTFOLIO_CONTACT = {
 } as const;
 
 export const PORTFOLIO_HERO = {
-  name: "Engineer Hasan Kamal",
+  displayName: "Hassan Kamal",
   headline: "Building Reliable Software. Delivering Quality at Scale.",
-  roles:
-    "Senior Software Engineer • Full-Stack Developer • Test Manager • Quality Engineering Leader",
+  roles: [
+    "Senior Software Engineer",
+    "Full-Stack Developer",
+    "Test Manager",
+    "Quality Engineering Leader",
+  ],
   intro:
-    "For more than 25 years, I've helped organizations design, build, test, and deliver mission-critical software—from telecommunications infrastructure and enterprise systems to European space technology and modern web applications.",
-  subIntro:
-    "My experience spans the complete Software Development Life Cycle (SDLC), combining software engineering expertise with quality leadership to create scalable, reliable, and high-performing digital solutions.",
-  quote:
-    "Quality isn't the final step—it's engineered into every stage of development.",
+    "For more than 25 years, I've helped organizations design, build, test, and deliver mission-critical software—from telecommunications infrastructure and enterprise systems to European space technology and modern SaaS platforms.",
 } as const;
 
 export const PORTFOLIO_STATS = [
-  { value: "25+", label: "Years Experience" },
-  { value: "5", label: "Industries Served" },
-  { value: "Enterprise", label: "Scale Delivery" },
-  { value: "Full SDLC", label: "End-to-End Ownership" },
+  { value: "25+", label: "Years" },
+  { value: "5", label: "Countries" },
+  { value: "100+", label: "Projects" },
+  { value: "4", label: "Domains", detail: "Telecom · Energy · Space · Enterprise" },
+] as const;
+
+/** Employer credibility strip — show immediately on the homepage. */
+export const WORKED_WITH = [
+  { name: "Nokia", short: "Nokia" },
+  { name: "European Space Agency", short: "ESA" },
+  { name: "Equinor", short: "Equinor" },
+  { name: "TietoEnator", short: "TietoEnator" },
+  { name: "Space Systems Finland", short: "SSF" },
+] as const;
+
+export const SELECTED_ACHIEVEMENTS = [
+  {
+    icon: Zap,
+    title: "25+ years in software engineering",
+    detail: "End-to-end delivery across telecom, aerospace, energy, and SaaS.",
+  },
+  {
+    icon: Satellite,
+    title: "ESA GOCE satellite mission",
+    detail: "Mission-critical software validation for Earth observation systems.",
+  },
+  {
+    icon: Radio,
+    title: "Carrier-grade telecom software",
+    detail: "Integration and QA for global mobile network platforms at Nokia.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Enterprise QA leadership",
+    detail: "Led testing programs for critical systems at Equinor and TietoEnator.",
+  },
+  {
+    icon: Code2,
+    title: "Full-stack enterprise applications",
+    detail: "Architected and shipped production systems from concept to support.",
+  },
+  {
+    icon: Rocket,
+    title: "Mission-critical delivery across Europe",
+    detail: "Finland, Norway, and remote consulting for multi-country programs.",
+  },
 ] as const;
 
 export type CareerRole = {
@@ -52,6 +93,7 @@ export type CareerRole = {
   location: string;
   title: string;
   period: string;
+  year: string;
   icon: LucideIcon;
   accent: string;
   summary: string;
@@ -59,32 +101,57 @@ export type CareerRole = {
   technologies?: string[];
 };
 
+/** Chronological journey (newest first for experience detail). */
 export const CAREER_ROLES: CareerRole[] = [
   {
-    id: "consultant",
-    company: "Freelance Consultant",
-    location: "Remote · Europe",
-    title: "Full-Stack Application Developer & QA Consultant",
-    period: "Jan 2011 – Jun 2022",
+    id: "maylesoft",
+    company: "MayleSoft",
+    location: "Founder · Europe",
+    title: "Founder & Principal Engineer",
+    period: "2022 – Present",
+    year: "2022",
     icon: Rocket,
     accent: "#2dd4bf",
     summary:
+      "Building a multi-product SaaS platform for restaurants, schools, and upcoming verticals—owning architecture, full-stack delivery, quality, and product direction.",
+    highlights: [
+      "Designed and shipped MayleSoft Restaurant (QR ordering, KDS, POS, waiter, pickup)",
+      "Launched MayleSoft Dugsi for school operations",
+      "Cloud-native stack with Next.js, NestJS, and modern DevOps practices",
+      "Roadmap for Clinic, Retail, Logistics, and HR platforms",
+    ],
+    technologies: [
+      "TypeScript",
+      "React",
+      "Next.js",
+      "NestJS",
+      "PostgreSQL",
+      "Docker",
+      "CI/CD",
+    ],
+  },
+  {
+    id: "consultant",
+    company: "Independent Consultant",
+    location: "Remote · Europe",
+    title: "Full-Stack Developer & QA Consultant",
+    period: "2011 – 2022",
+    year: "2011",
+    icon: Globe2,
+    accent: "#38bdf8",
+    summary:
       "Partnered with businesses to transform ideas into production-ready applications—from architecture and development to testing, deployment, and long-term support.",
     highlights: [
-      "Delivered end-to-end software development from requirements to production support",
-      "Built modern web and enterprise applications with scalable front-end and back-end architectures",
-      "Automated testing and continuous quality assurance across the SDLC",
-      "Performed unit, integration, functional, performance, and UAT",
-      "Translated business requirements into secure, maintainable technical solutions",
-      "Provided technical consulting and troubleshooting across multiple industries",
+      "Delivered end-to-end software from requirements to production support",
+      "Built scalable front-end and back-end architectures",
+      "Automated testing and continuous quality assurance",
+      "Integration, performance, and user acceptance testing",
     ],
     technologies: [
       "Java",
       "JavaScript",
       "TypeScript",
       "React",
-      "Next.js",
-      "NestJS",
       "PHP",
       "MySQL",
       "REST APIs",
@@ -95,17 +162,16 @@ export const CAREER_ROLES: CareerRole[] = [
     company: "Equinor (Statoil)",
     location: "Stavanger, Norway",
     title: "Test Manager",
-    period: "Dec 2007 – Nov 2010",
+    period: "2007 – 2010",
+    year: "2007",
     icon: Building2,
-    accent: "#38bdf8",
+    accent: "#818cf8",
     summary:
-      "Led quality assurance for enterprise-scale systems at one of Europe's largest energy companies—coordinating cross-functional teams, integration strategies, and executive reporting.",
+      "Led quality assurance for enterprise-scale systems at one of Europe's largest energy companies.",
     highlights: [
-      "Led testing for enterprise-scale projects aligned with business objectives",
-      "Defined test strategies for integration, E2E, system, regression, and UAT",
-      "Managed risks, defect reporting, testing metrics, and executive status reporting",
-      "Designed high-level solution architectures and cross-domain integration strategies",
-      "Presented solution designs, demos, and proof-of-concept implementations",
+      "Enterprise test strategy and end-to-end integration testing",
+      "Risk, defect metrics, and executive status reporting",
+      "Cross-domain solution architecture and integration reviews",
     ],
   },
   {
@@ -113,17 +179,16 @@ export const CAREER_ROLES: CareerRole[] = [
     company: "TietoEnator",
     location: "Espoo, Finland",
     title: "Test Manager",
-    period: "Aug 2006 – Nov 2007",
+    period: "2006 – 2007",
+    year: "2006",
     icon: Layers,
-    accent: "#818cf8",
+    accent: "#a78bfa",
     summary:
-      "Developed enterprise test and integration strategies for large multi-team Nordic implementations—improving delivery efficiency through better methodologies and open-source adoption.",
+      "Enterprise test and integration strategies for large multi-team Nordic implementations.",
     highlights: [
-      "Developed enterprise Test and Integration Strategies for multi-team projects",
-      "Directed end-to-end testing, integration planning, and release readiness",
-      "Designed high-level technical solutions aligned with business requirements",
-      "Evaluated and introduced open-source technologies to reduce costs",
-      "Delivered executive reporting on quality metrics and risk management",
+      "Directed integration planning and release readiness",
+      "Introduced open-source technologies to reduce delivery cost",
+      "Executive reporting on quality metrics and risk",
     ],
   },
   {
@@ -131,18 +196,16 @@ export const CAREER_ROLES: CareerRole[] = [
     company: "Space Systems Finland",
     location: "Espoo, Finland",
     title: "Test Manager",
-    period: "Jan 2004 – Jul 2006",
+    period: "2004 – 2006",
+    year: "2004",
     icon: Satellite,
-    accent: "#a78bfa",
+    accent: "#c084fc",
     summary:
-      "Managed mission-critical testing for the European Space Agency's GOCE satellite mission—validating software and hardware systems designed to operate hundreds of kilometers above Earth.",
+      "Mission-critical testing for the European Space Agency's GOCE satellite mission.",
     highlights: [
-      "Managed software integration and I/O vector testing for ESA's GOCE mission",
-      "Planned, executed, and reported mission-critical testing activities",
-      "Developed testing processes, documentation standards, and automation tools",
-      "Built and maintained integration and system test environments",
-      "Mentored test engineers and supported Oracle database validation with TOAD",
-      "Assisted business users with UAT and delivered end-user training",
+      "Software integration and I/O vector testing for ESA GOCE",
+      "Test automation, environments, and documentation standards",
+      "Oracle database validation and UAT support",
     ],
   },
   {
@@ -150,20 +213,29 @@ export const CAREER_ROLES: CareerRole[] = [
     company: "Nokia Networks",
     location: "Helsinki, Finland",
     title: "Senior Systems Engineer / QA Engineer",
-    period: "1997 – Dec 2003",
+    period: "1997 – 2003",
+    year: "1997",
     icon: Radio,
     accent: "#34d399",
     summary:
-      "Built the engineering foundation of my career during the rapid expansion of global telecommunications—integrating and testing carrier-grade networking systems for exceptional reliability.",
+      "Carrier-grade telecommunications software—integration, testing, and quality for global network operators.",
     highlights: [
-      "Participated in development, integration, and testing of telecom software systems",
-      "Executed functional, system, integration, and regression testing across platforms",
-      "Collaborated with developers and architects to resolve complex technical issues",
-      "Contributed to releases by identifying defects, validating fixes, and ensuring readiness",
-      "Supported continuous improvement initiatives for QA processes and methodologies",
+      "Functional, system, integration, and regression testing",
+      "Defect identification and production readiness",
+      "Continuous improvement of QA processes",
     ],
   },
 ];
+
+/** Compact journey strip (oldest → newest). */
+export const JOURNEY_MILESTONES = [
+  { year: "1997", label: "Nokia Networks" },
+  { year: "2004", label: "Space Systems Finland" },
+  { year: "2006", label: "TietoEnator" },
+  { year: "2007", label: "Equinor" },
+  { year: "2011", label: "Independent Consultant" },
+  { year: "2022", label: "Founder · MayleSoft" },
+] as const;
 
 export type SkillCategory = {
   title: string;
@@ -171,71 +243,56 @@ export type SkillCategory = {
   items: string[];
 };
 
+/** Premium skill columns — curated, not badge walls. */
 export const SKILL_CATEGORIES: SkillCategory[] = [
   {
-    title: "Languages",
+    title: "Software Engineering",
     icon: Code2,
     items: [
       "Java",
-      "JavaScript",
-      "TypeScript",
       "C / C++",
       "C#",
       "Python",
       "Ada",
+      "TypeScript",
       "PHP",
-      "SQL",
-      "XML",
-    ],
-  },
-  {
-    title: "Development",
-    icon: Layers,
-    items: [
       "React",
       "Next.js",
       "NestJS",
       "React Native",
-      "Expo",
       "Spring",
-      "REST APIs",
-      "MySQL",
-      "Oracle",
-      "Apache",
-      "Tomcat",
-      "Git",
     ],
   },
   {
     title: "Quality Engineering",
     icon: FlaskConical,
     items: [
-      "Test Management",
-      "Test Automation",
+      "Test Strategy",
+      "Automation",
       "Selenium",
       "JUnit",
       "Jest",
       "Playwright",
-      "Integration Testing",
-      "Performance Testing",
-      "Load Testing",
+      "Performance",
+      "Integration",
       "UAT",
-      "Regression Testing",
-      "CI/CD",
+      "Release Readiness",
     ],
   },
   {
-    title: "Leadership",
-    icon: Users,
+    title: "Architecture",
+    icon: Layers,
     items: [
-      "Technical Leadership",
-      "Project Delivery",
-      "Stakeholder Management",
-      "Agile",
-      "Scrum",
-      "Solution Architecture",
-      "Risk Management",
-      "Mentoring",
+      "REST APIs",
+      "Microservices",
+      "Cloud-ready",
+      "Docker",
+      "CI/CD",
+      "PostgreSQL",
+      "MySQL",
+      "Oracle",
+      "Solution Design",
+      "System Integration",
     ],
   },
 ];
@@ -243,43 +300,61 @@ export const SKILL_CATEGORIES: SkillCategory[] = [
 export type PlatformProduct = {
   id: string;
   name: string;
+  tagline: string;
   status: "live" | "coming";
   description: string;
+  result: string;
   icon: LucideIcon;
   accent: string;
-  href?: string;
+  tech: string[];
   highlights: string[];
 };
 
 export const PLATFORM_PRODUCTS: PlatformProduct[] = [
   {
     id: "restaurant",
-    name: "MayleSoft Restaurant",
+    name: "Restaurant Platform",
+    tagline: "Enterprise SaaS",
     status: "live",
     description:
-      "End-to-end restaurant operations — QR dine-in, kitchen display, waiter, cashier, and walk-in pickup in one platform.",
+      "Designed and developed a cloud-based restaurant management platform supporting POS, kitchen operations, QR dine-in, waiter workflows, reporting, and multi-branch administration.",
+    result:
+      "Modern architecture built for scalability, security, and operational efficiency across guest, kitchen, and staff apps.",
     icon: UtensilsCrossed,
     accent: "#2dd4bf",
+    tech: [
+      "Next.js",
+      "NestJS",
+      "TypeScript",
+      "PostgreSQL",
+      "Docker",
+      "WebSockets",
+      "CI/CD",
+    ],
     highlights: [
       "QR table ordering",
-      "Kitchen display system",
+      "Kitchen display",
       "POS / cashier",
-      "Waiter & table management",
-      "Walk-in pickup",
+      "Waiter app",
+      "Multi-branch admin",
     ],
   },
   {
     id: "dugsi",
-    name: "MayleSoft Dugsi",
+    name: "Dugsi School Platform",
+    tagline: "Education SaaS",
     status: "live",
     description:
-      "School management for attendance, exams, finance, teachers, and student records.",
+      "Built a school operations platform covering students, teachers, attendance, exams, finance, and reporting—designed for clarity, reliability, and multi-role access.",
+    result:
+      "Unified operations surface that reduces admin overhead and keeps academic and financial data consistent.",
     icon: GraduationCap,
     accent: "#38bdf8",
+    tech: ["Next.js", "NestJS", "TypeScript", "PostgreSQL", "REST APIs"],
     highlights: [
       "Students & teachers",
       "Attendance",
-      "Exams & grades",
+      "Exams",
       "Finance",
       "Reporting",
     ],
@@ -287,37 +362,49 @@ export const PLATFORM_PRODUCTS: PlatformProduct[] = [
   {
     id: "clinic",
     name: "Clinic / Healthcare",
+    tagline: "Coming soon",
     status: "coming",
     description: "Practice operations for clinics and outpatient care.",
+    result: "On the MayleSoft product roadmap.",
     icon: Stethoscope,
     accent: "#a78bfa",
+    tech: [],
     highlights: ["Appointments", "Patient records", "Billing"],
   },
   {
     id: "retail",
     name: "Retail",
+    tagline: "Coming soon",
     status: "coming",
     description: "Inventory, sales, and store operations for retail businesses.",
+    result: "On the MayleSoft product roadmap.",
     icon: ShoppingCart,
     accent: "#f472b6",
+    tech: [],
     highlights: ["Inventory", "POS", "Stock control"],
   },
   {
     id: "logistics",
     name: "Logistics",
+    tagline: "Coming soon",
     status: "coming",
     description: "Fleet, delivery, and warehouse coordination.",
+    result: "On the MayleSoft product roadmap.",
     icon: Truck,
     accent: "#fbbf24",
+    tech: [],
     highlights: ["Dispatch", "Tracking", "Warehousing"],
   },
   {
     id: "hr",
     name: "HR / Workforce",
+    tagline: "Coming soon",
     status: "coming",
     description: "People operations for growing organizations.",
+    result: "On the MayleSoft product roadmap.",
     icon: Building2,
     accent: "#94a3b8",
+    tech: [],
     highlights: ["People ops", "Scheduling", "Payroll-ready"],
   },
 ];
@@ -325,94 +412,92 @@ export const PLATFORM_PRODUCTS: PlatformProduct[] = [
 export type FeaturedProject = {
   id: string;
   title: string;
-  subtitle: string;
+  tagline: string;
   company?: string;
   role: string;
   icon: LucideIcon;
   accent: string;
-  points: string[];
-  technologies?: string[];
+  description: string;
+  result: string;
+  technologies: string[];
 };
 
 export const FEATURED_PROJECTS: FeaturedProject[] = [
   {
     id: "goce",
-    title: "European Space Agency GOCE Mission",
-    subtitle: "Mission-critical software testing supporting satellite operations.",
+    title: "ESA GOCE Mission",
+    tagline: "Aerospace · Mission-critical",
     company: "Space Systems Finland",
     role: "Test Manager",
     icon: Satellite,
     accent: "#a78bfa",
-    points: [
-      "Flight software and integration testing",
-      "Mission readiness validation",
-      "Test automation and environment management",
-      "Oracle database validation",
+    description:
+      "Led software integration and validation activities supporting the European Space Agency's GOCE Earth observation satellite—systems designed to operate hundreds of kilometers above Earth.",
+    result:
+      "Mission readiness through disciplined integration testing, automation, and environment management.",
+    technologies: [
+      "Integration Testing",
+      "Test Automation",
+      "Oracle",
+      "System Validation",
     ],
   },
   {
     id: "equinor-platform",
-    title: "Enterprise Energy Platform",
-    subtitle: "Quality leadership for critical business systems at scale.",
+    title: "Enterprise Energy Systems",
+    tagline: "Energy · Enterprise QA",
     company: "Equinor (Statoil)",
     role: "Test Manager",
     icon: ShieldCheck,
     accent: "#38bdf8",
-    points: [
-      "Enterprise integration and E2E testing",
-      "Cross-domain system integration",
-      "Executive reporting and risk management",
-      "Solution architecture reviews",
+    description:
+      "Directed enterprise testing for critical business systems at one of Europe's largest energy companies—covering integration strategy, risk management, and executive reporting.",
+    result:
+      "Reliable release readiness across complex, multi-domain integrations.",
+    technologies: [
+      "E2E Testing",
+      "Integration Strategy",
+      "Risk Management",
+      "Solution Architecture",
     ],
   },
   {
-    id: "enterprise-web",
-    title: "Enterprise Web Applications",
-    subtitle: "Full-stack delivery from concept to production for private clients.",
-    role: "Full-Stack Developer",
-    icon: Globe2,
-    accent: "#2dd4bf",
-    points: [
-      "Built secure, scalable enterprise applications",
-      "Automated testing and performance optimization",
-      "REST API design and database architecture",
-      "Long-term consulting and production support",
-    ],
+    id: "nokia-telecom",
+    title: "Carrier-Grade Telecom Platforms",
+    tagline: "Telecommunications",
+    company: "Nokia Networks",
+    role: "Senior Systems / QA Engineer",
+    icon: Radio,
+    accent: "#34d399",
+    description:
+      "Contributed to development, integration, and quality assurance of carrier-grade networking software used by global mobile operators.",
+    result:
+      "Production-ready releases for systems that demanded exceptional reliability and performance.",
     technologies: [
-      "Java",
-      "TypeScript",
-      "React",
-      "Next.js",
-      "NestJS",
-      "PHP",
-      "MySQL",
-      "REST APIs",
+      "System Integration",
+      "Regression Testing",
+      "Release Validation",
+      "Telecom Software",
     ],
   },
 ];
 
-export const WHY_HIRE = [
-  "25+ years of industry experience across telecom, aerospace, energy, and enterprise software",
-  "Full SDLC expertise—from requirements and architecture to deployment and support",
-  "Unique blend of software engineering and quality engineering leadership",
-  "Enterprise architecture and integration knowledge at global scale",
-  "Mission-critical systems experience including ESA satellite programs",
-  "Strong stakeholder communication and executive-level reporting",
-  "Proven delivery record with Nokia, Equinor, TietoEnator, and Space Systems Finland",
-] as const;
-
-export const EXPERTISE_PILLARS = [
-  { icon: Code2, label: "Software Engineering" },
-  { icon: FlaskConical, label: "Quality Engineering" },
-  { icon: Layers, label: "Solution Architecture" },
-  { icon: Zap, label: "Test Automation" },
-] as const;
-
 export const NAV_SECTIONS = [
   { id: "about", label: "About" },
-  { id: "career", label: "Career" },
+  { id: "experience", label: "Experience" },
   { id: "platforms", label: "Platforms" },
   { id: "skills", label: "Skills" },
   { id: "projects", label: "Projects" },
   { id: "contact", label: "Contact" },
+] as const;
+
+export const HERO_TECH_ICONS = [
+  "React",
+  "Next.js",
+  "NestJS",
+  "TypeScript",
+  "Java",
+  "Python",
+  "Docker",
+  "CI/CD",
 ] as const;
