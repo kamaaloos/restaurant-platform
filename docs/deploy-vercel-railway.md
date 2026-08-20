@@ -153,6 +153,7 @@ Guest ordering can live on **one subdomain per restaurant**:
 |------|-----|
 | `maylesoft.com` / `www` | Customer — MayleSoft product hub (links to each product) |
 | `customer.maylesoft.com` | Customer — restaurant platform marketing landing |
+| `hkamal.maylesoft.com` | Customer — personal portfolio (Eng. Hassan Kamal) |
 | `alhuda.maylesoft.com` | Customer (tenant home + `/w`, `/t`) |
 | `admin.maylesoft.com` | Admin |
 | `kitchen.maylesoft.com` | Kitchen |
@@ -174,7 +175,10 @@ Guest ordering can live on **one subdomain per restaurant**:
 2. Set env:
    - `NEXT_PUBLIC_ROOT_DOMAIN=maylesoft.com`
    - `NEXT_PUBLIC_MARKETING_HOST=customer.maylesoft.com`
+   - Optional: `NEXT_PUBLIC_PORTFOLIO_HOST=hkamal.maylesoft.com` (default when unset)
 3. Redeploy customer after adding the env var.
+
+`hkamal` is a **reserved** subdomain (not a restaurant tenant). The wildcard `*.maylesoft.com` CNAME covers it; no extra DNS record is required unless you use a custom portfolio host.
 
 ### Admin
 

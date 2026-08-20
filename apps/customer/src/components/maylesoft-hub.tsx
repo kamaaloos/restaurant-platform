@@ -21,7 +21,7 @@ import {
 import { HubAuroraBackground } from "@/components/hub-aurora-background";
 import { LanguageSwitcher, useLocale } from "@/lib/i18n/locale-provider";
 import type { MessageKey } from "@/lib/i18n/messages";
-import { restaurantMarketingOrigin } from "@/lib/tenant-host";
+import { restaurantMarketingOrigin, portfolioOrigin } from "@/lib/tenant-host";
 
 const ROOT_DOMAIN =
   process.env.NEXT_PUBLIC_ROOT_DOMAIN?.trim() || "maylesoft.com";
@@ -30,6 +30,7 @@ const CONTACT_MAIL = "mailto:contact@maylesoft.com?subject=MayleSoft%20inquiry";
 
 const RESTAURANT_URL = restaurantMarketingOrigin(ROOT_DOMAIN, MARKETING_HOST);
 const DUGSI_URL = `https://dugsi.${ROOT_DOMAIN}`;
+const PORTFOLIO_URL = portfolioOrigin(ROOT_DOMAIN, process.env.NEXT_PUBLIC_PORTFOLIO_HOST);
 
 const HERO_WORDS: MessageKey[] = [
   "hubHeroWordRestaurants",
@@ -519,6 +520,14 @@ export function MayleSoftHub() {
                 <Link href="/about" className="font-medium text-white hover:text-white/80">
                   {t("hubFooterAbout")}
                 </Link>
+              </div>
+              <div>
+                <a
+                  href={PORTFOLIO_URL}
+                  className="font-medium text-white hover:text-white/80"
+                >
+                  Portfolio
+                </a>
               </div>
               <div>
                 <Link

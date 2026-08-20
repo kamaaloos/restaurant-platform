@@ -27,6 +27,7 @@ const RESERVED_SUBDOMAINS = new Set([
   "preview",
   "dev",
   "test",
+  "hkamal",
 ]);
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -59,6 +60,14 @@ export function getTenantSlugFromHost(
   if (!SLUG_RE.test(sub)) return null;
 
   return sub;
+}
+
+/** Slugs that must never hit the tenant API (platform / personal hosts). */
+export function isReservedTenantSlug(
+  slug: string | null | undefined,
+): boolean {
+  if (!slug) return false;
+  return RESERVED_SUBDOMAINS.has(slug.trim().toLowerCase());
 }
 
 export function normalizeHostname(
@@ -116,5 +125,48 @@ export function restaurantMarketingOrigin(
   }
   const root = rootDomain?.trim().toLowerCase();
   if (root) return `https://customer.${root}`;
+  return "http://localhost:3001";
+}
+
+/**
+ * Personal portfolio host (default: hkamal.{rootDomain}, e.g. hkamal.maylesoft.com).
+ * Override with NEXT_PUBLIC_PORTFOLIO_HOST when needed.
+ */
+export function isPortfolioHost(
+  host: string | null | undefined,
+  rootDomain: string | null | undefined,
+  portfolioHost?: string | null,
+): boolean {
+  const hostname = normalizeHostname(host);
+  const explicit = portfolioHost?.trim().toLowerCase();
+  if (explicit) {
+    return hostname === explicit.split(":")[0];
+  }
+
+  const root = rootDomain?.trim().toLowerCase();
+  if (root && hostname === `hkamal.${root}`) return true;
+
+  return false;
+}
+
+export function portfolioOrigin(
+  rootDomain: string | null | undefined,
+  portfolioHost?: string | null,
+): string {
+  const explicit = portfolioHost?.trim();
+  if (explicit) {
+    const host = explicit.replace(/^https?:\/\//i, "").split("/")[0];
+    return `https://${host}`;
+  }
+  const root = rootDomain?.trim().toLowerCase();
+  if (root) return `https://hkamal.${root}`;
+  return "http://localhost:3001/portfolio";
+}
+
+export function mayleSoftHubOrigin(
+  rootDomain: string | null | undefined,
+): string {
+  const root = rootDomain?.trim().toLowerCase();
+  if (root) return `https://${root}`;
   return "http://localhost:3001";
 }

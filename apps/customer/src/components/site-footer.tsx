@@ -1,9 +1,22 @@
 import { headers } from "next/headers";
-import { isApexOrWwwHost } from "@/lib/tenant-host";
+import { isApexOrWwwHost, isPortfolioHost } from "@/lib/tenant-host";
 
 export async function SiteFooter() {
-  const host = (await headers()).get("host");
-  if (isApexOrWwwHost(host, process.env.NEXT_PUBLIC_ROOT_DOMAIN)) {
+  const headerList = await headers();
+  const host = headerList.get("host");
+  const pathname = headerList.get("x-pathname") ?? "";
+  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
+  const portfolioHost = process.env.NEXT_PUBLIC_PORTFOLIO_HOST;
+
+  if (isPortfolioHost(host, rootDomain, portfolioHost)) {
+    return null;
+  }
+
+  if (pathname.startsWith("/portfolio")) {
+    return null;
+  }
+
+  if (isApexOrWwwHost(host, rootDomain)) {
     return null;
   }
 
