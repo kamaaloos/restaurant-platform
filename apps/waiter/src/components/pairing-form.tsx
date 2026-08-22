@@ -9,10 +9,11 @@ import {
 import { waiterApi } from "@/lib/api";
 import { setStoredDeviceToken } from "@/lib/device-token";
 import { Button } from "@/components/ui/button";
+import { useLocale } from "@/lib/i18n/locale-provider";
 
-async function resolveDeviceToken(raw: string) {
+async function resolveDeviceToken(raw: string, enterPairing: string) {
   const value = raw.trim();
-  if (!value) throw new Error("Enter a pairing code or device token");
+  if (!value) throw new Error(enterPairing);
   if (looksLikePairingCode(value)) {
     const paired = await exchangeDevicePairingCode(value);
     return paired.token;
@@ -21,6 +22,7 @@ async function resolveDeviceToken(raw: string) {
 }
 
 export function PairingForm() {
+  const { t } = useLocale();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [token, setToken] = React.useState("");
@@ -42,7 +44,7 @@ export function PairingForm() {
 
     let cancelled = false;
     setPending(true);
-    void resolveDeviceToken(raw)
+    void resolveDeviceToken(raw, t("enterPairing"))
       .then(async (deviceToken) => {
         await waiterApi.me(deviceToken);
         if (cancelled) return;
@@ -51,14 +53,14 @@ export function PairingForm() {
       })
       .catch((err: Error) => {
         if (cancelled) return;
-        setError(err.message || "QR pairing failed");
+        setError(err.message || t("qrPairingFailed"));
         setPending(false);
       });
 
     return () => {
       cancelled = true;
     };
-  }, [searchParams, router]);
+  }, [searchParams, router, t]);
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -66,12 +68,12 @@ export function PairingForm() {
     setPending(true);
 
     try {
-      const deviceToken = await resolveDeviceToken(token);
+      const deviceToken = await resolveDeviceToken(token, t("enterPairing"));
       await waiterApi.me(deviceToken);
       setStoredDeviceToken(deviceToken);
       router.push("/display");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Pairing failed");
+      setError(err instanceof Error ? err.message : t("pairingFailed"));
     } finally {
       setPending(false);
     }
@@ -81,12 +83,12 @@ export function PairingForm() {
     <form onSubmit={onSubmit} className="mx-auto w-full max-w-xl space-y-5">
       <label className="block space-y-2">
         <span className="text-sm font-medium uppercase tracking-[0.18em] text-[var(--muted)]">
-          Pairing code or device token
+          {t("pairingLabel")}
         </span>
         <input
           value={token}
           onChange={(e) => setToken(e.target.value)}
-          placeholder="Paste Admin pairing code or device token"
+          placeholder={t("pairingPlaceholder")}
           className="h-14 w-full rounded-lg border border-[var(--line)] bg-[var(--surface)] px-4 text-lg text-[var(--ink)] outline-none ring-[var(--signal)] placeholder:text-[var(--muted)] focus:ring-2"
           autoComplete="off"
           spellCheck={false}
@@ -101,7 +103,7 @@ export function PairingForm() {
       ) : null}
 
       <Button type="submit" size="touch" className="w-full" disabled={pending}>
-        {pending ? "Pairing…" : "Open waiter display"}
+        {pending ? t("pairingPending") : t("pairingSubmit")}
       </Button>
     </form>
   );

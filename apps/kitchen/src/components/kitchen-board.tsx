@@ -17,8 +17,22 @@ import {
 import { cn, ageMinutesLabel, formatWalkInQueueCode } from "@/lib/utils";
 import { useKitchenRealtime } from "@/hooks/use-kitchen-realtime";
 import { Button } from "@/components/ui/button";
+import {
+  LanguageSwitcher,
+  useLocale,
+} from "@/lib/i18n/locale-provider";
+import type { MessageKey } from "@/lib/i18n/messages";
+
+const COURSE_KEYS: Record<string, MessageKey> = {
+  APPETIZER: "courseAppetizer",
+  DRINK: "courseDrink",
+  MAIN: "courseMain",
+  DESSERT: "courseDessert",
+  OTHER: "courseOther",
+};
 
 export function KitchenBoard() {
+  const { t } = useLocale();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [token, setToken] = React.useState<string | null>(null);
@@ -81,7 +95,7 @@ export function KitchenBoard() {
   if (!token) {
     return (
       <div className="grid min-h-screen place-items-center text-[var(--muted)]">
-        Loading display…
+        {t("loadingDisplay")}
       </div>
     );
   }
@@ -91,14 +105,14 @@ export function KitchenBoard() {
       <div className="grid min-h-screen place-items-center px-6">
         <div className="max-w-md space-y-4 text-center">
           <h1 className="font-[family-name:var(--font-display)] text-3xl">
-            Device offline
+            {t("deviceOffline")}
           </h1>
           <p className="text-[var(--muted)]">
             {deviceQuery.error instanceof Error
               ? deviceQuery.error.message
-              : "Could not reach the kitchen API"}
+              : t("apiUnreachable")}
           </p>
-          <Button onClick={unpair}>Re-pair device</Button>
+          <Button onClick={unpair}>{t("repairDevice")}</Button>
         </div>
       </div>
     );
@@ -113,27 +127,28 @@ export function KitchenBoard() {
       <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[var(--line)] bg-[var(--surface)]/85 px-6 py-4 backdrop-blur-md">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted)]">
-            Kitchen Display
+            {t("kitchenDisplay")}
           </p>
           <h1 className="font-[family-name:var(--font-display)] text-3xl tracking-tight text-[var(--ink)]">
-            {device?.name ?? "Kitchen"}
+            {device?.name ?? t("kitchenFallback")}
           </h1>
           <p className="text-sm text-[var(--muted)]">
-            {device?.branchName ?? "…"} · {dash?.open ?? tickets.length} open
+            {device?.branchName ?? "…"} ·{" "}
+            {t("openCount", { count: dash?.open ?? tickets.length })}
           </p>
         </div>
 
         {dash ? (
           <div className="flex flex-wrap gap-2 text-sm">
-            <DashPill label="New" value={dash.new} />
-            <DashPill label="Prep" value={dash.preparing} />
-            <DashPill label="Ready" value={dash.ready} />
+            <DashPill label={t("dashNew")} value={dash.new} />
+            <DashPill label={t("dashPrep")} value={dash.preparing} />
+            <DashPill label={t("dashReady")} value={dash.ready} />
             <DashPill
-              label="Avg wait"
+              label={t("dashAvgWait")}
               value={`${dash.averageWaitMinutes}m`}
             />
             <DashPill
-              label="Oldest"
+              label={t("dashOldest")}
               value={`${dash.longestWaitingMinutes}m`}
               hot={dash.longestWaitingMinutes >= 12}
             />
@@ -141,6 +156,7 @@ export function KitchenBoard() {
         ) : null}
 
         <div className="flex items-center gap-3">
+          <LanguageSwitcher />
           <span
             className={cn(
               "inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium",
@@ -155,10 +171,10 @@ export function KitchenBoard() {
                 connected ? "bg-[var(--ok)] animate-pulse" : "bg-[var(--danger)]",
               )}
             />
-            {connected ? "Live" : "Reconnecting"}
+            {connected ? t("live") : t("reconnecting")}
           </span>
           <Button variant="outline" size="sm" onClick={unpair}>
-            Unpair
+            {t("unpair")}
           </Button>
         </div>
       </header>
@@ -178,10 +194,10 @@ export function KitchenBoard() {
                 <div className="flex items-end justify-between border-b border-[var(--line)] px-4 py-3">
                   <div>
                     <h2 className="font-[family-name:var(--font-display)] text-2xl">
-                      {column.title}
+                      {t(column.titleKey)}
                     </h2>
                     <p className="text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
-                      {column.hint}
+                      {t(column.hintKey)}
                     </p>
                   </div>
                   <span className="rounded-md bg-[var(--surface-2)] px-2.5 py-1 text-sm font-semibold tabular-nums">
@@ -192,7 +208,7 @@ export function KitchenBoard() {
                 <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-3">
                   {columnTickets.length === 0 ? (
                     <p className="m-auto px-2 py-6 text-center text-sm text-[var(--muted)]">
-                      No tickets
+                      {t("noTickets")}
                     </p>
                   ) : (
                     columnTickets.map((ticket) => (
@@ -220,7 +236,7 @@ export function KitchenBoard() {
         <div className="border-t border-[var(--line)] bg-[var(--danger-soft)] px-6 py-3 text-[var(--danger)]">
           {ticketsQuery.error instanceof Error
             ? ticketsQuery.error.message
-            : "Failed to load tickets"}
+            : t("loadTicketsFailed")}
         </div>
       ) : null}
     </div>
@@ -280,6 +296,7 @@ function TicketCard({
   busy: boolean;
   onAdvance: (status: KitchenStatus) => void;
 }) {
+  const { t } = useLocale();
   const next = NEXT_ACTIONS[ticket.status as KitchenStatus];
   const ageMins = ticket.ageMinutes;
   const urgent = ageMins >= 12;
@@ -300,19 +317,19 @@ function TicketCard({
               ? (formatWalkInQueueCode(ticket.queueNumber) ?? "—")
               : ticket.table?.number
                 ? `T${ticket.table.number}`
-                : "Walk-in"}
+                : t("walkIn")}
           </p>
           <p className="mt-1 text-sm text-[var(--muted)]">
-            {ticket.mode === "WALK_IN" ? "Walk-in · " : ""}
-            {ticket.customerName ?? "Guest"}
+            {ticket.mode === "WALK_IN" ? `${t("walkIn")} · ` : ""}
+            {ticket.customerName ?? t("guest")}
             {ticket.isRush ? (
               <span className="ml-2 rounded bg-[var(--heat-soft)] px-1.5 py-0.5 text-xs font-semibold text-[var(--heat)]">
-                RUSH
+                {t("rush")}
               </span>
             ) : null}
             {ticket.isVip ? (
               <span className="ml-2 rounded bg-[var(--surface-2)] px-1.5 py-0.5 text-xs font-semibold text-[var(--ink)]">
-                VIP
+                {t("vip")}
               </span>
             ) : null}
           </p>
@@ -333,7 +350,7 @@ function TicketCard({
         {groupByCourse(ticket.items).map((group) => (
           <li key={group.course}>
             <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-              {group.course}
+              {t(COURSE_KEYS[group.course] ?? "courseOther")}
             </p>
             <ul className="space-y-2">
               {group.items.map((item) => (
@@ -358,7 +375,7 @@ function TicketCard({
                   ) : null}
                   {item.notes ? (
                     <p className="ml-7 text-sm font-medium text-[var(--heat)]">
-                      Note: {item.notes}
+                      {t("note")} {item.notes}
                     </p>
                   ) : null}
                 </li>
@@ -375,11 +392,11 @@ function TicketCard({
           disabled={busy}
           onClick={() => onAdvance(next.status)}
         >
-          {busy ? "Updating…" : next.label}
+          {busy ? t("updating") : t(next.labelKey)}
         </Button>
       ) : (
         <p className="rounded-lg bg-[var(--ok-soft)] px-3 py-2 text-center text-sm font-semibold text-[var(--ok)]">
-          Waiting for pickup
+          {t("waitingPickup")}
         </p>
       )}
     </article>

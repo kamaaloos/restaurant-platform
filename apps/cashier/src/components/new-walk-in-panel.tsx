@@ -8,6 +8,7 @@ import { formatMoney, formatWalkInQueueCode } from "@/lib/utils";
 import type { Order } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { openPickupTicketWindow } from "@/components/pickup-ticket-view";
+import { useLocale } from "@/lib/i18n/locale-provider";
 
 type CartLine = { menuItemId: string; quantity: number };
 
@@ -15,7 +16,7 @@ type MenuItemRow = Awaited<
   ReturnType<typeof cashierApi.listMenuItems>
 >[number];
 
-function groupByCategory(items: MenuItemRow[]) {
+function groupByCategory(items: MenuItemRow[], otherLabel: string) {
   const map = new Map<
     string,
     { id: string; name: string; order: number; items: MenuItemRow[] }
@@ -23,7 +24,7 @@ function groupByCategory(items: MenuItemRow[]) {
 
   for (const item of items) {
     const id = item.category?.id ?? item.categoryId ?? "other";
-    const name = item.category?.name ?? "Other";
+    const name = item.category?.name ?? otherLabel;
     const order = item.category?.displayOrder ?? 999;
     const group = map.get(id) ?? { id, name, order, items: [] };
     group.items.push(item);
@@ -54,6 +55,7 @@ export function NewWalkInPanel({
   branchName?: string;
   restaurantId?: string | null;
 }) {
+  const { t } = useLocale();
   const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
   const [customerName, setCustomerName] = React.useState("");
@@ -76,7 +78,7 @@ export function NewWalkInPanel({
         .filter(([, qty]) => qty > 0)
         .map(([menuItemId, quantity]) => ({ menuItemId, quantity }));
       if (items.length === 0) {
-        throw new Error("Add at least one item");
+        throw new Error(t("addAtLeastOneItem"));
       }
       return cashierApi.createWalkInOrder({
         branchId,
@@ -99,7 +101,10 @@ export function NewWalkInPanel({
   const items = (menuQuery.data ?? []).filter(
     (item) => item.active && item.available !== false,
   );
-  const categories = React.useMemo(() => groupByCategory(items), [items]);
+  const categories = React.useMemo(
+    () => groupByCategory(items, t("other")),
+    [items, t],
+  );
   const visibleCategories = React.useMemo(
     () =>
       selectedCategoryId === "all"
@@ -135,7 +140,7 @@ export function NewWalkInPanel({
     return (
       <div className="mb-6">
         <Button type="button" onClick={() => setOpen(true)}>
-          New walk-in
+          {t("newWalkIn")}
         </Button>
       </div>
     );
@@ -145,13 +150,13 @@ export function NewWalkInPanel({
     return (
       <section className="mb-6 rounded-xl border border-[var(--accent)] bg-[var(--accent-soft)] px-4 py-5">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
-          Walk-in created · pay at till
+          {t("walkInCreated")}
         </p>
         <p className="mt-2 font-[family-name:var(--font-display)] text-5xl leading-none tracking-tight text-[var(--ink)] sm:text-6xl">
           {formatWalkInQueueCode(created.queueNumber) ?? "—"}
         </p>
         <p className="mt-2 text-sm text-[var(--muted)]">
-          {created.customerName || "Guest"} ·{" "}
+          {created.customerName || t("guest")} ·{" "}
           {formatMoney(Number(created.total), created.currency ?? currency)}
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
@@ -159,7 +164,7 @@ export function NewWalkInPanel({
             type="button"
             onClick={() => openPickupTicketWindow(created.id, branchName)}
           >
-            Print pickup ticket
+            {t("printPickupTicket")}
           </Button>
           <Button
             type="button"
@@ -169,10 +174,10 @@ export function NewWalkInPanel({
               setOpen(false);
             }}
           >
-            Done
+            {t("done")}
           </Button>
           <Button type="button" variant="ghost" onClick={resetPanel}>
-            Another walk-in
+            {t("anotherWalkIn")}
           </Button>
         </div>
       </section>
@@ -184,11 +189,9 @@ export function NewWalkInPanel({
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-            New walk-in
+            {t("newWalkIn")}
           </h2>
-          <p className="mt-1 text-sm text-[var(--muted)]">
-            Assign pickup number, print ticket, then take payment.
-          </p>
+          <p className="mt-1 text-sm text-[var(--muted)]">{t("walkInHint")}</p>
         </div>
         <Button
           type="button"
@@ -199,18 +202,18 @@ export function NewWalkInPanel({
             setOpen(false);
           }}
         >
-          Close
+          {t("close")}
         </Button>
       </div>
 
       <label className="mb-3 block max-w-sm space-y-1.5">
         <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
-          Guest name (optional)
+          {t("guestNameOptional")}
         </span>
         <input
           value={customerName}
           onChange={(e) => setCustomerName(e.target.value)}
-          placeholder="Guest"
+          placeholder={t("guestPlaceholder")}
           className="h-11 w-full rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
         />
       </label>
@@ -222,13 +225,13 @@ export function NewWalkInPanel({
       ) : null}
 
       {menuQuery.isLoading ? (
-        <p className="text-sm text-[var(--muted)]">Loading menu…</p>
+        <p className="text-sm text-[var(--muted)]">{t("loadingMenu")}</p>
       ) : menuQuery.isError ? (
         <p className="text-sm text-[var(--danger)]">
           {(menuQuery.error as Error).message}
         </p>
       ) : items.length === 0 ? (
-        <p className="text-sm text-[var(--muted)]">No active menu items.</p>
+        <p className="text-sm text-[var(--muted)]">{t("noActiveMenuItems")}</p>
       ) : (
         <div className="space-y-3">
           <div className="flex flex-wrap gap-2">
@@ -241,7 +244,7 @@ export function NewWalkInPanel({
                   : "border border-[var(--line)] bg-[var(--paper)] text-[var(--ink)] hover:border-[var(--accent)]"
               }`}
             >
-              All
+              {t("all")}
               <span className="ms-1.5 opacity-70">{items.length}</span>
             </button>
             {categories.map((category) => (
@@ -310,7 +313,7 @@ export function NewWalkInPanel({
                             variant="outline"
                             disabled={qty === 0}
                             onClick={() => setQty(item.id, qty - 1)}
-                            aria-label={`Decrease ${item.name}`}
+                            aria-label={t("decreaseAria", { name: item.name })}
                           >
                             −
                           </Button>
@@ -322,7 +325,7 @@ export function NewWalkInPanel({
                             size="sm"
                             variant="outline"
                             onClick={() => setQty(item.id, qty + 1)}
-                            aria-label={`Increase ${item.name}`}
+                            aria-label={t("increaseAria", { name: item.name })}
                           >
                             +
                           </Button>
@@ -339,13 +342,16 @@ export function NewWalkInPanel({
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm">
-          <span className="text-[var(--muted)]">Cart · </span>
+          <span className="text-[var(--muted)]">{t("cart")} </span>
           <span className="font-semibold tabular-nums">
             {formatMoney(total, currency)}
           </span>
           <span className="text-[var(--muted)]">
             {" "}
-            · {lines.reduce((n, i) => n + (cart[i.id] ?? 0), 0)} items
+            ·{" "}
+            {t("itemsCount", {
+              count: lines.reduce((n, i) => n + (cart[i.id] ?? 0), 0),
+            })}
           </span>
         </p>
         <Button
@@ -353,7 +359,7 @@ export function NewWalkInPanel({
           disabled={create.isPending || lines.length === 0 || !branchId}
           onClick={() => create.mutate()}
         >
-          {create.isPending ? "Creating…" : "Create & assign number"}
+          {create.isPending ? t("creating") : t("createAssignNumber")}
         </Button>
       </div>
     </section>

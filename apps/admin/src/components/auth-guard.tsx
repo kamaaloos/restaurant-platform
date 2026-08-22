@@ -11,6 +11,7 @@ import {
   BookOpen,
   Users,
   LogOut,
+  BookMarked,
 } from "lucide-react";
 import { useSelectedRestaurant } from "@/hooks/use-selected-restaurant";
 import {
@@ -38,7 +39,7 @@ const ADMIN_ROLES = new Set([
 function navForRole(role: string, t: (key: MessageKey) => string) {
   const locationsLabel =
     role === "PLATFORM_ADMIN" ? t("navRestaurants") : t("navBranches");
-  return [
+  const items = [
     { href: "/", label: t("navOverview"), icon: LayoutDashboard },
     { href: "/restaurants", label: locationsLabel, icon: Building2 },
     { href: "/tables", label: t("navTables"), icon: UtensilsCrossed },
@@ -46,6 +47,14 @@ function navForRole(role: string, t: (key: MessageKey) => string) {
     { href: "/menu", label: t("navMenu"), icon: BookOpen },
     { href: "/users", label: t("navUsers"), icon: Users },
   ];
+  if (
+    role === "PLATFORM_ADMIN" ||
+    role === "RESTAURANT_OWNER" ||
+    role === "ACCOUNTANT"
+  ) {
+    items.push({ href: "/ledger", label: t("navLedger"), icon: BookMarked });
+  }
+  return items;
 }
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {

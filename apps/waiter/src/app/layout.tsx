@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Anton, DM_Sans } from "next/font/google";
+import { Anton, DM_Sans, Noto_Sans_Arabic } from "next/font/google";
 import { DiningBackdrop } from "@/components/dining-backdrop";
 import { Providers } from "@/components/providers";
 import { SiteFooter } from "@/components/site-footer";
@@ -16,6 +16,11 @@ const body = DM_Sans({
   subsets: ["latin"],
 });
 
+const arabic = Noto_Sans_Arabic({
+  variable: "--font-arabic",
+  subsets: ["arabic"],
+});
+
 export const metadata: Metadata = {
   title: "Waiter Display",
   description: "Live waiter orders and table service requests",
@@ -28,7 +33,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${display.variable} ${body.variable} antialiased`}>
+      <body
+        className={`${display.variable} ${body.variable} ${arabic.variable} antialiased`}
+      >
         <Providers>
           <div className="relative flex min-h-screen flex-col">
             <DiningBackdrop />

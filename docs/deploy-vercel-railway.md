@@ -8,6 +8,37 @@ This guide deploys the restaurant platform with:
 | Nest API (`backend/`) | [Railway](https://railway.app) |
 | Next.js apps (`apps/*`) | [Vercel](https://vercel.com) — one project per app |
 
+Local installs use the **root npm workspaces** (`apps/*`, `packages/*`, `backend`). Railway keeps Root Directory `backend/` and uses `backend/package-lock.json` separately — after changing API deps, run `npm install` at the repo root **and** `npm install --prefix backend`.
+
+---
+
+## 0. CI (GitHub Actions)
+
+Workflow: `.github/workflows/ci.yml` (runs on push/PR to `main`).
+
+| Job | What it runs |
+|-----|----------------|
+| Apps | `nx affected -t lint build` for workspace apps |
+| Backend | `npm run test:ci` + `npm run build` in `backend/` |
+| E2E smoke | Build customer → Playwright `portfolio-smoke` (no API/seed) |
+| E2E staff | Postgres + Redis → migrate/seed API → kitchen/waiter/cashier Playwright |
+
+Local equivalents:
+
+```bash
+npm run ci:apps
+npm run ci:backend
+npm run build --workspace=customer && npm run customer:e2e:smoke
+
+# Staff e2e (API must be up + seeded):
+npm run backend:dev
+# other terminal after migrate/seed:
+npm run build --workspace=kitchen
+npm run build --workspace=waiter
+npm run build --workspace=cashier
+npm run ci:e2e:staff
+```
+
 ---
 
 ## 1. Neon (database)
@@ -23,7 +54,13 @@ cd backend
 DATABASE_URL="postgresql://..." npm run seed
 ```
 
-Default admin login after seed: `admin@restaurant.local` / `admin123`.
+**Demo seed users (local/CI only):** `admin@restaurant.local` / `admin123` and `cashier@restaurant.local` / `cashier123`.
+
+**Before production:** change those passwords in Admin (or delete the demo users) and create real staff accounts. Re-running seed does **not** reset existing passwords. Never leave the default passwords on a public API.
+
+Restaurant receipts use each restaurant’s **tax rate %** (Admin → Restaurants; default 22). Menu prices are treated as tax-inclusive.
+
+**Stripe live:** see [stripe-production.md](./stripe-production.md).
 
 ---
 
@@ -58,10 +95,9 @@ Copy from `backend/.env.example`. Minimum for production:
 | `CUSTOMER_APP_URL` | `https://your-customer.vercel.app` |
 | `CASHIER_APP_URL` | `https://your-cashier.vercel.app` |
 
-Optional: `PAYMENT_PROVIDER`, Stripe keys, Redis (see `.env.example`).
+Required for production: `REDIS_URL` (Railway Redis plugin). Socket.IO uses the Redis adapter; rate limits share Redis. Local/dev may omit Redis for in-memory fallbacks.
 
-For a **single-replica** first deploy without Redis, set `REDIS_OPTIONAL=1`.
-For multi-instance / reliable realtime, add a Railway Redis plugin and set `REDIS_URL`.
+Do **not** set `REDIS_OPTIONAL` — that escape hatch was removed.
 
 `PORT` is injected by Railway — do not hardcode.
 
@@ -120,6 +156,8 @@ Do **not** set `NEXT_PUBLIC_API_URL` to `maylesoft.com` or a Railway host **with
 | `NEXT_PUBLIC_ONLINE_PAYMENTS=1` | API `PAYMENT_PROVIDER=stripe` |
 | `NEXT_PUBLIC_STRIPE_TERMINAL=1` | Stripe Terminal enabled on API |
 
+Full live go-live checklist: [stripe-production.md](./stripe-production.md).
+
 See each app’s `.env.example` for copy-paste templates.
 
 ---
@@ -141,6 +179,8 @@ For **restaurant subdomains** (Pattern B, e.g. `alhuda.maylesoft.com`), include 
 
 ```
 CORS_ORIGIN=https://admin.maylesoft.com,https://kitchen.maylesoft.com,https://waiter.maylesoft.com,https://till.maylesoft.com,https://maylesoft.com,https://*.maylesoft.com
+
+Same list applies to **HTTP** and **Socket.IO** (`/realtime`). Wildcards such as `https://*.maylesoft.com` are evaluated by shared CORS helpers (not matched as a literal string).
 ```
 
 ---

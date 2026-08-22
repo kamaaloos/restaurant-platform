@@ -22,7 +22,7 @@ function overviewLinks(
   t: (key: MessageKey) => string,
 ) {
   const isPlatformAdmin = role === "PLATFORM_ADMIN";
-  return [
+  const links = [
     {
       href: "/restaurants",
       title: isPlatformAdmin ? t("navRestaurants") : t("navBranches"),
@@ -45,12 +45,19 @@ function overviewLinks(
       title: t("navMenu"),
       body: t("overviewLinkMenuBody"),
     },
-    {
-      href: "/ledger",
-      title: "Ledger",
-      body: "View journal entries and financial summaries",
-    },
   ];
+  if (
+    role === "PLATFORM_ADMIN" ||
+    role === "RESTAURANT_OWNER" ||
+    role === "ACCOUNTANT"
+  ) {
+    links.push({
+      href: "/ledger",
+      title: t("navLedger"),
+      body: t("overviewLinkLedgerBody"),
+    });
+  }
+  return links;
 }
 
 export function OverviewPage() {

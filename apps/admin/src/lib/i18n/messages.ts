@@ -36,6 +36,7 @@ export type MessageKey =
   | "navDevices"
   | "navMenu"
   | "navUsers"
+  | "navLedger"
   | "rolePlatformAdmin"
   | "roleRestaurantOwner"
   | "roleBranchManager"
@@ -65,6 +66,42 @@ export type MessageKey =
   | "overviewLinkTablesBody"
   | "overviewLinkDevicesBody"
   | "overviewLinkMenuBody"
+  | "overviewLinkLedgerBody"
+  | "ledgerTitle"
+  | "ledgerSubtitle"
+  | "ledgerAllBranches"
+  | "ledgerFrom"
+  | "ledgerTo"
+  | "ledgerNetSales"
+  | "ledgerTips"
+  | "ledgerRefunds"
+  | "ledgerTaxCollected"
+  | "ledgerNetExTax"
+  | "ledgerTaxRate"
+  | "ledgerByCategory"
+  | "ledgerByChannel"
+  | "ledgerChannel"
+  | "ledgerAmount"
+  | "ledgerTip"
+  | "ledgerPayments"
+  | "ledgerDate"
+  | "ledgerCategory"
+  | "ledgerDescription"
+  | "ledgerDebit"
+  | "ledgerCredit"
+  | "ledgerNoEntries"
+  | "ledgerPrev"
+  | "ledgerNext"
+  | "ledgerExportCsv"
+  | "ledgerCatRevenue"
+  | "ledgerCatTips"
+  | "ledgerCatRefund"
+  | "ledgerCatTax"
+  | "ledgerCatAdjustment"
+  | "ledgerChannelCash"
+  | "ledgerChannelTerminal"
+  | "ledgerChannelOnline"
+  | "ledgerChannelCounter"
   | "kitchenService"
   | "kitchenServiceBody"
   | "selectABranch"
@@ -177,6 +214,8 @@ export type MessageKey =
   | "contactEmail"
   | "phonePlaceholder"
   | "addressOptional"
+  | "taxRatePercent"
+  | "taxRateHint"
   | "logo"
   | "uploadLogo"
   | "pasteLogoUrl"
@@ -329,6 +368,7 @@ const en: Messages = {
   navDevices: "Devices",
   navMenu: "Menu",
   navUsers: "Users",
+  navLedger: "Ledger",
   rolePlatformAdmin: "Platform admin",
   roleRestaurantOwner: "Restaurant owner",
   roleBranchManager: "Branch manager",
@@ -361,6 +401,42 @@ const en: Messages = {
   overviewLinkDevicesBody:
     "Create kitchen/waiter devices; pair with short-lived QR codes.",
   overviewLinkMenuBody: "Add categories and items for the QR menu.",
+  overviewLinkLedgerBody: "Period P&L, tax estimate, sales by channel, and journal export.",
+  ledgerTitle: "Ledger",
+  ledgerSubtitle: "Period summary, tax estimate, and journal entries",
+  ledgerAllBranches: "All branches",
+  ledgerFrom: "From",
+  ledgerTo: "To",
+  ledgerNetSales: "Net sales",
+  ledgerTips: "Tips",
+  ledgerRefunds: "Refunds",
+  ledgerTaxCollected: "Tax collected",
+  ledgerNetExTax: "Net excl. tax",
+  ledgerTaxRate: "Tax rate {rate}%",
+  ledgerByCategory: "By category",
+  ledgerByChannel: "Sales by channel",
+  ledgerChannel: "Channel",
+  ledgerAmount: "Sales",
+  ledgerTip: "Tips",
+  ledgerPayments: "Payments",
+  ledgerDate: "Date",
+  ledgerCategory: "Category",
+  ledgerDescription: "Description",
+  ledgerDebit: "Debit",
+  ledgerCredit: "Credit",
+  ledgerNoEntries: "No journal entries found.",
+  ledgerPrev: "Prev",
+  ledgerNext: "Next",
+  ledgerExportCsv: "Export CSV",
+  ledgerCatRevenue: "Revenue",
+  ledgerCatTips: "Tips",
+  ledgerCatRefund: "Refund",
+  ledgerCatTax: "Tax",
+  ledgerCatAdjustment: "Adjustment",
+  ledgerChannelCash: "Cash",
+  ledgerChannelTerminal: "Terminal",
+  ledgerChannelOnline: "Online",
+  ledgerChannelCounter: "Counter card",
   kitchenService: "Kitchen service",
   kitchenServiceBody: "Live ticket pressure for the selected branch",
   selectABranch: "Select a branch",
@@ -484,6 +560,8 @@ const en: Messages = {
   contactEmail: "Contact email",
   phonePlaceholder: "Phone",
   addressOptional: "Address (optional)",
+  taxRatePercent: "Tax rate %",
+  taxRateHint: "VAT/sales tax on receipts (menu prices are tax-inclusive).",
   logo: "Logo",
   uploadLogo: "Upload logo",
   pasteLogoUrl: "Or paste logo URL",
@@ -646,6 +724,7 @@ const fi: Messages = {
   navDevices: "Laitteet",
   navMenu: "Menu",
   navUsers: "Käyttäjät",
+  navLedger: "Kirjanpito",
   rolePlatformAdmin: "Alustan ylläpitäjä",
   roleRestaurantOwner: "Ravintolan omistaja",
   roleBranchManager: "Toimipisteen esimies",
@@ -677,6 +756,42 @@ const fi: Messages = {
   overviewLinkDevicesBody:
     "Luo keittiö- ja tarjoilijalaitteita; parita lyhytkestoisilla QR-koodeilla.",
   overviewLinkMenuBody: "Lisää kategorioita ja annoksia QR-menuun.",
+  overviewLinkLedgerBody: "Jakson tulos, veroarvio, myynti kanavittain ja päiväkirjan vienti.",
+  ledgerTitle: "Kirjanpito",
+  ledgerSubtitle: "Jakson yhteenveto, veroarvio ja päiväkirjarivit",
+  ledgerAllBranches: "Kaikki toimipisteet",
+  ledgerFrom: "Alkaen",
+  ledgerTo: "Asti",
+  ledgerNetSales: "Nettomyynti",
+  ledgerTips: "Tipit",
+  ledgerRefunds: "Palautukset",
+  ledgerTaxCollected: "Kerätty vero",
+  ledgerNetExTax: "Netto ilman veroa",
+  ledgerTaxRate: "Veroprosentti {rate} %",
+  ledgerByCategory: "Kategorioittain",
+  ledgerByChannel: "Myynti kanavittain",
+  ledgerChannel: "Kanava",
+  ledgerAmount: "Myynti",
+  ledgerTip: "Tipit",
+  ledgerPayments: "Maksut",
+  ledgerDate: "Päivä",
+  ledgerCategory: "Kategoria",
+  ledgerDescription: "Kuvaus",
+  ledgerDebit: "Debet",
+  ledgerCredit: "Kredit",
+  ledgerNoEntries: "Ei päiväkirjarivejä.",
+  ledgerPrev: "Edellinen",
+  ledgerNext: "Seuraava",
+  ledgerExportCsv: "Vie CSV",
+  ledgerCatRevenue: "Liikevaihto",
+  ledgerCatTips: "Tipit",
+  ledgerCatRefund: "Palautus",
+  ledgerCatTax: "Vero",
+  ledgerCatAdjustment: "Oikaisu",
+  ledgerChannelCash: "Käteinen",
+  ledgerChannelTerminal: "Pääte",
+  ledgerChannelOnline: "Verkko",
+  ledgerChannelCounter: "Kassakortti",
   kitchenService: "Keittiöpalvelu",
   kitchenServiceBody: "Valitun toimipisteen live-jonetilanne",
   selectABranch: "Valitse toimipiste",
@@ -800,6 +915,8 @@ const fi: Messages = {
   contactEmail: "Yhteyssähköposti",
   phonePlaceholder: "Puhelin",
   addressOptional: "Osoite (valinnainen)",
+  taxRatePercent: "Veroprosentti %",
+  taxRateHint: "ALV kuiteilla (hinnat sisältävät veron).",
   logo: "Logo",
   uploadLogo: "Lataa logo",
   pasteLogoUrl: "Tai liitä logon URL",
@@ -962,6 +1079,7 @@ const ar: Messages = {
   navDevices: "الأجهزة",
   navMenu: "القائمة",
   navUsers: "المستخدمون",
+  navLedger: "دفتر الأستاذ",
   rolePlatformAdmin: "مسؤول المنصة",
   roleRestaurantOwner: "صاحب المطعم",
   roleBranchManager: "مدير الفرع",
@@ -993,6 +1111,42 @@ const ar: Messages = {
   overviewLinkDevicesBody:
     "أنشئ أجهزة المطبخ والنادل؛ اربطها برموز QR قصيرة العمر.",
   overviewLinkMenuBody: "أضف التصنيفات والأصناف لقائمة QR.",
+  overviewLinkLedgerBody: "أرباح الفترة وتقدير الضريبة والمبيعات حسب القناة وتصدير اليومية.",
+  ledgerTitle: "دفتر الأستاذ",
+  ledgerSubtitle: "ملخص الفترة وتقدير الضريبة وقيود اليومية",
+  ledgerAllBranches: "كل الفروع",
+  ledgerFrom: "من",
+  ledgerTo: "إلى",
+  ledgerNetSales: "صافي المبيعات",
+  ledgerTips: "إكراميات",
+  ledgerRefunds: "استردادات",
+  ledgerTaxCollected: "الضريبة المحصّلة",
+  ledgerNetExTax: "الصافي دون ضريبة",
+  ledgerTaxRate: "نسبة الضريبة {rate}%",
+  ledgerByCategory: "حسب الفئة",
+  ledgerByChannel: "المبيعات حسب القناة",
+  ledgerChannel: "القناة",
+  ledgerAmount: "المبيعات",
+  ledgerTip: "إكراميات",
+  ledgerPayments: "المدفوعات",
+  ledgerDate: "التاريخ",
+  ledgerCategory: "الفئة",
+  ledgerDescription: "الوصف",
+  ledgerDebit: "مدين",
+  ledgerCredit: "دائن",
+  ledgerNoEntries: "لا توجد قيود يومية.",
+  ledgerPrev: "السابق",
+  ledgerNext: "التالي",
+  ledgerExportCsv: "تصدير CSV",
+  ledgerCatRevenue: "إيرادات",
+  ledgerCatTips: "إكراميات",
+  ledgerCatRefund: "استرداد",
+  ledgerCatTax: "ضريبة",
+  ledgerCatAdjustment: "تعديل",
+  ledgerChannelCash: "نقداً",
+  ledgerChannelTerminal: "جهاز الدفع",
+  ledgerChannelOnline: "عبر الإنترنت",
+  ledgerChannelCounter: "بطاقة الكاونتر",
   kitchenService: "خدمة المطبخ",
   kitchenServiceBody: "ضغط الطلبات الحي للفرع المحدد",
   selectABranch: "اختر فرعاً",
@@ -1115,6 +1269,8 @@ const ar: Messages = {
   contactEmail: "بريد التواصل",
   phonePlaceholder: "الهاتف",
   addressOptional: "العنوان (اختياري)",
+  taxRatePercent: "نسبة الضريبة %",
+  taxRateHint: "ضريبة القيمة المضافة على الإيصالات (الأسعار شاملة الضريبة).",
   logo: "الشعار",
   uploadLogo: "رفع الشعار",
   pasteLogoUrl: "أو الصق رابط الشعار",
@@ -1276,6 +1432,7 @@ const so: Messages = {
   navDevices: "Qalabka",
   navMenu: "Liiska",
   navUsers: "Isticmaalayaasha",
+  navLedger: "Xisaabaadka",
   rolePlatformAdmin: "Maamulaha madasha",
   roleRestaurantOwner: "Milkiilaha makhaayadda",
   roleBranchManager: "Maareeyaha laanta",
@@ -1308,6 +1465,42 @@ const so: Messages = {
   overviewLinkDevicesBody:
     "Abuur qalabka jikada/adeegaha; isku xidh QR gaaban.",
   overviewLinkMenuBody: "Kudar qaybo iyo cuntooyin liiska QR.",
+  overviewLinkLedgerBody: "Natiijada muddada, qiyaasta canshuurta, iibka kanaalka, iyo dhoofinta joornaalka.",
+  ledgerTitle: "Xisaabaadka",
+  ledgerSubtitle: "Soo koobidda muddada, qiyaasta canshuurta, iyo gelinta joornaalka",
+  ledgerAllBranches: "Dhammaan laamaha",
+  ledgerFrom: "Laga bilaabo",
+  ledgerTo: "Ilaa",
+  ledgerNetSales: "Iibka saafiga",
+  ledgerTips: "Tips",
+  ledgerRefunds: "Celinta lacagta",
+  ledgerTaxCollected: "Canshuurta la ururiyey",
+  ledgerNetExTax: "Safi oo aan canshuur lahayn",
+  ledgerTaxRate: "Heerka canshuurta {rate}%",
+  ledgerByCategory: "Qayb ahaan",
+  ledgerByChannel: "Iibka kanaalka",
+  ledgerChannel: "Kanaalka",
+  ledgerAmount: "Iibka",
+  ledgerTip: "Tips",
+  ledgerPayments: "Lacag-bixinnada",
+  ledgerDate: "Taariikhda",
+  ledgerCategory: "Qaybta",
+  ledgerDescription: "Sharaxaad",
+  ledgerDebit: "Debit",
+  ledgerCredit: "Credit",
+  ledgerNoEntries: "Gelinta joornaalka lama helin.",
+  ledgerPrev: "Hore",
+  ledgerNext: "Xiga",
+  ledgerExportCsv: "Dhoofi CSV",
+  ledgerCatRevenue: "Dakhliga",
+  ledgerCatTips: "Tips",
+  ledgerCatRefund: "Celin",
+  ledgerCatTax: "Canshuur",
+  ledgerCatAdjustment: "Hagaajin",
+  ledgerChannelCash: "Lacag caddaan ah",
+  ledgerChannelTerminal: "Terminal",
+  ledgerChannelOnline: "Online",
+  ledgerChannelCounter: "Kaarka counter-ka",
   kitchenService: "Adeegga jikada",
   kitchenServiceBody: "Cadaadiska tikidhada tooska ah ee laanta la doortay",
   selectABranch: "Dooro laan",
@@ -1431,6 +1624,8 @@ const so: Messages = {
   contactEmail: "Iimaylka xiriirka",
   phonePlaceholder: "Telefoon",
   addressOptional: "Cinwaanka (ikhtiyaari)",
+  taxRatePercent: "Heerka canshuurta %",
+  taxRateHint: "VAT/canshuur rasiidhada (qiimuhu waa ay ku jiraan).",
   logo: "Astaanta",
   uploadLogo: "Soo rar astaanta",
   pasteLogoUrl: "Ama ku dheji URL-ka astaanta",

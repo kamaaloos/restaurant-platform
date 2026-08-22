@@ -32,6 +32,7 @@ type RestaurantFormState = {
   email: string;
   phone: string;
   address: string;
+  taxRatePercent: string;
   logoUrl: string;
   brandAccent: string;
   brandButton: string;
@@ -48,6 +49,7 @@ const emptyForm: RestaurantFormState = {
   email: "",
   phone: "",
   address: "",
+  taxRatePercent: "22",
   logoUrl: "",
   brandAccent: DEFAULT_BRAND.accent,
   brandButton: DEFAULT_BRAND.button,
@@ -126,6 +128,10 @@ export function RestaurantsPage() {
       email: restaurant.email ?? "",
       phone: restaurant.phone ?? "",
       address: restaurant.address ?? "",
+      taxRatePercent:
+        restaurant.taxRatePercent != null
+          ? String(Number(restaurant.taxRatePercent))
+          : "22",
       active: restaurant.active !== false,
       ...brandFieldsFromRestaurant(restaurant),
     });
@@ -136,12 +142,14 @@ export function RestaurantsPage() {
 
   const saveRestaurant = useMutation({
     mutationFn: async () => {
+      const taxParsed = Number(form.taxRatePercent);
       const body = {
         name: form.name.trim(),
         slug: form.slug.trim().toLowerCase() || undefined,
         email: form.email.trim(),
         phone: form.phone.trim(),
         address: form.address.trim() || undefined,
+        taxRatePercent: Number.isFinite(taxParsed) ? taxParsed : 22,
         logoUrl: form.logoUrl.trim() || null,
         brandAccent: form.brandAccent.trim() || null,
         brandButton: form.brandButton.trim() || null,
@@ -406,6 +414,22 @@ export function RestaurantsPage() {
             placeholder={t("addressOptional")}
             className={`${inputClass} md:col-span-2`}
           />
+          <div className="space-y-1.5">
+            <input
+              value={form.taxRatePercent}
+              onChange={(e) =>
+                setForm((f) => ({
+                  ...f,
+                  taxRatePercent: e.target.value.replace(/[^0-9.]/g, ""),
+                }))
+              }
+              inputMode="decimal"
+              placeholder={t("taxRatePercent")}
+              className={inputClass}
+              required
+            />
+            <p className="text-xs text-[var(--muted)]">{t("taxRateHint")}</p>
+          </div>
           <div className="md:col-span-2 space-y-2">
             <span className="text-sm font-medium text-[var(--muted)]">{t("logo")}</span>
             <div className="flex flex-wrap items-center gap-2">

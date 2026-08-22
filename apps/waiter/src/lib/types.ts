@@ -54,26 +54,26 @@ export type ServiceRequest = {
 
 export const ORDER_COLUMNS: Array<{
   key: string;
-  title: string;
-  hint: string;
+  titleKey: "colKitchen" | "colReady" | "colServed";
+  hintKey: "colKitchenHint" | "colReadyHint" | "colServedHint";
   statuses: WaiterOrderStatus[];
 }> = [
   {
     key: "kitchen",
-    title: "In kitchen",
-    hint: "Cooking",
+    titleKey: "colKitchen",
+    hintKey: "colKitchenHint",
     statuses: ["NEW", "ACCEPTED", "PREPARING"],
   },
   {
     key: "ready",
-    title: "Ready",
-    hint: "Pick up",
+    titleKey: "colReady",
+    hintKey: "colReadyHint",
     statuses: ["READY"],
   },
   {
     key: "served",
-    title: "Served",
-    hint: "At table",
+    titleKey: "colServed",
+    hintKey: "colServedHint",
     statuses: ["SERVED"],
   },
 ];

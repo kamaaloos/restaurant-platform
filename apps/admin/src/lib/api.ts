@@ -7,6 +7,8 @@ import type {
   KitchenDashboard,
   MenuCategory,
   MenuItem,
+  ModifierGroup,
+  ModifierOption,
   Restaurant,
   RestaurantTable,
   StaffUser,
@@ -243,6 +245,38 @@ export const adminApi = {
   deleteItem: (id: string) =>
     request<MenuItem>(`/menu/items/${id}`, { method: "DELETE" }),
 
+  listModifiers: (menuItemId: string) =>
+    request<ModifierGroup[]>(`/menu/items/${menuItemId}/modifiers`),
+
+  createModifierGroup: (body: {
+    menuItemId: string;
+    name: string;
+    minSelect?: number;
+    maxSelect?: number;
+    required?: boolean;
+    options: Array<{ name: string; priceDelta?: number }>;
+  }) =>
+    request<ModifierGroup>("/menu/modifiers/groups", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+
+  deleteModifierGroup: (id: string) =>
+    request<unknown>(`/menu/modifiers/groups/${id}`, { method: "DELETE" }),
+
+  createModifierOption: (body: {
+    groupId: string;
+    name: string;
+    priceDelta?: number;
+  }) =>
+    request<ModifierOption>("/menu/modifiers/options", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+
+  deleteModifierOption: (id: string) =>
+    request<unknown>(`/menu/modifiers/options/${id}`, { method: "DELETE" }),
+
   listUsers: (opts?: { restaurantId?: string; branchId?: string }) => {
     const params = new URLSearchParams();
     if (opts?.restaurantId) params.set("restaurantId", opts.restaurantId);
@@ -294,6 +328,7 @@ export const adminApi = {
     ),
 
   ledgerEntries: (params?: {
+    restaurantId?: string;
     branchId?: string;
     from?: string;
     to?: string;
@@ -301,6 +336,7 @@ export const adminApi = {
     take?: number;
   }) => {
     const q = new URLSearchParams();
+    if (params?.restaurantId) q.set("restaurantId", params.restaurantId);
     if (params?.branchId) q.set("branchId", params.branchId);
     if (params?.from) q.set("from", params.from);
     if (params?.to) q.set("to", params.to);
@@ -317,24 +353,51 @@ export const adminApi = {
         credit: number;
         paymentId: string | null;
         branchId: string | null;
+        payment?: {
+          method: string;
+          channel: string;
+          status: string;
+        } | null;
       }>;
       total: number;
     }>(`/ledger${qs ? `?${qs}` : ""}`);
   },
 
   ledgerSummary: (params?: {
+    restaurantId?: string;
     branchId?: string;
     from?: string;
     to?: string;
   }) => {
     const q = new URLSearchParams();
+    if (params?.restaurantId) q.set("restaurantId", params.restaurantId);
     if (params?.branchId) q.set("branchId", params.branchId);
     if (params?.from) q.set("from", params.from);
     if (params?.to) q.set("to", params.to);
     const qs = q.toString();
-    return request<
-      Array<{ category: string; totalDebit: number; totalCredit: number }>
-    >(`/ledger/summary${qs ? `?${qs}` : ""}`);
+    return request<{
+      categories: Array<{
+        category: string;
+        totalDebit: number;
+        totalCredit: number;
+      }>;
+      totals: {
+        revenue: number;
+        tips: number;
+        refunds: number;
+        netSales: number;
+        taxRatePercent: number;
+        taxCollected: number;
+        netExTax: number;
+        currency: string;
+      };
+      salesByChannel: Array<{
+        channel: string;
+        amount: number;
+        tipAmount: number;
+        count: number;
+      }>;
+    }>(`/ledger/summary${qs ? `?${qs}` : ""}`);
   },
 
   uploadImage: async (file: File, opts?: { restaurantId?: string }) => {

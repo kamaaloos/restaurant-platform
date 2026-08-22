@@ -5,12 +5,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { cashierApi } from "@/lib/api";
 import { formatMoney } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useLocale } from "@/lib/i18n/locale-provider";
 
 export function MenuAvailabilityPanel({
   restaurantId,
 }: {
   restaurantId?: string | null;
 }) {
+  const { t } = useLocale();
   const queryClient = useQueryClient();
   const [open, setOpen] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
@@ -35,7 +37,7 @@ export function MenuAvailabilityPanel({
     return (
       <div className="mb-4">
         <Button type="button" variant="outline" onClick={() => setOpen(true)}>
-          Menu availability
+          {t("menuAvailability")}
         </Button>
       </div>
     );
@@ -46,10 +48,10 @@ export function MenuAvailabilityPanel({
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div>
           <h2 className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-            Menu availability
+            {t("menuAvailability")}
           </h2>
           <p className="mt-1 text-sm text-[var(--muted)]">
-            Mark finished items sold out. Guests still see them as unavailable.
+            {t("menuAvailabilityHint")}
           </p>
         </div>
         <Button
@@ -58,7 +60,7 @@ export function MenuAvailabilityPanel({
           size="sm"
           onClick={() => setOpen(false)}
         >
-          Close
+          {t("close")}
         </Button>
       </div>
 
@@ -69,7 +71,7 @@ export function MenuAvailabilityPanel({
       ) : null}
 
       {menuQuery.isLoading ? (
-        <p className="text-sm text-[var(--muted)]">Loading menu…</p>
+        <p className="text-sm text-[var(--muted)]">{t("loadingMenu")}</p>
       ) : menuQuery.isError ? (
         <p className="text-sm text-[var(--danger)]">
           {(menuQuery.error as Error).message}
@@ -96,7 +98,7 @@ export function MenuAvailabilityPanel({
                   <p className="text-xs text-[var(--muted)]">
                     {item.category?.name ? `${item.category.name} · ` : ""}
                     {formatMoney(Number(item.price), "EUR")} ·{" "}
-                    {available ? "Available" : "Sold out"}
+                    {available ? t("available") : t("soldOut")}
                   </p>
                 </div>
                 <Button
@@ -111,7 +113,7 @@ export function MenuAvailabilityPanel({
                     })
                   }
                 >
-                  {available ? "Sold out" : "Available"}
+                  {available ? t("soldOut") : t("available")}
                 </Button>
               </li>
             );

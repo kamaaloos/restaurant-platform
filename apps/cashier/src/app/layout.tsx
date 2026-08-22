@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, IBM_Plex_Sans } from "next/font/google";
+import { Space_Grotesk, IBM_Plex_Sans, Noto_Sans_Arabic } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { SiteFooter } from "@/components/site-footer";
 import { CurrencyBackdrop } from "@/components/currency-backdrop";
@@ -16,6 +16,11 @@ const body = IBM_Plex_Sans({
   subsets: ["latin"],
 });
 
+const arabic = Noto_Sans_Arabic({
+  variable: "--font-arabic",
+  subsets: ["arabic"],
+});
+
 export const metadata: Metadata = {
   title: "Cashier",
   description: "Restaurant platform cashier till",
@@ -28,7 +33,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${display.variable} ${body.variable} antialiased`}>
+      <body
+        className={`${display.variable} ${body.variable} ${arabic.variable} antialiased`}
+      >
         <Providers>
           <div className="relative flex min-h-screen flex-col">
             <CurrencyBackdrop />

@@ -13,6 +13,7 @@ import type { MenuCategory, MenuItem } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import { ImageUploadButton } from "@/components/image-upload-button";
+import { MenuModifiersPanel } from "@/components/menu-modifiers-panel";
 import {
   RestaurantSelect,
   useSelectedRestaurant,
@@ -52,6 +53,9 @@ export function MenuPage() {
   const [editingCategory, setEditingCategory] =
     React.useState<MenuCategory | null>(null);
   const [editingItemId, setEditingItemId] = React.useState<string | null>(null);
+  const [modifiersItemId, setModifiersItemId] = React.useState<string | null>(
+    null,
+  );
   const [itemForm, setItemForm] = React.useState<ItemFormState>(emptyItemForm());
   const [error, setError] = React.useState<string | null>(null);
 
@@ -92,6 +96,7 @@ export function MenuPage() {
     setFilterCategoryId("all");
     setEditingCategory(null);
     setEditingItemId(null);
+    setModifiersItemId(null);
     setItemForm(emptyItemForm());
     setError(null);
   }, [restaurantId]);
@@ -641,10 +646,8 @@ export function MenuPage() {
           ) : (
             <ul className="divide-y divide-[var(--line)]">
               {items.map((item) => (
-                <li
-                  key={item.id}
-                  className="flex flex-wrap items-center justify-between gap-3 px-4 py-3"
-                >
+                <li key={item.id} className="px-4 py-3">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex min-w-0 flex-1 items-center gap-3">
                     {menuImagePreviewSrc(item.imageUrl) ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -686,6 +689,18 @@ export function MenuPage() {
                     <Button
                       type="button"
                       size="sm"
+                      variant="outline"
+                      onClick={() =>
+                        setModifiersItemId((id) =>
+                          id === item.id ? null : item.id,
+                        )
+                      }
+                    >
+                      Modifiers
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
                       variant={
                         item.available !== false ? "outline" : "default"
                       }
@@ -717,6 +732,14 @@ export function MenuPage() {
                       {t("delete")}
                     </Button>
                   </div>
+                  </div>
+                  {modifiersItemId === item.id ? (
+                    <MenuModifiersPanel
+                      menuItemId={item.id}
+                      itemName={item.name}
+                      onClose={() => setModifiersItemId(null)}
+                    />
+                  ) : null}
                 </li>
               ))}
             </ul>

@@ -16,8 +16,13 @@ import {
 import { cn, elapsedLabel, formatWalkInQueueCode } from "@/lib/utils";
 import { useWaiterRealtime } from "@/hooks/use-waiter-realtime";
 import { Button } from "@/components/ui/button";
+import {
+  LanguageSwitcher,
+  useLocale,
+} from "@/lib/i18n/locale-provider";
 
 export function WaiterBoard() {
+  const { t } = useLocale();
   const router = useRouter();
   const queryClient = useQueryClient();
   const [token, setToken] = React.useState<string | null>(null);
@@ -115,7 +120,7 @@ export function WaiterBoard() {
   if (!token) {
     return (
       <div className="grid min-h-screen place-items-center text-[var(--muted)]">
-        Loading display…
+        {t("loadingDisplay")}
       </div>
     );
   }
@@ -125,14 +130,14 @@ export function WaiterBoard() {
       <div className="grid min-h-screen place-items-center px-6">
         <div className="max-w-md space-y-4 text-center">
           <h1 className="font-[family-name:var(--font-display)] text-3xl">
-            Device offline
+            {t("deviceOffline")}
           </h1>
           <p className="text-[var(--muted)]">
             {deviceQuery.error instanceof Error
               ? deviceQuery.error.message
-              : "Could not reach the waiter API"}
+              : t("apiUnreachable")}
           </p>
-          <Button onClick={unpair}>Re-pair device</Button>
+          <Button onClick={unpair}>{t("repairDevice")}</Button>
         </div>
       </div>
     );
@@ -148,18 +153,19 @@ export function WaiterBoard() {
       <header className="flex items-center justify-between gap-4 border-b border-[var(--line)] bg-[var(--surface)]/85 px-6 py-4 backdrop-blur-md">
         <div>
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--muted)]">
-            Waiter Display
+            {t("waiterDisplay")}
           </p>
           <h1 className="font-[family-name:var(--font-display)] text-3xl tracking-tight text-[var(--ink)]">
-            {device?.name ?? "Waiter"}
+            {device?.name ?? t("waiterFallback")}
           </h1>
           <p className="text-sm text-[var(--muted)]">
-            {device?.branchName ?? "…"} · {readyCount} ready · {requests.length}{" "}
-            calls
+            {device?.branchName ?? "…"} ·{" "}
+            {t("readyCalls", { ready: readyCount, calls: requests.length })}
           </p>
         </div>
 
         <div className="flex items-center gap-3">
+          <LanguageSwitcher />
           <span
             className={cn(
               "inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-medium",
@@ -176,10 +182,10 @@ export function WaiterBoard() {
                   : "bg-[var(--danger)]",
               )}
             />
-            {connected ? "Live" : "Reconnecting"}
+            {connected ? t("live") : t("reconnecting")}
           </span>
           <Button variant="outline" size="sm" onClick={unpair}>
-            Unpair
+            {t("unpair")}
           </Button>
         </div>
       </header>
@@ -194,10 +200,10 @@ export function WaiterBoard() {
         <section className="border-b border-[var(--line)] bg-[var(--signal-soft)]/85 px-4 py-4 backdrop-blur-sm">
           <div className="mb-3 flex items-end justify-between">
             <h2 className="font-[family-name:var(--font-display)] text-2xl tracking-wide">
-              Table calls
+              {t("tableCalls")}
             </h2>
             <span className="text-sm font-semibold text-[var(--signal)]">
-              {requests.length} open
+              {t("openCount", { count: requests.length })}
             </span>
           </div>
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
@@ -223,62 +229,62 @@ export function WaiterBoard() {
 
       <main className="flex flex-1 items-center justify-center px-4 py-6">
         <div className="grid w-full max-w-[1400px] grid-cols-1 gap-4 lg:grid-cols-3">
-        {ORDER_COLUMNS.map((column) => {
-          const columnOrders = orders.filter((order) =>
-            column.statuses.includes(order.status as never),
-          );
+          {ORDER_COLUMNS.map((column) => {
+            const columnOrders = orders.filter((order) =>
+              column.statuses.includes(order.status as never),
+            );
 
-          return (
-            <section
-              key={column.key}
-              className="flex h-[48vh] max-h-[520px] min-h-[280px] flex-col rounded-2xl border border-white/25 bg-[var(--surface)]/55 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] backdrop-blur-md"
-            >
-              <div className="flex items-end justify-between border-b border-[var(--line)] px-4 py-3">
-                <div>
-                  <h2 className="font-[family-name:var(--font-display)] text-2xl">
-                    {column.title}
-                  </h2>
-                  <p className="text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
-                    {column.hint}
-                  </p>
+            return (
+              <section
+                key={column.key}
+                className="flex h-[48vh] max-h-[520px] min-h-[280px] flex-col rounded-2xl border border-white/25 bg-[var(--surface)]/55 shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] backdrop-blur-md"
+              >
+                <div className="flex items-end justify-between border-b border-[var(--line)] px-4 py-3">
+                  <div>
+                    <h2 className="font-[family-name:var(--font-display)] text-2xl">
+                      {t(column.titleKey)}
+                    </h2>
+                    <p className="text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
+                      {t(column.hintKey)}
+                    </p>
+                  </div>
+                  <span className="rounded-md bg-[var(--surface-2)] px-2.5 py-1 text-sm font-semibold tabular-nums">
+                    {columnOrders.length}
+                  </span>
                 </div>
-                <span className="rounded-md bg-[var(--surface-2)] px-2.5 py-1 text-sm font-semibold tabular-nums">
-                  {columnOrders.length}
-                </span>
-              </div>
 
-              <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-3">
-                {columnOrders.length === 0 ? (
-                  <p className="m-auto px-2 py-6 text-center text-sm text-[var(--muted)]">
-                    Nothing here
-                  </p>
-                ) : (
-                  columnOrders.map((order) => (
-                    <OrderCard
-                      key={order.id}
-                      order={order}
-                      now={now}
-                      busy={
-                        (advance.isPending &&
-                          advance.variables?.orderId === order.id) ||
-                        (fireNext.isPending &&
-                          fireNext.variables === order.id)
-                      }
-                      onAdvance={(status) =>
-                        advance.mutate({ orderId: order.id, status })
-                      }
-                      onFireNext={
-                        order.items.some((item) => !item.firedAt)
-                          ? () => fireNext.mutate(order.id)
-                          : undefined
-                      }
-                    />
-                  ))
-                )}
-              </div>
-            </section>
-          );
-        })}
+                <div className="flex flex-1 flex-col gap-3 overflow-y-auto p-3">
+                  {columnOrders.length === 0 ? (
+                    <p className="m-auto px-2 py-6 text-center text-sm text-[var(--muted)]">
+                      {t("nothingHere")}
+                    </p>
+                  ) : (
+                    columnOrders.map((order) => (
+                      <OrderCard
+                        key={order.id}
+                        order={order}
+                        now={now}
+                        busy={
+                          (advance.isPending &&
+                            advance.variables?.orderId === order.id) ||
+                          (fireNext.isPending &&
+                            fireNext.variables === order.id)
+                        }
+                        onAdvance={(status) =>
+                          advance.mutate({ orderId: order.id, status })
+                        }
+                        onFireNext={
+                          order.items.some((item) => !item.firedAt)
+                            ? () => fireNext.mutate(order.id)
+                            : undefined
+                        }
+                      />
+                    ))
+                  )}
+                </div>
+              </section>
+            );
+          })}
         </div>
       </main>
     </div>
@@ -300,8 +306,9 @@ function ServiceRequestCard({
   onAcknowledge: () => void;
   onComplete: () => void;
 }) {
+  const { t } = useLocale();
   const label =
-    request.type === "REQUEST_BILL" ? "Request bill" : "Call waiter";
+    request.type === "REQUEST_BILL" ? t("requestBill") : t("callWaiter");
 
   return (
     <article className="animate-ticket-in rounded-xl border border-[var(--signal)] bg-[var(--surface)] p-4">
@@ -328,7 +335,7 @@ function ServiceRequestCard({
             disabled={acknowledging}
             onClick={onAcknowledge}
           >
-            {acknowledging ? "…" : "On my way"}
+            {acknowledging ? "…" : t("onMyWay")}
           </Button>
         ) : (
           <Button
@@ -336,7 +343,7 @@ function ServiceRequestCard({
             disabled={completing}
             onClick={onComplete}
           >
-            {completing ? "…" : "Done"}
+            {completing ? "…" : t("done")}
           </Button>
         )}
       </div>
@@ -357,6 +364,7 @@ function OrderCard({
   onAdvance: (status: "SERVED" | "COMPLETED") => void;
   onFireNext?: () => void;
 }) {
+  const { t } = useLocale();
   const urgent = order.status === "READY";
 
   return (
@@ -375,19 +383,19 @@ function OrderCard({
               ? (formatWalkInQueueCode(order.queueNumber) ?? "—")
               : order.table?.number
                 ? `T${order.table.number}`
-                : "Walk-in"}
+                : t("walkIn")}
           </p>
           <p className="mt-1 text-sm text-[var(--muted)]">
-            {order.mode === "WALK_IN" ? "Walk-in · " : ""}
-            {order.customerName ?? "Guest"} · {order.status}
+            {order.mode === "WALK_IN" ? `${t("walkIn")} · ` : ""}
+            {order.customerName ?? t("guest")} · {order.status}
             {order.isRush ? (
               <span className="ml-2 rounded bg-[var(--signal-soft)] px-1.5 py-0.5 text-xs font-semibold text-[var(--signal)]">
-                RUSH
+                {t("rush")}
               </span>
             ) : null}
             {order.isVip ? (
               <span className="ml-2 rounded bg-[var(--surface-2)] px-1.5 py-0.5 text-xs font-semibold">
-                VIP
+                {t("vip")}
               </span>
             ) : null}
           </p>
@@ -414,13 +422,13 @@ function OrderCard({
               {item.menuItem.name}
               {item.seatNumber != null ? (
                 <span className="ml-1 text-sm font-normal text-[var(--muted)]">
-                  · seat {item.seatNumber}
+                  · {t("seat", { n: item.seatNumber })}
                 </span>
               ) : null}
               {item.course ? (
                 <span className="ml-1 text-sm font-normal text-[var(--muted)]">
                   · {item.course.toLowerCase()}
-                  {!item.firedAt ? " (held)" : ""}
+                  {!item.firedAt ? ` ${t("held")}` : ""}
                 </span>
               ) : null}
             </span>
@@ -437,7 +445,7 @@ function OrderCard({
             disabled={busy}
             onClick={onFireNext}
           >
-            {busy ? "Updating…" : "Fire next course"}
+            {busy ? t("updating") : t("fireNext")}
           </Button>
         ) : null}
 
@@ -451,10 +459,10 @@ function OrderCard({
             }
           >
             {busy
-              ? "Updating…"
+              ? t("updating")
               : order.mode === "WALK_IN"
-                ? "Picked up"
-                : "Mark served"}
+                ? t("pickedUp")
+                : t("markServed")}
           </Button>
         ) : null}
 
@@ -465,9 +473,9 @@ function OrderCard({
             className="w-full"
             disabled={busy}
             onClick={() => onAdvance("COMPLETED")}
-            title="Requires full payment at cashier first"
+            title={t("closeCheckTitle")}
           >
-            {busy ? "Updating…" : "Close check"}
+            {busy ? t("updating") : t("closeCheck")}
           </Button>
         ) : null}
       </div>

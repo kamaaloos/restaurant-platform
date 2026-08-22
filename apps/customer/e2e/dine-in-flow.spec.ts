@@ -30,7 +30,7 @@ const TABLE_TOKEN =
   process.env.TABLE_E2E_TOKEN?.trim() ||
   "c295c2df-cc43-49bd-8bd5-5f7484fa9061";
 const TABLE_E2E_PIN =
-  process.env.TABLE_E2E_PIN?.trim() || "1234";
+  process.env.TABLE_E2E_PIN?.trim() || "123456";
 const CASHIER_EMAIL =
   process.env.CASHIER_E2E_EMAIL ?? "cashier@restaurant.local";
 const CASHIER_PASSWORD =

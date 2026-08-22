@@ -26,6 +26,12 @@ body {
   background-color: var(--paper);
   color: var(--ink);
   min-height: 100vh;
+  font-family: var(--font-body), sans-serif;
+}
+
+html.locale-ar,
+html.locale-ar body {
+  font-family: var(--font-arabic), var(--font-body), sans-serif;
 }
 
 * {

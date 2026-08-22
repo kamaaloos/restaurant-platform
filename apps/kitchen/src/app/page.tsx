@@ -1,7 +1,12 @@
+"use client";
+
 import { Suspense } from "react";
 import { PairingForm } from "@/components/pairing-form";
+import { LanguageSwitcher, useLocale } from "@/lib/i18n/locale-provider";
 
 export default function HomePage() {
+  const { t } = useLocale();
+
   return (
     <main className="relative min-h-screen overflow-hidden">
       <div
@@ -10,17 +15,19 @@ export default function HomePage() {
       />
 
       <section className="relative mx-auto flex min-h-screen max-w-3xl flex-col justify-center px-6 py-16">
+        <div className="mb-6 flex justify-end">
+          <LanguageSwitcher />
+        </div>
         <p className="mb-3 text-sm font-semibold uppercase tracking-[0.28em] text-[var(--heat)]">
-          Station display
+          {t("stationDisplay")}
         </p>
         <h1 className="mb-4 font-[family-name:var(--font-display)] text-7xl leading-none tracking-wide text-[var(--ink)] md:text-8xl">
-          Kitchen Display
+          {t("kitchenDisplay")}
         </h1>
         <p className="mb-10 max-w-xl text-lg text-[var(--muted)]">
-          Pair this screen with a kitchen device token to show live tickets and
-          advance orders from the line.
+          {t("homeBody")}
         </p>
-        <Suspense fallback={<p className="text-[var(--muted)]">Loading…</p>}>
+        <Suspense fallback={<p className="text-[var(--muted)]">{t("loading")}</p>}>
           <PairingForm />
         </Suspense>
       </section>

@@ -58,21 +58,22 @@ export type KitchenDashboard = {
   sloPaymentThresholdSeconds?: number;
 };
 
+/** Next kitchen status after advancing; labels come from i18n. */
 export const NEXT_ACTIONS: Partial<
-  Record<KitchenStatus, { status: KitchenStatus; label: string }>
+  Record<KitchenStatus, { status: KitchenStatus; labelKey: "actionAccept" | "actionStart" | "actionReady" }>
 > = {
-  NEW: { status: "ACCEPTED", label: "Accept" },
-  ACCEPTED: { status: "PREPARING", label: "Start" },
-  PREPARING: { status: "READY", label: "Ready" },
+  NEW: { status: "ACCEPTED", labelKey: "actionAccept" },
+  ACCEPTED: { status: "PREPARING", labelKey: "actionStart" },
+  PREPARING: { status: "READY", labelKey: "actionReady" },
 };
 
 export const BOARD_COLUMNS: Array<{
   status: KitchenStatus;
-  title: string;
-  hint: string;
+  titleKey: "colNew" | "colAccepted" | "colPreparing" | "colReady";
+  hintKey: "colNewHint" | "colAcceptedHint" | "colPreparingHint" | "colReadyHint";
 }> = [
-  { status: "NEW", title: "New", hint: "Incoming" },
-  { status: "ACCEPTED", title: "Accepted", hint: "Queued" },
-  { status: "PREPARING", title: "Preparing", hint: "On the line" },
-  { status: "READY", title: "Ready", hint: "Pass" },
+  { status: "NEW", titleKey: "colNew", hintKey: "colNewHint" },
+  { status: "ACCEPTED", titleKey: "colAccepted", hintKey: "colAcceptedHint" },
+  { status: "PREPARING", titleKey: "colPreparing", hintKey: "colPreparingHint" },
+  { status: "READY", titleKey: "colReady", hintKey: "colReadyHint" },
 ];

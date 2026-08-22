@@ -19,6 +19,7 @@ import {
 } from "@/hooks/use-selected-branch";
 import { useCashierRealtime } from "@/hooks/use-cashier-realtime";
 import { getStoredUser } from "@/lib/session";
+import { useLocale } from "@/lib/i18n/locale-provider";
 
 type PayMethod = "CASH" | "CARD" | "CARD_MANUAL" | "ONLINE";
 
@@ -109,6 +110,7 @@ function allocatedItemIds(order: Order): Set<string> {
 }
 
 export function PaymentsBoard() {
+  const { t } = useLocale();
   const queryClient = useQueryClient();
   const { branchId, setBranchId, branches, isLoading: branchesLoading } =
     useSelectedBranch();
@@ -179,16 +181,16 @@ export function PaymentsBoard() {
       if (payment.clientSecret) {
         setStatusMsg(
           getTerminalMode() === "simulated"
-            ? "Simulated reader: presenting test card 4242… (no tap UI)"
-            : "Waiting for card on Terminal reader…",
+            ? t("statusSimulatedReader")
+            : t("statusWaitingTerminal"),
         );
         await collectTerminalPayment(payment.clientSecret);
-        setStatusMsg("Waiting for Stripe webhook confirmation…");
+        setStatusMsg(t("statusWaitingWebhook"));
         payment = await cashierApi.waitForTerminalPaid(
           input.orderId,
           payment.id,
         );
-        setStatusMsg("Card payment succeeded.");
+        setStatusMsg(t("statusCardSucceeded"));
       }
       return payment;
     },
@@ -226,7 +228,7 @@ export function PaymentsBoard() {
     mutationFn: (orderId: string) => cashierApi.cancelOrder(orderId),
     onSuccess: () => {
       setError(null);
-      setStatusMsg("Order cancelled.");
+      setStatusMsg(t("statusOrderCancelled"));
       invalidateTill();
       window.setTimeout(() => setStatusMsg(null), 2500);
     },
@@ -281,10 +283,11 @@ export function PaymentsBoard() {
   return (
     <div>
       <PageHeader
-        title="Payments"
-        subtitle={`Split by item · tips · refunds · ONLINE via ${provider}${
-          terminalEnabled ? " · CARD via Terminal" : ""
-        }.`}
+        title={t("paymentsTitle")}
+        subtitle={t("paymentsSubtitle", {
+          provider,
+          terminal: terminalEnabled ? t("paymentsSubtitleTerminal") : "",
+        })}
       />
 
       <TerminalReaderSettings enabled={terminalEnabled} />
@@ -299,9 +302,9 @@ export function PaymentsBoard() {
           />
         </div>
         <p className="text-sm text-[var(--muted)]">
-          Live feed:{" "}
+          {t("liveFeed")}{" "}
           <span className={connected ? "text-[var(--accent)]" : ""}>
-            {connected ? "connected" : "polling"}
+            {connected ? t("connected") : t("polling")}
           </span>
         </p>
       </div>
@@ -319,24 +322,24 @@ export function PaymentsBoard() {
 
       <div className="mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Stat
-          label="Open unpaid"
+          label={t("openUnpaid")}
           value={formatMoney(unpaidTotal, currency)}
-          hint={`${unpaid.length} orders`}
+          hint={t("ordersCount", { count: unpaid.length })}
         />
         <Stat
-          label="Paid on floor"
+          label={t("paidOnFloor")}
           value={formatMoney(paidTotal, currency)}
-          hint={`${settled.length} orders`}
+          hint={t("ordersCount", { count: settled.length })}
         />
         <Stat
-          label="Today's paid"
+          label={t("todaysPaid")}
           value={formatMoney(todaySales, currency)}
-          hint={`${todayPaid.length} closed`}
+          hint={t("closedCount", { count: todayPaid.length })}
         />
         <Stat
-          label="Till total"
+          label={t("tillTotal")}
           value={formatMoney(unpaidTotal + paidTotal, currency)}
-          hint="Active tickets"
+          hint={t("activeTickets")}
         />
       </div>
 
@@ -353,9 +356,9 @@ export function PaymentsBoard() {
       ) : null}
 
       {!branchId && branchesLoading ? (
-        <p className="text-[var(--muted)]">Loading branches…</p>
+        <p className="text-[var(--muted)]">{t("loadingBranches")}</p>
       ) : ordersQuery.isLoading ? (
-        <p className="text-[var(--muted)]">Loading orders…</p>
+        <p className="text-[var(--muted)]">{t("loadingOrders")}</p>
       ) : ordersQuery.isError ? (
         <p className="text-[var(--danger)]">
           {(ordersQuery.error as Error).message}
@@ -364,10 +367,10 @@ export function PaymentsBoard() {
         <div className="space-y-8">
           <section>
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-              Needs payment ({unpaid.length})
+              {t("needsPayment", { count: unpaid.length })}
             </h2>
             {unpaid.length === 0 ? (
-              <p className="text-[var(--muted)]">No open unpaid orders.</p>
+              <p className="text-[var(--muted)]">{t("noOpenUnpaid")}</p>
             ) : (
               <div className="space-y-3">
                 {unpaid.map((order) => {
@@ -385,7 +388,9 @@ export function PaymentsBoard() {
                     order.mode === "WALK_IN" || order.queueNumber != null
                       ? (formatWalkInQueueCode(order.queueNumber) ??
                         shortId(order.id))
-                      : `Table ${order.table?.number ?? "—"}`;
+                      : t("tableLabel", {
+                          number: order.table?.number ?? "—",
+                        });
                   return (
                     <OrderCard
                       key={order.id}
@@ -439,11 +444,11 @@ export function PaymentsBoard() {
                         canCancel
                           ? () => {
                               const ok = window.confirm(
-                                `Cancel order ${queueLabel}?\n\nThis cannot be undone. Pending payments will be voided.`,
+                                t("cancelConfirm", { label: queueLabel }),
                               );
                               if (!ok) return;
                               const sure = window.confirm(
-                                `Confirm cancel ${queueLabel}?`,
+                                t("cancelConfirmSure", { label: queueLabel }),
                               );
                               if (!sure) return;
                               cancelOrder.mutate(order.id);
@@ -462,9 +467,7 @@ export function PaymentsBoard() {
                         pending?.provider === "stripe" &&
                         pending.method === "CARD"
                           ? () => {
-                              setStatusMsg(
-                                "Checking Stripe PaymentIntent status…",
-                              );
+                              setStatusMsg(t("statusCheckingStripe"));
                               void cashierApi
                                 .confirmTerminal(pending.id)
                                 .then((payment) => {
@@ -501,10 +504,10 @@ export function PaymentsBoard() {
 
           <section>
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-              Settled ({settled.length})
+              {t("settled", { count: settled.length })}
             </h2>
             {settled.length === 0 ? (
-              <p className="text-[var(--muted)]">No settled active orders.</p>
+              <p className="text-[var(--muted)]">{t("noSettled")}</p>
             ) : (
               <div className="space-y-3">
                 {settled.map((order) => {
@@ -523,7 +526,9 @@ export function PaymentsBoard() {
                           ? () => {
                               if (
                                 window.confirm(
-                                  `Refund remaining balance for ${shortId(order.id)}?`,
+                                  t("refundConfirm", {
+                                    id: shortId(order.id),
+                                  }),
                                 )
                               ) {
                                 refund.mutate(refundable.id);
@@ -540,18 +545,16 @@ export function PaymentsBoard() {
 
           <section>
             <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-[var(--muted)]">
-              Today&apos;s paid ({todayPaid.length})
+              {t("todaysPaidSection", { count: todayPaid.length })}
             </h2>
             {todayPaidQuery.isLoading ? (
-              <p className="text-[var(--muted)]">Loading today&apos;s paid…</p>
+              <p className="text-[var(--muted)]">{t("loadingTodaysPaid")}</p>
             ) : todayPaidQuery.isError ? (
               <p className="text-[var(--danger)]">
                 {(todayPaidQuery.error as Error).message}
               </p>
             ) : todayPaid.length === 0 ? (
-              <p className="text-[var(--muted)]">
-                No closed paid orders yet today.
-              </p>
+              <p className="text-[var(--muted)]">{t("noClosedPaidToday")}</p>
             ) : (
               <div className="space-y-3">
                 {todayPaid.map((order) => {
@@ -570,7 +573,9 @@ export function PaymentsBoard() {
                           ? () => {
                               if (
                                 window.confirm(
-                                  `Refund remaining balance for ${shortId(order.id)}?`,
+                                  t("refundConfirm", {
+                                    id: shortId(order.id),
+                                  }),
                                 )
                               ) {
                                 refund.mutate(refundable.id);
@@ -647,6 +652,7 @@ function OrderCard({
   onlineEnabled?: boolean;
   terminalEnabled?: boolean;
 }) {
+  const { t } = useLocale();
   const currency = order.currency ?? order.payment?.currency ?? "USD";
   const total = Number(order.total);
   const due = amountOwed(order);
@@ -663,6 +669,13 @@ function OrderCard({
   const charge = cover + tip;
   const payments = orderPayments(order);
 
+  const paymentMeta =
+    payments.length === 0
+      ? t("noPayment")
+      : payments.length === 1
+        ? t("paymentsCountOne")
+        : t("paymentsCount", { count: payments.length });
+
   return (
     <article className="rounded-xl border border-[var(--line)] bg-[var(--surface)] p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -670,15 +683,15 @@ function OrderCard({
           <p className="text-lg font-semibold">
             {order.mode === "WALK_IN" || order.queueNumber != null
               ? (formatWalkInQueueCode(order.queueNumber) ?? "—")
-              : `Table ${order.table?.number ?? "—"}`}{" "}
+              : t("tableLabel", {
+                  number: order.table?.number ?? "—",
+                })}{" "}
             · {order.status}
-            {order.mode === "WALK_IN" ? " · Walk-in" : ""}
+            {order.mode === "WALK_IN" ? ` · ${t("walkIn")}` : ""}
           </p>
           <p className="text-sm text-[var(--muted)]">
-            {order.customerName || "Guest"} · {shortId(order.id)}
-            {payments.length
-              ? ` · ${payments.length} payment${payments.length > 1 ? "s" : ""}`
-              : " · no payment"}
+            {order.customerName || t("guest")} · {shortId(order.id)} ·{" "}
+            {paymentMeta}
           </p>
         </div>
         <div className="text-right">
@@ -687,7 +700,10 @@ function OrderCard({
           </p>
           {due > 0 && due < total ? (
             <p className="text-xs text-[var(--muted)]">
-              Due {formatMoney(due, currency)} of {formatMoney(total, currency)}
+              {t("dueOf", {
+                due: formatMoney(due, currency),
+                total: formatMoney(total, currency),
+              })}
             </p>
           ) : null}
         </div>
@@ -712,8 +728,10 @@ function OrderCard({
                   </span>
                 )}
                 <span className={taken ? "line-through opacity-60" : ""}>
-                  {item.quantity}× {item.menuItem?.name ?? "Item"}
-                  {item.seatNumber != null ? ` · seat ${item.seatNumber}` : ""}
+                  {item.quantity}× {item.menuItem?.name ?? t("item")}
+                  {item.seatNumber != null
+                    ? ` · ${t("seat", { number: item.seatNumber })}`
+                    : ""}
                 </span>
               </label>
               <span>
@@ -723,18 +741,18 @@ function OrderCard({
           );
         })}
         <li className="flex justify-between gap-3 pt-1 font-semibold text-[var(--ink)]">
-          <span>Order</span>
+          <span>{t("order")}</span>
           <span>{formatMoney(total, currency)}</span>
         </li>
         {due > 0 ? (
           <li className="flex justify-between gap-3 text-[var(--ink)]">
-            <span>{selected.length ? "Selected" : "Balance due"}</span>
+            <span>{selected.length ? t("selected") : t("balanceDue")}</span>
             <span>{formatMoney(cover, currency)}</span>
           </li>
         ) : null}
         {tip > 0 ? (
           <li className="flex justify-between gap-3 text-[var(--ink)]">
-            <span>Tip</span>
+            <span>{t("tip")}</span>
             <span>{formatMoney(tip, currency)}</span>
           </li>
         ) : null}
@@ -743,7 +761,8 @@ function OrderCard({
       {onPay && onTipChange ? (
         <label className="mt-3 block text-sm">
           <span className="text-[var(--muted)]">
-            Tip (optional){selected.length ? " · on this split" : ""}
+            {t("tipOptional")}
+            {selected.length ? t("tipOnSplit") : ""}
           </span>
           <input
             type="number"
@@ -755,7 +774,7 @@ function OrderCard({
             placeholder="0.00"
           />
           <span className="mt-1 block text-xs text-[var(--muted)]">
-            Split is by whole line items (not per unit of quantity).
+            {t("splitHint")}
           </span>
         </label>
       ) : null}
@@ -772,7 +791,7 @@ function OrderCard({
           {onPay ? (
             <>
               <Button size="sm" disabled={busy} onClick={() => onPay("CASH")}>
-                {selected.length ? "Pay selected cash" : "Pay cash"}
+                {selected.length ? t("paySelectedCash") : t("payCash")}
               </Button>
               {terminalEnabled ? (
                 <Button
@@ -782,8 +801,8 @@ function OrderCard({
                   onClick={() => onPay("CARD")}
                 >
                   {selected.length
-                    ? "Pay selected (Terminal)"
-                    : "Pay card (Terminal)"}
+                    ? t("paySelectedTerminal")
+                    : t("payCardTerminal")}
                 </Button>
               ) : null}
               <Button
@@ -792,7 +811,7 @@ function OrderCard({
                 disabled={busy}
                 onClick={() => onPay("CARD_MANUAL")}
               >
-                {selected.length ? "Pay selected (manual card)" : "Card manual"}
+                {selected.length ? t("paySelectedManual") : t("cardManual")}
               </Button>
               {onlineEnabled ? (
                 <Button
@@ -801,19 +820,19 @@ function OrderCard({
                   disabled={busy}
                   onClick={() => onPay("ONLINE")}
                 >
-                  Pay online
+                  {t("payOnline")}
                 </Button>
               ) : null}
             </>
           ) : null}
           {onPend && due > 0.001 ? (
             <Button size="sm" variant="outline" disabled={busy} onClick={onPend}>
-              Record pending
+              {t("recordPending")}
             </Button>
           ) : null}
           {onMarkPaid ? (
             <Button size="sm" disabled={busy} onClick={onMarkPaid}>
-              Mark paid
+              {t("markPaid")}
             </Button>
           ) : null}
           {onReconcileTerminal ? (
@@ -823,7 +842,7 @@ function OrderCard({
               disabled={busy}
               onClick={onReconcileTerminal}
             >
-              Check Stripe
+              {t("checkStripe")}
             </Button>
           ) : null}
           {onPrintTicket ? (
@@ -833,7 +852,7 @@ function OrderCard({
               disabled={busy}
               onClick={onPrintTicket}
             >
-              Print ticket
+              {t("printTicket")}
             </Button>
           ) : null}
           {onPrintReceipt ? (
@@ -843,7 +862,7 @@ function OrderCard({
               disabled={busy}
               onClick={onPrintReceipt}
             >
-              Print receipt
+              {t("printReceipt")}
             </Button>
           ) : null}
           {onRefund ? (
@@ -853,7 +872,7 @@ function OrderCard({
               disabled={busy}
               onClick={onRefund}
             >
-              Refund
+              {t("refund")}
             </Button>
           ) : null}
           {onCancel ? (
@@ -864,7 +883,7 @@ function OrderCard({
               onClick={onCancel}
               className="border-[var(--danger)] text-[var(--danger)] hover:bg-[var(--danger-soft)]"
             >
-              Cancel order
+              {t("cancelOrder")}
             </Button>
           ) : null}
         </div>

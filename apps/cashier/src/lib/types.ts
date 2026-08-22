@@ -63,6 +63,8 @@ export type Order = {
   queueNumber?: number | null;
   total: number | string;
   currency?: string;
+  /** Receipt VAT/sales-tax percent (tax-inclusive prices). Defaults to 22. */
+  taxRatePercent?: number | string;
   customerName?: string | null;
   table?: { number: string } | null;
   items: OrderItem[];

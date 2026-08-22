@@ -12,12 +12,14 @@ import {
   type TerminalMode,
 } from "@/lib/terminal";
 import { Button } from "@/components/ui/button";
+import { useLocale } from "@/lib/i18n/locale-provider";
 
 /**
  * Pair / select a physical Stripe Terminal reader via /api/payments/terminal/*.
  * Simulated remains default for local + CI (no hardware required).
  */
 export function TerminalReaderSettings({ enabled }: { enabled: boolean }) {
+  const { t } = useLocale();
   const queryClient = useQueryClient();
   const [mode, setMode] = React.useState<TerminalMode>("simulated");
   const [selectedId, setSelectedId] = React.useState<string | null>(null);
@@ -53,12 +55,12 @@ export function TerminalReaderSettings({ enabled }: { enabled: boolean }) {
       setSelectedId(reader.id);
       setCode("");
       setMessage(
-        `Registered ${reader.label ?? reader.id} via /payments/terminal/readers/register`,
+        t("registeredReader", { label: reader.label ?? reader.id }),
       );
       void queryClient.invalidateQueries({ queryKey: ["terminal-readers"] });
     },
     onError: (err) => {
-      setMessage(err instanceof Error ? err.message : "Register failed");
+      setMessage(err instanceof Error ? err.message : t("registerFailed"));
     },
   });
 
@@ -69,12 +71,12 @@ export function TerminalReaderSettings({ enabled }: { enabled: boolean }) {
       setSelectedId(result.readerId);
       setMessage(
         result.mode === "physical"
-          ? `Connected to ${result.readerLabel} (token from /payments/terminal/connection-token).`
-          : `Connected simulated reader ${result.readerLabel}.`,
+          ? t("connectedPhysical", { label: result.readerLabel })
+          : t("connectedSimulated", { label: result.readerLabel }),
       );
     },
     onError: (err) => {
-      setMessage(err instanceof Error ? err.message : "Connect failed");
+      setMessage(err instanceof Error ? err.message : t("connectFailed"));
     },
   });
 
@@ -86,40 +88,27 @@ export function TerminalReaderSettings({ enabled }: { enabled: boolean }) {
     setTerminalMode(next);
     setMode(next);
     setMessage(
-      next === "simulated"
-        ? "Using simulated reader (local/CI)."
-        : "Physical mode — register/select a reader, then Connect.",
+      next === "simulated" ? t("usingSimulated") : t("physicalModeHint"),
     );
   }
 
   return (
     <details className="mb-6 rounded-xl border border-[var(--line)] bg-[var(--surface)]/88 p-4 backdrop-blur-md">
       <summary className="cursor-pointer text-sm font-semibold">
-        Stripe Terminal reader
+        {t("stripeTerminalReader")}
       </summary>
       <div className="mt-3 space-y-3 text-sm">
-        <p className="text-[var(--muted)]">
-          All Terminal traffic goes through{" "}
-          <code className="text-xs">/api/payments/terminal/*</code> (connection
-          token, reader list, register). Simulated needs no hardware. Physical:
-          set <code className="text-xs">PAYMENT_PROVIDER=stripe</code>,{" "}
-          <code className="text-xs">STRIPE_TERMINAL=1</code>, and{" "}
-          <code className="text-xs">STRIPE_TERMINAL_LOCATION_ID</code> on the
-          API, then register the device pairing code here.
-        </p>
+        <p className="text-[var(--muted)]">{t("terminalHelp")}</p>
 
         <p className="text-xs text-[var(--muted)]">
-          Location:{" "}
+          {t("location")}{" "}
           <span className="font-mono text-[var(--ink)]">
-            {locationId ?? "not configured"}
+            {locationId ?? t("notConfigured")}
           </span>
         </p>
 
         {!locationId && mode === "physical" ? (
-          <p className="text-[var(--danger)]">
-            No location configured — register/connect will fail until Location
-            ID is set.
-          </p>
+          <p className="text-[var(--danger)]">{t("noLocationWarning")}</p>
         ) : null}
 
         <div className="flex flex-wrap gap-2">
@@ -129,7 +118,7 @@ export function TerminalReaderSettings({ enabled }: { enabled: boolean }) {
             type="button"
             onClick={() => applyMode("simulated")}
           >
-            Simulated
+            {t("simulated")}
           </Button>
           <Button
             size="sm"
@@ -137,7 +126,7 @@ export function TerminalReaderSettings({ enabled }: { enabled: boolean }) {
             type="button"
             onClick={() => applyMode("physical")}
           >
-            Physical
+            {t("physical")}
           </Button>
           <Button
             size="sm"
@@ -146,14 +135,14 @@ export function TerminalReaderSettings({ enabled }: { enabled: boolean }) {
             disabled={connect.isPending}
             onClick={() => connect.mutate()}
           >
-            {connect.isPending ? "Connecting…" : "Connect / test"}
+            {connect.isPending ? t("connecting") : t("connectTest")}
           </Button>
         </div>
 
         {mode === "physical" ? (
           <>
             <label className="block">
-              <span className="text-[var(--muted)]">Preferred reader</span>
+              <span className="text-[var(--muted)]">{t("preferredReader")}</span>
               <select
                 className="mt-1 h-10 w-full max-w-md rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
                 value={selectedId ?? ""}
@@ -163,7 +152,7 @@ export function TerminalReaderSettings({ enabled }: { enabled: boolean }) {
                   setSelectedId(id);
                 }}
               >
-                <option value="">First discovered at location</option>
+                <option value="">{t("firstDiscovered")}</option>
                 {(readersQuery.data ?? []).map((r) => (
                   <option key={r.id} value={r.id}>
                     {r.label ?? r.id} · {r.status}
@@ -175,7 +164,9 @@ export function TerminalReaderSettings({ enabled }: { enabled: boolean }) {
 
             <div className="flex flex-wrap items-end gap-2">
               <label className="block">
-                <span className="text-[var(--muted)]">Registration code</span>
+                <span className="text-[var(--muted)]">
+                  {t("registrationCode")}
+                </span>
                 <input
                   className="mt-1 h-10 w-40 rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
                   value={code}
@@ -184,7 +175,7 @@ export function TerminalReaderSettings({ enabled }: { enabled: boolean }) {
                 />
               </label>
               <label className="block">
-                <span className="text-[var(--muted)]">Label</span>
+                <span className="text-[var(--muted)]">{t("label")}</span>
                 <input
                   className="mt-1 h-10 w-40 rounded-md border border-[var(--line)] bg-[var(--paper)] px-3"
                   value={label}
@@ -197,7 +188,7 @@ export function TerminalReaderSettings({ enabled }: { enabled: boolean }) {
                 disabled={!code.trim() || register.isPending || !locationId}
                 onClick={() => register.mutate()}
               >
-                {register.isPending ? "Registering…" : "Register reader"}
+                {register.isPending ? t("registering") : t("registerReader")}
               </Button>
               <Button
                 size="sm"
@@ -205,7 +196,7 @@ export function TerminalReaderSettings({ enabled }: { enabled: boolean }) {
                 type="button"
                 onClick={() => void readersQuery.refetch()}
               >
-                Refresh list
+                {t("refreshList")}
               </Button>
             </div>
           </>

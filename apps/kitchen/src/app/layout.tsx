@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bebas_Neue, Source_Sans_3 } from "next/font/google";
+import { Bebas_Neue, Noto_Sans_Arabic, Source_Sans_3 } from "next/font/google";
 import { CookingBackdrop } from "@/components/cooking-backdrop";
 import { Providers } from "@/components/providers";
 import { SiteFooter } from "@/components/site-footer";
@@ -16,6 +16,11 @@ const body = Source_Sans_3({
   subsets: ["latin"],
 });
 
+const arabic = Noto_Sans_Arabic({
+  variable: "--font-arabic",
+  subsets: ["arabic"],
+});
+
 export const metadata: Metadata = {
   title: "Kitchen Display",
   description: "Live kitchen tickets for restaurant devices",
@@ -28,7 +33,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${display.variable} ${body.variable} antialiased`}>
+      <body
+        className={`${display.variable} ${body.variable} ${arabic.variable} antialiased`}
+      >
         <Providers>
           <div className="relative flex min-h-screen flex-col">
             <CookingBackdrop />

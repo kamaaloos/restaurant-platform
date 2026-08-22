@@ -67,7 +67,7 @@ export function TablePinGate({
         className="mt-6 space-y-4"
         onSubmit={(e) => {
           e.preventDefault();
-          if (pin.trim().length < 4) {
+          if (pin.trim().length !== 6) {
             setError(t("tablePinInvalid"));
             return;
           }

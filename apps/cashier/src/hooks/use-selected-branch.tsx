@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { cashierApi } from "@/lib/api";
+import { useLocale } from "@/lib/i18n/locale-provider";
 
 const STORAGE_KEY = "cashier.selectedBranchId";
 
@@ -56,10 +57,12 @@ export function BranchSelect({
   branches: Array<{ id: string; name: string }>;
   disabled?: boolean;
 }) {
+  const { t } = useLocale();
+
   return (
     <label className="block space-y-1.5">
       <span className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--muted)]">
-        Branch
+        {t("branch")}
       </span>
       <select
         value={branchId}
@@ -69,7 +72,7 @@ export function BranchSelect({
         required
       >
         {branches.length === 0 ? (
-          <option value="">No branches available</option>
+          <option value="">{t("noBranchesAvailable")}</option>
         ) : (
           branches.map((branch) => (
             <option key={branch.id} value={branch.id}>

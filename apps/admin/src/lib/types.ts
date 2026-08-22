@@ -32,6 +32,8 @@ export type Restaurant = {
   phone?: string | null;
   address?: string | null;
   currency?: string;
+  /** Receipt VAT/sales-tax percent (e.g. 22). */
+  taxRatePercent?: number | string;
   logoUrl?: string | null;
   brandAccent?: string | null;
   brandButton?: string | null;
@@ -114,6 +116,26 @@ export type MenuItem = {
   available: boolean;
   categoryId: string;
   imageUrl: string | null;
+};
+
+export type ModifierOption = {
+  id: string;
+  groupId: string;
+  name: string;
+  priceDelta: string | number;
+  active: boolean;
+  displayOrder: number;
+};
+
+export type ModifierGroup = {
+  id: string;
+  menuItemId: string;
+  name: string;
+  minSelect: number;
+  maxSelect: number;
+  required: boolean;
+  displayOrder: number;
+  options: ModifierOption[];
 };
 
 export type StaffUser = {
