@@ -286,6 +286,7 @@ export type MessageKey =
   | "hubScreensBody"
   | "hubRestaurantDash"
   | "hubDugsiDash"
+  | "hubRetailDash"
   | "hubMockToday"
   | "hubMockLiveFloor"
   | "hubMockOpenOrders"
@@ -299,6 +300,14 @@ export type MessageKey =
   | "hubMockStudents"
   | "hubMockEnrolled"
   | "hubMockAttendance"
+  | "hubMockRetailPos"
+  | "hubMockRetailProducts"
+  | "hubMockRetailStock"
+  | "hubMockRetailOverview"
+  | "hubMockRetailSales"
+  | "hubMockRetailTx"
+  | "hubMockRetailProfit"
+  | "hubMockRetailLowStock"
   | "hubCtaTitle"
   | "hubCtaBody"
   | "hubFooterBlurb"
@@ -671,9 +680,10 @@ const en: Messages = {
   hubStatSupport: "Support",
   hubScreensTitle: "Built for real operations",
   hubScreensBody:
-    "Clean dashboards your team actually uses — from the floor to the classroom.",
+    "Clean dashboards your team actually uses — from the floor to the classroom to the counter.",
   hubRestaurantDash: "Restaurant dashboard",
   hubDugsiDash: "Dugsi dashboard",
+  hubRetailDash: "Retail dashboard",
   hubMockToday: "Today",
   hubMockLiveFloor: "Live floor",
   hubMockOpenOrders: "Open orders",
@@ -687,6 +697,14 @@ const en: Messages = {
   hubMockStudents: "Students overview",
   hubMockEnrolled: "enrolled",
   hubMockAttendance: "attendance",
+  hubMockRetailPos: "POS",
+  hubMockRetailProducts: "Products",
+  hubMockRetailStock: "Stock",
+  hubMockRetailOverview: "Shop overview",
+  hubMockRetailSales: "Today sales",
+  hubMockRetailTx: "Transactions",
+  hubMockRetailProfit: "Gross profit",
+  hubMockRetailLowStock: "Low stock",
   hubCtaTitle: "Ready to transform your business?",
   hubCtaBody: "Explore our platforms today.",
   hubFooterBlurb:
@@ -1076,9 +1094,10 @@ const fi: Messages = {
   hubStatSupport: "Tuki",
   hubScreensTitle: "Rakennettu oikeaan arkeen",
   hubScreensBody:
-    "Selkeät näkymät, joita tiimi oikeasti käyttää — salista luokkahuoneeseen.",
+    "Selkeät näkymät, joita tiimi oikeasti käyttää — salista luokkahuoneeseen ja kassalle.",
   hubRestaurantDash: "Ravintolan hallinta",
   hubDugsiDash: "Dugsi-hallinta",
+  hubRetailDash: "Vähittäiskaupan hallinta",
   hubMockToday: "Tänään",
   hubMockLiveFloor: "Sali live",
   hubMockOpenOrders: "Avoimet tilaukset",
@@ -1092,6 +1111,14 @@ const fi: Messages = {
   hubMockStudents: "Oppilaskatsaus",
   hubMockEnrolled: "ilmoittautunut",
   hubMockAttendance: "läsnäolo",
+  hubMockRetailPos: "Kassa",
+  hubMockRetailProducts: "Tuotteet",
+  hubMockRetailStock: "Varasto",
+  hubMockRetailOverview: "Kaupan yleiskuva",
+  hubMockRetailSales: "Myynti tänään",
+  hubMockRetailTx: "Tapahtumat",
+  hubMockRetailProfit: "Kate",
+  hubMockRetailLowStock: "Vähäinen varasto",
   hubCtaTitle: "Valmis uudistamaan liiketoimintasi?",
   hubCtaBody: "Tutustu alustoihimme jo tänään.",
   hubFooterBlurb:
@@ -1476,9 +1503,10 @@ const ar: Messages = {
   hubStatSupport: "دعم",
   hubScreensTitle: "مصممة للتشغيل الحقيقي",
   hubScreensBody:
-    "لوحات واضحة يستخدمها فريقك فعلاً — من صالة المطعم إلى الفصل.",
+    "لوحات واضحة يستخدمها فريقك فعلاً — من صالة المطعم إلى الفصل والكاونتر.",
   hubRestaurantDash: "لوحة المطعم",
   hubDugsiDash: "لوحة دُكسي",
+  hubRetailDash: "لوحة التجزئة",
   hubMockToday: "اليوم",
   hubMockLiveFloor: "الصالة مباشرة",
   hubMockOpenOrders: "طلبات مفتوحة",
@@ -1492,6 +1520,14 @@ const ar: Messages = {
   hubMockStudents: "نظرة على الطلاب",
   hubMockEnrolled: "مسجّل",
   hubMockAttendance: "حضور",
+  hubMockRetailPos: "نقطة البيع",
+  hubMockRetailProducts: "منتجات",
+  hubMockRetailStock: "مخزون",
+  hubMockRetailOverview: "نظرة على المحل",
+  hubMockRetailSales: "مبيعات اليوم",
+  hubMockRetailTx: "معاملات",
+  hubMockRetailProfit: "إجمالي الربح",
+  hubMockRetailLowStock: "مخزون منخفض",
   hubCtaTitle: "هل أنت مستعد لتحويل عملك؟",
   hubCtaBody: "استكشف منصاتنا اليوم.",
   hubFooterBlurb:
@@ -1880,9 +1916,10 @@ const so: Messages = {
   hubStatSupport: "Taageero",
   hubScreensTitle: "Loo dhisay howlaha dhabta ah",
   hubScreensBody:
-    "Dashboard-yo nadiif ah oo kooxdaadu run ahaantii isticmaasho — laga bilaabo dabaqa ilaa fasalka.",
+    "Dashboard-yo nadiif ah oo kooxdaadu run ahaantii isticmaasho — laga bilaabo dabaqa ilaa fasalka iyo miiska iibka.",
   hubRestaurantDash: "Dashboard-ka makhaayadda",
   hubDugsiDash: "Dashboard-ka Dugsi",
+  hubRetailDash: "Dashboard-ka tafaariiqda",
   hubMockToday: "Maanta",
   hubMockLiveFloor: "Dabaqa tooska ah",
   hubMockOpenOrders: "Dalabyo furan",
@@ -1896,6 +1933,14 @@ const so: Messages = {
   hubMockStudents: "Ardayda guud ahaan",
   hubMockEnrolled: "diiwaangashan",
   hubMockAttendance: "imaansho",
+  hubMockRetailPos: "POS",
+  hubMockRetailProducts: "Alaabta",
+  hubMockRetailStock: "Kayd",
+  hubMockRetailOverview: "Dukaanka guud ahaan",
+  hubMockRetailSales: "Iibka maanta",
+  hubMockRetailTx: "Macaamilo",
+  hubMockRetailProfit: "Faa'iidada",
+  hubMockRetailLowStock: "Kayd hooseeya",
   hubCtaTitle: "Diyaar ma u tahay inaad beddesho ganacsigaaga?",
   hubCtaBody: "Sahamin platform-yadeenna maanta.",
   hubFooterBlurb:

@@ -224,6 +224,60 @@ function DugsiDashboardMock({ t }: { t: (key: MessageKey) => string }) {
   );
 }
 
+function RetailDashboardMock({ t }: { t: (key: MessageKey) => string }) {
+  const nav = [
+    t("hubMockDashboard"),
+    t("hubMockRetailPos"),
+    t("hubMockRetailProducts"),
+    t("hubMockRetailStock"),
+  ];
+
+  return (
+    <div className="hub-glass hub-screenshot-mock overflow-hidden rounded-3xl p-1 shadow-xl">
+      <div className="flex min-h-64 overflow-hidden rounded-[1.35rem] bg-[#0f172a] sm:min-h-72">
+        <aside className="hidden w-28 shrink-0 flex-col gap-2 bg-[#020617] p-3 text-[0.65rem] text-slate-400 sm:flex">
+          <div className="mb-2 flex items-center gap-2">
+            <div className="h-7 w-7 rounded-full bg-[#38bdf8]/80" />
+            <span className="font-semibold text-white/90">POS</span>
+          </div>
+          {nav.map((l, i) => (
+            <span
+              key={l}
+              className={`rounded-lg px-2 py-1.5 ${i === 0 ? "bg-white/12 text-white" : ""}`}
+            >
+              {l}
+            </span>
+          ))}
+        </aside>
+        <div className="flex flex-1 flex-col p-4 sm:p-5">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-slate-400">
+            {t("hubMockToday")}
+          </p>
+          <h4 className="mt-1 text-lg font-semibold text-white">
+            {t("hubMockRetailOverview")}
+          </h4>
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            {[
+              [t("hubMockRetailSales"), "$9.99"],
+              [t("hubMockRetailTx"), "1"],
+              [t("hubMockRetailProfit"), "$4.99"],
+              [t("hubMockRetailLowStock"), "0"],
+            ].map(([k, v]) => (
+              <div
+                key={k}
+                className="rounded-xl border border-white/10 bg-white/5 px-3 py-2.5"
+              >
+                <p className="text-[0.65rem] text-slate-400">{k}</p>
+                <p className="text-sm font-semibold text-white">{v}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function MayleSoftHub() {
   const { t, dir } = useLocale();
 
@@ -465,7 +519,7 @@ export function MayleSoftHub() {
           <p className="mx-auto mt-3 max-w-xl text-center text-[#6b6560]">
             {t("hubScreensBody")}
           </p>
-          <div className="mt-8 grid gap-6 sm:mt-12 sm:gap-8 lg:grid-cols-2">
+          <div className="mt-8 grid gap-6 sm:mt-12 sm:gap-8 lg:grid-cols-3">
             <div>
               <p className="mb-4 text-sm font-semibold text-[#1c1917]">
                 {t("hubRestaurantDash")}
@@ -477,6 +531,12 @@ export function MayleSoftHub() {
                 {t("hubDugsiDash")}
               </p>
               <DugsiDashboardMock t={t} />
+            </div>
+            <div>
+              <p className="mb-4 text-sm font-semibold text-[#1c1917]">
+                {t("hubRetailDash")}
+              </p>
+              <RetailDashboardMock t={t} />
             </div>
           </div>
         </div>
