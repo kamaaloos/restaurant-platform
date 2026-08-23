@@ -1,5 +1,5 @@
 import { headers } from "next/headers";
-import { isApexOrWwwHost, isPortfolioHost } from "@/lib/tenant-host";
+import { isApexOrWwwHost, isPortfolioHost, isRetailMarketingHost } from "@/lib/tenant-host";
 
 export async function SiteFooter() {
   const headerList = await headers();
@@ -7,8 +7,13 @@ export async function SiteFooter() {
   const pathname = headerList.get("x-pathname") ?? "";
   const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN;
   const portfolioHost = process.env.NEXT_PUBLIC_PORTFOLIO_HOST;
+  const retailHost = process.env.NEXT_PUBLIC_RETAIL_HOST;
 
   if (isPortfolioHost(host, rootDomain, portfolioHost)) {
+    return null;
+  }
+
+  if (isRetailMarketingHost(host, rootDomain, retailHost)) {
     return null;
   }
 

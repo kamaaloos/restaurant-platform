@@ -398,6 +398,68 @@ html[dir="rtl"] body {
   mix-blend-mode: soft-light;
 }
 
+/* —— MayleSoft Retail landing —— */
+.retail-page {
+  --landing-paper: #f7f3ec;
+  --retail-ink: #e8eef8;
+  --retail-muted: rgba(226, 232, 240, 0.72);
+  --retail-accent: #38bdf8;
+  --retail-accent-strong: #0ea5e9;
+  --retail-line: rgba(148, 163, 184, 0.22);
+}
+
+@keyframes retail-cinematic-drift {
+  0%,
+  100% {
+    transform: scale(1.06) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.12) translate3d(-0.6%, -0.4%, 0);
+  }
+}
+
+.retail-cinematic-drift {
+  animation: retail-cinematic-drift 42s ease-in-out infinite;
+  will-change: transform;
+}
+
+@keyframes retail-pos-glow {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.retail-pos-glow {
+  background: radial-gradient(
+    ellipse 50% 40% at 72% 32%,
+    rgba(56, 189, 248, 0.2),
+    transparent 72%
+  );
+  animation: retail-pos-glow 7s ease-in-out infinite;
+  mix-blend-mode: screen;
+}
+
+.retail-scanlines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.04) 2px,
+    rgba(255, 255, 255, 0.04) 3px
+  );
+}
+
+.retail-screen-frame {
+  box-shadow:
+    0 0 0 1px rgba(148, 163, 184, 0.18),
+    0 28px 80px rgba(2, 6, 23, 0.55),
+    0 0 60px rgba(56, 189, 248, 0.12);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pickup-fire-drift,
   .menu-bg-drift,
@@ -406,6 +468,8 @@ html[dir="rtl"] body {
   .landing-brand-zoom,
   .landing-ken-burns,
   .landing-cinematic-drift,
+  .retail-cinematic-drift,
+  .retail-pos-glow,
   .landing-warm-glow,
   .landing-hero-line1,
   .landing-hero-line2,

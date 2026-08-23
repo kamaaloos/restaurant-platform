@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -13,6 +14,7 @@ import {
   Users,
   WifiOff,
 } from "lucide-react";
+import { RetailCinematicBackdrop } from "@/components/retail-cinematic-backdrop";
 import { LanguageSwitcher, useLocale } from "@/lib/i18n/locale-provider";
 import type { MessageKey } from "@/lib/i18n/messages";
 import { mayleSoftHubOrigin } from "@/lib/tenant-host";
@@ -23,6 +25,17 @@ const HUB_URL = mayleSoftHubOrigin(ROOT_DOMAIN);
 const CONTACT_MAIL =
   "mailto:contact@maylesoft.com?subject=MayleSoft%20Retail%20demo";
 const UPDATE_FEED_PATH = "/latest.json";
+
+const APP_SHOTS = [
+  {
+    src: "/images/retail/dashboard.png",
+    labelKey: "retailScreenDashboard" as const,
+  },
+  {
+    src: "/images/retail/categories.png",
+    labelKey: "retailScreenCategories" as const,
+  },
+] as const;
 
 type RetailRelease = {
   version: string;
@@ -70,68 +83,39 @@ const FEATURES: {
   },
 ];
 
-function PosMock() {
-  const { t } = useLocale();
+function AppScreenshot({
+  src,
+  label,
+  priority = false,
+  float = true,
+  className = "",
+}: {
+  src: string;
+  label: string;
+  priority?: boolean;
+  float?: boolean;
+  className?: string;
+}) {
   return (
-    <div className="landing-float landing-glass-mock relative mx-auto w-full max-w-lg overflow-hidden rounded-[1.5rem]">
-      <div className="flex min-h-[18rem] sm:min-h-[22rem]">
-        <aside className="flex w-16 flex-col gap-2 bg-[#1c1917]/95 px-2 py-4 text-[0.65rem] text-white/55 sm:w-40 sm:px-3 sm:py-5 sm:text-xs">
-          <p className="mb-2 px-1 text-[0.7rem] font-semibold tracking-wide text-white sm:text-sm">
-            MayleSoft
-          </p>
-          {[
-            t("retailMockSell"),
-            t("retailMockProducts"),
-            t("retailMockStock"),
-            t("retailMockStaff"),
-            t("retailMockReports"),
-          ].map((label, i) => (
-            <span
-              key={label}
-              className={`rounded-lg px-2 py-1.5 ${
-                i === 0 ? "bg-white/12 text-white" : ""
-              }`}
-            >
-              <span className="hidden sm:inline">{label}</span>
-              <span className="sm:hidden">{label.slice(0, 1)}</span>
-            </span>
-          ))}
-        </aside>
-        <div className="flex flex-1 flex-col bg-[#faf7f2]/95 p-3.5 sm:p-5">
-          <p className="text-xs font-medium uppercase tracking-[0.16em] text-[var(--landing-muted)]">
-            {t("retailMockRegister")}
-          </p>
-          <h3 className="mt-1 font-[family-name:var(--font-body)] text-base font-semibold text-[var(--landing-ink)] sm:text-lg">
-            {t("retailMockCheckout")}
-          </h3>
-          <ul className="mt-3.5 flex-1 space-y-2 text-xs text-[var(--landing-ink)] sm:mt-4 sm:space-y-2.5 sm:text-sm">
-            <li className="flex justify-between gap-3 border-b border-[var(--landing-line)] pb-2">
-              <span>{t("retailMockItem1")}</span>
-              <span className="text-[var(--landing-muted)]">€4.50</span>
-            </li>
-            <li className="flex justify-between gap-3 border-b border-[var(--landing-line)] pb-2">
-              <span>{t("retailMockItem2")}</span>
-              <span className="text-[var(--landing-muted)]">€12.00</span>
-            </li>
-            <li className="flex justify-between gap-3 border-b border-[var(--landing-line)] pb-2">
-              <span>{t("retailMockItem3")}</span>
-              <span className="text-[var(--landing-muted)]">€2.20</span>
-            </li>
-          </ul>
-          <div className="mt-3.5 flex items-center justify-between text-sm font-medium">
-            <span>{t("retailMockTotal")}</span>
-            <span>€18.70</span>
-          </div>
-          <button
-            type="button"
-            tabIndex={-1}
-            className="mt-3 w-full rounded-xl bg-[var(--landing-accent)] py-2.5 text-sm font-semibold text-white sm:py-3"
-          >
-            {t("retailMockPay")}
-          </button>
-        </div>
+    <figure className={`group ${className}`}>
+      <div
+        className={`retail-screen-frame overflow-hidden rounded-[1.25rem] border border-white/10 bg-[#0b1220] ${
+          float ? "landing-float" : ""
+        }`}
+      >
+        <Image
+          src={src}
+          alt={label}
+          width={1280}
+          height={800}
+          priority={priority}
+          className="h-auto w-full object-cover object-top"
+        />
       </div>
-    </div>
+      <figcaption className="mt-3 text-center text-sm font-medium text-[var(--retail-muted)]">
+        {label}
+      </figcaption>
+    </figure>
   );
 }
 
@@ -181,76 +165,110 @@ export function RetailLanding() {
 
   return (
     <div
-      className="landing-page relative isolate min-h-screen overflow-x-hidden text-[var(--landing-ink)]"
+      className="retail-page landing-page relative isolate min-h-screen overflow-x-hidden text-[var(--retail-ink)]"
       dir={dir}
     >
-      <div className="landing-aurora pointer-events-none absolute inset-0 -z-10" aria-hidden />
+      <section className="relative isolate overflow-hidden">
+        <RetailCinematicBackdrop tone="hero" />
 
-      <header className="sticky top-0 z-50 border-b border-[var(--landing-line)] bg-[var(--landing-paper)]/70 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:flex-nowrap sm:px-6 sm:py-4">
-          <Link href="/" className="flex min-w-0 items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/brand/maylesoft-logo.png"
-              alt="MayleSoft"
-              className="h-11 w-11 rounded-2xl object-cover shadow-sm"
-            />
-            <span className="truncate font-[family-name:var(--font-display)] text-lg tracking-tight sm:text-2xl">
-              {t("retailBrand")}
-            </span>
-          </Link>
-          <div className="flex w-full items-center gap-2 sm:w-auto sm:justify-end sm:gap-3">
-            <LanguageSwitcher />
-            <a
-              href="#download"
-              className="inline-flex items-center justify-center rounded-full bg-[var(--landing-ink)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--landing-accent)]"
-            >
-              {t("retailDownloadCta")}
-            </a>
+        <header className="relative z-20 border-b border-white/10 bg-[#070b14]/45 backdrop-blur-xl">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:flex-nowrap sm:px-6 sm:py-4">
+            <Link href="/" className="flex min-w-0 items-center gap-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/brand/maylesoft-logo.png"
+                alt="MayleSoft"
+                className="h-11 w-11 rounded-2xl object-cover shadow-sm ring-1 ring-white/15"
+              />
+              <span className="truncate font-[family-name:var(--font-display)] text-lg tracking-tight text-white sm:text-2xl">
+                {t("retailBrand")}
+              </span>
+            </Link>
+            <div className="flex w-full items-center gap-2 sm:w-auto sm:justify-end sm:gap-3">
+              <LanguageSwitcher />
+              <a
+                href="#download"
+                className="inline-flex items-center justify-center rounded-full bg-[var(--retail-accent-strong)] px-4 py-2 text-sm font-semibold text-white transition hover:brightness-110"
+              >
+                {t("retailDownloadCta")}
+              </a>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main>
-        <section className="relative px-4 pb-16 pt-12 sm:px-6 sm:pb-24 sm:pt-20">
+        <div className="relative z-10 px-4 pb-20 pt-12 sm:px-6 sm:pb-28 sm:pt-16">
           <div className="mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-14">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--landing-accent)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--retail-accent)]">
                 {t("retailEyebrow")}
               </p>
-              <h1 className="mt-4 max-w-xl text-balance font-[family-name:var(--font-display)] text-[2.35rem] leading-[1.05] tracking-tight sm:text-5xl lg:text-[3.4rem]">
+              <h1 className="mt-4 max-w-xl text-balance font-[family-name:var(--font-display)] text-[2.35rem] leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-[3.4rem]">
                 {t("retailTitle")}
               </h1>
-              <p className="mt-5 max-w-lg text-base leading-relaxed text-[var(--landing-muted)] sm:text-lg">
+              <p className="mt-5 max-w-lg text-base leading-relaxed text-[var(--retail-muted)] sm:text-lg">
                 {t("retailLead")}
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <a
                   href={installerHref ?? "#download"}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--landing-accent)] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[var(--landing-accent)]/25 transition hover:brightness-110"
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--retail-accent-strong)] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#0ea5e9]/30 transition hover:brightness-110"
                 >
                   <Download className="h-4 w-4" />
                   {t("retailDownloadCta")}
                 </a>
                 <a
-                  href="#features"
-                  className="inline-flex items-center justify-center rounded-full border border-[var(--landing-line)] bg-white/60 px-6 py-3.5 text-sm font-semibold backdrop-blur transition hover:bg-white"
+                  href="#screens"
+                  className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/8 px-6 py-3.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/12"
                 >
                   {t("retailCtaSecondary")}
                 </a>
               </div>
-              <p className="mt-5 flex items-center gap-2 text-sm text-[var(--landing-muted)]">
+              <p className="mt-5 flex items-center gap-2 text-sm text-[var(--retail-muted)]">
                 <Monitor className="h-4 w-4 shrink-0" strokeWidth={1.75} />
                 {t("retailPlatformNote")}
               </p>
             </div>
-            <PosMock />
+
+            <AppScreenshot
+              src={APP_SHOTS[0].src}
+              label={t(APP_SHOTS[0].labelKey)}
+              priority
+            />
+          </div>
+        </div>
+      </section>
+
+      <main className="relative z-10 bg-[var(--landing-paper)] text-[var(--landing-ink)]">
+        <section
+          id="screens"
+          className="border-b border-[var(--landing-line)] px-4 py-16 sm:px-6 sm:py-24"
+        >
+          <div className="mx-auto max-w-6xl">
+            <p className="text-center text-xs font-semibold uppercase tracking-[0.22em] text-[var(--landing-accent)]">
+              {t("retailScreensEyebrow")}
+            </p>
+            <h2 className="mt-3 text-center font-[family-name:var(--font-display)] text-2xl tracking-tight sm:text-4xl">
+              {t("retailScreensTitle")}
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-[var(--landing-muted)]">
+              {t("retailScreensBody")}
+            </p>
+            <div className="mt-10 grid gap-8 lg:grid-cols-2 lg:gap-10">
+              {APP_SHOTS.map(({ src, labelKey }) => (
+                <AppScreenshot
+                  key={src}
+                  src={src}
+                  label={t(labelKey)}
+                  float={false}
+                />
+              ))}
+            </div>
           </div>
         </section>
 
         <section
           id="features"
-          className="border-y border-[var(--landing-line)] bg-white/35 px-4 py-16 sm:px-6 sm:py-24"
+          className="border-b border-[var(--landing-line)] bg-white/35 px-4 py-16 sm:px-6 sm:py-24"
         >
           <div className="mx-auto max-w-6xl">
             <p className="text-center text-xs font-semibold uppercase tracking-[0.22em] text-[var(--landing-accent)]">
@@ -280,10 +298,7 @@ export function RetailLanding() {
           </div>
         </section>
 
-        <section
-          id="download"
-          className="border-b border-[var(--landing-line)] px-4 py-16 sm:px-6 sm:py-24"
-        >
+        <section id="download" className="px-4 py-16 sm:px-6 sm:py-24">
           <div className="mx-auto max-w-3xl rounded-[2rem] border border-[var(--landing-line)] bg-white/60 p-6 backdrop-blur sm:p-10">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--landing-accent)]">
               {t("retailDownloadEyebrow")}
@@ -362,7 +377,7 @@ export function RetailLanding() {
           </div>
         </section>
 
-        <section className="px-4 py-16 sm:px-6 sm:py-24">
+        <section className="border-t border-[var(--landing-line)] px-4 py-16 sm:px-6 sm:py-20">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="font-[family-name:var(--font-display)] text-2xl tracking-tight sm:text-4xl">
               {t("retailFinalTitle")}
@@ -392,7 +407,7 @@ export function RetailLanding() {
         </section>
       </main>
 
-      <footer className="border-t border-[var(--landing-line)] bg-[var(--landing-paper)]/80 px-4 py-10 text-center text-sm text-[var(--landing-muted)] sm:px-6">
+      <footer className="relative z-10 border-t border-[var(--landing-line)] bg-[var(--landing-paper)] px-4 py-8 text-center text-sm text-[var(--landing-muted)] sm:px-6">
         <p>
           <a href={HUB_URL} className="font-medium text-[var(--landing-ink)] hover:underline">
             MayleSoft

@@ -356,7 +356,12 @@ export type MessageKey =
   | "retailDownloadPlatform"
   | "retailDownloadLoading"
   | "retailDownloadUnavailable"
-  | "retailDownloadFeed";
+  | "retailDownloadFeed"
+  | "retailScreensEyebrow"
+  | "retailScreensTitle"
+  | "retailScreensBody"
+  | "retailScreenDashboard"
+  | "retailScreenCategories";
 
 export type Messages = Record<MessageKey, string>;
 
@@ -754,6 +759,12 @@ const en: Messages = {
   retailDownloadUnavailable:
     "Installer not available yet. Contact us for a build, or try again after the next release.",
   retailDownloadFeed: "Update feed",
+  retailScreensEyebrow: "Inside the app",
+  retailScreensTitle: "Built for real shop floors",
+  retailScreensBody:
+    "Dashboard, categories, inventory, and checkout — the same Windows POS your team uses every day.",
+  retailScreenDashboard: "Dashboard & sales",
+  retailScreenCategories: "Categories & products",
 };
 
 const fi: Messages = {
@@ -1153,6 +1164,12 @@ const fi: Messages = {
   retailDownloadUnavailable:
     "Asennusohjelmaa ei ole vielä saatavilla. Ota yhteyttä tai yritä uudelleen seuraavan julkaisun jälkeen.",
   retailDownloadFeed: "Päivityssyöte",
+  retailScreensEyebrow: "Sovelluksen sisällä",
+  retailScreensTitle: "Rakennettu oikeille myyntipisteille",
+  retailScreensBody:
+    "Kojelauta, kategoriat, varasto ja kassa — sama Windows-POS, jota tiimisi käyttää päivittäin.",
+  retailScreenDashboard: "Kojelauta ja myynti",
+  retailScreenCategories: "Kategoriat ja tuotteet",
 };
 
 const ar: Messages = {
@@ -1547,6 +1564,12 @@ const ar: Messages = {
   retailDownloadUnavailable:
     "المثبّت غير متاح بعد. تواصل معنا للحصول على نسخة، أو حاول مجدداً بعد الإصدار التالي.",
   retailDownloadFeed: "مصدر التحديثات",
+  retailScreensEyebrow: "داخل التطبيق",
+  retailScreensTitle: "مصمم لبيئة المحل الحقيقية",
+  retailScreensBody:
+    "لوحة التحكم والفئات والمخزون والدفع — نفس نقطة البيع على ويندوز التي يستخدمها فريقك يومياً.",
+  retailScreenDashboard: "لوحة التحكم والمبيعات",
+  retailScreenCategories: "الفئات والمنتجات",
 };
 
 const so: Messages = {
@@ -1945,6 +1968,12 @@ const so: Messages = {
   retailDownloadUnavailable:
     "Rakibuhu weli ma diyaar. Nala soo xiriir, ama isku day markale ka dib daabacaadda xigta.",
   retailDownloadFeed: "Isku-xirka cusboonaysiinta",
+  retailScreensEyebrow: "Gudaha app-ka",
+  retailScreensTitle: "Loogu talagalay dukaamada dhabta ah",
+  retailScreensBody:
+    "Dashboard, qaybaha, kaydka, iyo bixinta — isla POS-ka Windows ee kooxdu maalin walba isticmaasho.",
+  retailScreenDashboard: "Dashboard & iibka",
+  retailScreenCategories: "Qaybaha & alaabta",
 };
 
 export const MESSAGES: Record<Locale, Messages> = { en, fi, ar, so };
