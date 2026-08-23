@@ -8,16 +8,22 @@ See also: [Deploy guide](./deploy-vercel-railway.md) for Vercel + Railway setup.
 
 ## security.txt (in repo)
 
-The customer app serves RFC 9116 `security.txt` at:
+The customer Vercel project serves RFC 9116 `security.txt` on marketing and tenant hosts. **Canonical** is the restaurant platform host:
 
-`https://maylesoft.com/.well-known/security.txt`
+`https://customer.maylesoft.com/.well-known/security.txt`
+
+| Host | Notes |
+|------|--------|
+| `https://customer.maylesoft.com/.well-known/security.txt` | Preferred — direct **200** |
+| `https://www.maylesoft.com/.well-known/security.txt` | Same file (product hub host) |
+| `https://maylesoft.com/.well-known/security.txt` | **308** → `www`; use `curl -L` |
 
 Source file: `apps/customer/public/.well-known/security.txt`
 
-After deploy, verify with:
+After deploy, verify:
 
 ```bash
-curl -sS https://maylesoft.com/.well-known/security.txt
+curl -sS https://customer.maylesoft.com/.well-known/security.txt
 ```
 
 **Contacts:** `security@maylesoft.com` (recommended alias) and `contact@maylesoft.com`. Forward `security@` to your main inbox if you do not use a separate mailbox.
