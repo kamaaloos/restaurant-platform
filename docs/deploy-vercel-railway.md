@@ -232,6 +232,7 @@ Guest ordering can live on **one subdomain per restaurant**:
 - Middleware reads the host; `alhuda.maylesoft.com` rewrites `/` → restaurant home (branches list).
 - `customer.maylesoft.com` serves the restaurant platform marketing page.
 - `retail.maylesoft.com` serves the MayleSoft Retail (Windows POS) landing — `retail` is a **reserved** label (not a restaurant tenant).
+- Retail update feed: `https://retail.maylesoft.com/latest.json` (file: `apps/customer/public/latest.json`). Put the matching installer at `apps/customer/public/MayleSoftRetail-Setup-0.1.0.exe` (same path as `downloadUrl` in that JSON) before deploy.
 - `maylesoft.com` serves a small product hub (Restaurant platform, Dugsi, Retail, …).
 - Public API: `GET /api/customer/tenants/:slug`
 - Reserved labels (`admin`, `kitchen`, `customer`, `dugsi`, `retail`, `www`, …) are never treated as restaurant slugs.

@@ -1,10 +1,12 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import {
   ArrowRight,
   BarChart3,
   Boxes,
+  Download,
   Monitor,
   Shield,
   ShoppingCart,
@@ -20,6 +22,16 @@ const ROOT_DOMAIN =
 const HUB_URL = mayleSoftHubOrigin(ROOT_DOMAIN);
 const CONTACT_MAIL =
   "mailto:contact@maylesoft.com?subject=MayleSoft%20Retail%20demo";
+const UPDATE_FEED_PATH = "/latest.json";
+
+type RetailRelease = {
+  version: string;
+  platform: string;
+  fileName: string;
+  downloadUrl: string;
+  releasedAt?: string;
+  notes?: string;
+};
 
 const FEATURES: {
   icon: typeof Monitor;
@@ -123,8 +135,49 @@ function PosMock() {
   );
 }
 
+function useRetailRelease() {
+  const [release, setRelease] = React.useState<RetailRelease | null>(null);
+  const [status, setStatus] = React.useState<"loading" | "ready" | "error">(
+    "loading",
+  );
+
+  React.useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(UPDATE_FEED_PATH, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = (await res.json()) as RetailRelease;
+        if (
+          !data?.version ||
+          !data?.downloadUrl ||
+          typeof data.downloadUrl !== "string"
+        ) {
+          throw new Error("invalid feed");
+        }
+        if (!cancelled) {
+          setRelease(data);
+          setStatus("ready");
+        }
+      } catch {
+        if (!cancelled) {
+          setRelease(null);
+          setStatus("error");
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return { release, status };
+}
+
 export function RetailLanding() {
   const { t, dir } = useLocale();
+  const { release, status } = useRetailRelease();
+  const installerHref = release?.downloadUrl ?? null;
 
   return (
     <div
@@ -149,10 +202,10 @@ export function RetailLanding() {
           <div className="flex w-full items-center gap-2 sm:w-auto sm:justify-end sm:gap-3">
             <LanguageSwitcher />
             <a
-              href={CONTACT_MAIL}
+              href="#download"
               className="inline-flex items-center justify-center rounded-full bg-[var(--landing-ink)] px-4 py-2 text-sm font-semibold text-white transition hover:bg-[var(--landing-accent)]"
             >
-              {t("retailContact")}
+              {t("retailDownloadCta")}
             </a>
           </div>
         </div>
@@ -173,11 +226,11 @@ export function RetailLanding() {
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
                 <a
-                  href={CONTACT_MAIL}
+                  href={installerHref ?? "#download"}
                   className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--landing-accent)] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[var(--landing-accent)]/25 transition hover:brightness-110"
                 >
-                  {t("retailCtaPrimary")}
-                  <ArrowRight className="h-4 w-4" />
+                  <Download className="h-4 w-4" />
+                  {t("retailDownloadCta")}
                 </a>
                 <a
                   href="#features"
@@ -227,6 +280,88 @@ export function RetailLanding() {
           </div>
         </section>
 
+        <section
+          id="download"
+          className="border-b border-[var(--landing-line)] px-4 py-16 sm:px-6 sm:py-24"
+        >
+          <div className="mx-auto max-w-3xl rounded-[2rem] border border-[var(--landing-line)] bg-white/60 p-6 backdrop-blur sm:p-10">
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[var(--landing-accent)]">
+              {t("retailDownloadEyebrow")}
+            </p>
+            <h2 className="mt-3 font-[family-name:var(--font-display)] text-2xl tracking-tight sm:text-4xl">
+              {t("retailDownloadTitle")}
+            </h2>
+            <p className="mt-3 text-base leading-relaxed text-[var(--landing-muted)] sm:text-lg">
+              {t("retailDownloadBody")}
+            </p>
+
+            {status === "loading" ? (
+              <p className="mt-8 text-sm text-[var(--landing-muted)]">
+                {t("retailDownloadLoading")}
+              </p>
+            ) : null}
+
+            {status === "ready" && release ? (
+              <div className="mt-8 space-y-4">
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-[var(--landing-muted)]">
+                  <span>
+                    {t("retailDownloadVersion").replace(
+                      "{version}",
+                      release.version,
+                    )}
+                  </span>
+                  <span aria-hidden>·</span>
+                  <span>{t("retailDownloadPlatform")}</span>
+                  {release.fileName ? (
+                    <>
+                      <span aria-hidden>·</span>
+                      <span className="font-mono text-xs sm:text-sm">
+                        {release.fileName}
+                      </span>
+                    </>
+                  ) : null}
+                </div>
+                {release.notes ? (
+                  <p className="text-sm text-[var(--landing-muted)]">
+                    {release.notes}
+                  </p>
+                ) : null}
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <a
+                    href={release.downloadUrl}
+                    className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--landing-accent)] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[var(--landing-accent)]/25 transition hover:brightness-110"
+                  >
+                    <Download className="h-4 w-4" />
+                    {t("retailDownloadCta")}
+                  </a>
+                  <a
+                    href={UPDATE_FEED_PATH}
+                    className="inline-flex items-center justify-center gap-2 rounded-full border border-[var(--landing-line)] bg-white/70 px-6 py-3.5 text-sm font-semibold transition hover:bg-white"
+                  >
+                    {t("retailDownloadFeed")}
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                </div>
+              </div>
+            ) : null}
+
+            {status === "error" ? (
+              <div className="mt-8 space-y-4">
+                <p className="text-sm text-[var(--landing-muted)]">
+                  {t("retailDownloadUnavailable")}
+                </p>
+                <a
+                  href={CONTACT_MAIL}
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--landing-ink)] px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-[var(--landing-accent)]"
+                >
+                  {t("retailContact")}
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+              </div>
+            ) : null}
+          </div>
+        </section>
+
         <section className="px-4 py-16 sm:px-6 sm:py-24">
           <div className="mx-auto max-w-3xl text-center">
             <h2 className="font-[family-name:var(--font-display)] text-2xl tracking-tight sm:text-4xl">
@@ -235,13 +370,24 @@ export function RetailLanding() {
             <p className="mt-3 text-base text-[var(--landing-muted)] sm:mt-4 sm:text-lg">
               {t("retailFinalBody")}
             </p>
-            <a
-              href={CONTACT_MAIL}
-              className="mt-8 inline-flex items-center justify-center gap-2 rounded-full bg-[var(--landing-ink)] px-8 py-4 text-base font-semibold text-white transition hover:bg-[var(--landing-accent)]"
-            >
-              {t("retailCtaPrimary")}
-              <ArrowRight className="h-5 w-5" />
-            </a>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              {installerHref ? (
+                <a
+                  href={installerHref}
+                  className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--landing-accent)] px-8 py-4 text-base font-semibold text-white transition hover:brightness-110"
+                >
+                  <Download className="h-5 w-5" />
+                  {t("retailDownloadCta")}
+                </a>
+              ) : null}
+              <a
+                href={CONTACT_MAIL}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[var(--landing-ink)] px-8 py-4 text-base font-semibold text-white transition hover:bg-[var(--landing-accent)]"
+              >
+                {t("retailCtaPrimary")}
+                <ArrowRight className="h-5 w-5" />
+              </a>
+            </div>
           </div>
         </section>
       </main>

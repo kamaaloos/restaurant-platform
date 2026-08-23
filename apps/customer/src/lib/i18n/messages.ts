@@ -347,7 +347,16 @@ export type MessageKey =
   | "retailMockItem2"
   | "retailMockItem3"
   | "retailMockTotal"
-  | "retailMockPay";
+  | "retailMockPay"
+  | "retailDownloadEyebrow"
+  | "retailDownloadTitle"
+  | "retailDownloadBody"
+  | "retailDownloadCta"
+  | "retailDownloadVersion"
+  | "retailDownloadPlatform"
+  | "retailDownloadLoading"
+  | "retailDownloadUnavailable"
+  | "retailDownloadFeed";
 
 export type Messages = Record<MessageKey, string>;
 
@@ -734,6 +743,17 @@ const en: Messages = {
   retailMockItem3: "Snack pack",
   retailMockTotal: "Total",
   retailMockPay: "Pay €18.70",
+  retailDownloadEyebrow: "Windows installer",
+  retailDownloadTitle: "Download MayleSoft Retail",
+  retailDownloadBody:
+    "Install the offline POS on your Windows PC. The app also checks this site for updates.",
+  retailDownloadCta: "Download for Windows",
+  retailDownloadVersion: "Version {version}",
+  retailDownloadPlatform: "Windows desktop",
+  retailDownloadLoading: "Checking latest release…",
+  retailDownloadUnavailable:
+    "Installer not available yet. Contact us for a build, or try again after the next release.",
+  retailDownloadFeed: "Update feed",
 };
 
 const fi: Messages = {
@@ -1122,6 +1142,17 @@ const fi: Messages = {
   retailMockItem3: "Välipalapakkaus",
   retailMockTotal: "Yhteensä",
   retailMockPay: "Maksa 18,70 €",
+  retailDownloadEyebrow: "Windows-asennus",
+  retailDownloadTitle: "Lataa MayleSoft Retail",
+  retailDownloadBody:
+    "Asenna offline-kassa Windows-tietokoneelle. Sovellus tarkistaa päivitykset tältä sivustolta.",
+  retailDownloadCta: "Lataa Windowsille",
+  retailDownloadVersion: "Versio {version}",
+  retailDownloadPlatform: "Windows-työpöytä",
+  retailDownloadLoading: "Haetaan uusinta julkaisua…",
+  retailDownloadUnavailable:
+    "Asennusohjelmaa ei ole vielä saatavilla. Ota yhteyttä tai yritä uudelleen seuraavan julkaisun jälkeen.",
+  retailDownloadFeed: "Päivityssyöte",
 };
 
 const ar: Messages = {
@@ -1505,6 +1536,17 @@ const ar: Messages = {
   retailMockItem3: "وجبة خفيفة",
   retailMockTotal: "الإجمالي",
   retailMockPay: "ادفع €18.70",
+  retailDownloadEyebrow: "مثبّت ويندوز",
+  retailDownloadTitle: "نزّل MayleSoft Retail",
+  retailDownloadBody:
+    "ثبّت نقطة البيع دون اتصال على جهاز ويندوز. يتحقق التطبيق أيضاً من التحديثات عبر هذا الموقع.",
+  retailDownloadCta: "تنزيل لويندوز",
+  retailDownloadVersion: "الإصدار {version}",
+  retailDownloadPlatform: "سطح مكتب ويندوز",
+  retailDownloadLoading: "جارٍ التحقق من أحدث إصدار…",
+  retailDownloadUnavailable:
+    "المثبّت غير متاح بعد. تواصل معنا للحصول على نسخة، أو حاول مجدداً بعد الإصدار التالي.",
+  retailDownloadFeed: "مصدر التحديثات",
 };
 
 const so: Messages = {
@@ -1892,6 +1934,17 @@ const so: Messages = {
   retailMockItem3: "Cunto fudud",
   retailMockTotal: "Wadarta",
   retailMockPay: "Bixi €18.70",
+  retailDownloadEyebrow: "Rakibaha Windows",
+  retailDownloadTitle: "Soo deg MayleSoft Retail",
+  retailDownloadBody:
+    "Ku rakib POS-ka offline komputerka Windows. App-ku wuxuu kaloo ka eegayaa cusboonaysiinta goobtan.",
+  retailDownloadCta: "Soo deg Windows",
+  retailDownloadVersion: "Nooca {version}",
+  retailDownloadPlatform: "Desktop Windows",
+  retailDownloadLoading: "Waa la hubinayaa nooca ugu dambeeyay…",
+  retailDownloadUnavailable:
+    "Rakibuhu weli ma diyaar. Nala soo xiriir, ama isku day markale ka dib daabacaadda xigta.",
+  retailDownloadFeed: "Isku-xirka cusboonaysiinta",
 };
 
 export const MESSAGES: Record<Locale, Messages> = { en, fi, ar, so };
