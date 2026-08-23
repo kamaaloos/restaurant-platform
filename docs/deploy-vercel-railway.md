@@ -193,6 +193,7 @@ Guest ordering can live on **one subdomain per restaurant**:
 |------|-----|
 | `maylesoft.com` / `www` | Customer — MayleSoft product hub (links to each product) |
 | `customer.maylesoft.com` | Customer — restaurant platform marketing landing |
+| `retail.maylesoft.com` | Customer — MayleSoft Retail (Windows POS) landing |
 | `hkamal.maylesoft.com` | Customer — personal portfolio (Hasan Kamal) |
 | `alhuda.maylesoft.com` | Customer (tenant home + `/w`, `/t`) |
 | `admin.maylesoft.com` | Admin |
@@ -230,9 +231,10 @@ Guest ordering can live on **one subdomain per restaurant**:
 
 - Middleware reads the host; `alhuda.maylesoft.com` rewrites `/` → restaurant home (branches list).
 - `customer.maylesoft.com` serves the restaurant platform marketing page.
-- `maylesoft.com` serves a small product hub (Restaurant platform, Dugsi, …).
+- `retail.maylesoft.com` serves the MayleSoft Retail (Windows POS) landing — `retail` is a **reserved** label (not a restaurant tenant).
+- `maylesoft.com` serves a small product hub (Restaurant platform, Dugsi, Retail, …).
 - Public API: `GET /api/customer/tenants/:slug`
-- Reserved labels (`admin`, `kitchen`, `customer`, `dugsi`, `www`, …) are never treated as restaurant slugs.
+- Reserved labels (`admin`, `kitchen`, `customer`, `dugsi`, `retail`, `www`, …) are never treated as restaurant slugs.
 
 Guest menu/service-request 404s on `/t/maylesoft.com/customer/...` mean the **customer** Vercel project’s `NEXT_PUBLIC_API_URL` is a relative host. Fix it to the Railway URL, then **redeploy** (Next inlines `NEXT_PUBLIC_*` at build time).
 

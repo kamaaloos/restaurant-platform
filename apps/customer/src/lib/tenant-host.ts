@@ -4,6 +4,7 @@ const RESERVED_SUBDOMAINS = new Set([
   "www2",
   "customer",
   "dugsi",
+  "retail",
   "order",
   "orders",
   "admin",
@@ -161,6 +162,41 @@ export function portfolioOrigin(
   const root = rootDomain?.trim().toLowerCase();
   if (root) return `https://hkamal.${root}`;
   return "http://localhost:3001/portfolio";
+}
+
+/**
+ * Host that serves MayleSoft Retail marketing
+ * (default: retail.{rootDomain}, e.g. retail.maylesoft.com).
+ */
+export function isRetailMarketingHost(
+  host: string | null | undefined,
+  rootDomain: string | null | undefined,
+  retailHost?: string | null,
+): boolean {
+  const hostname = normalizeHostname(host);
+  const explicit = retailHost?.trim().toLowerCase();
+  if (explicit) {
+    return hostname === explicit.replace(/^https?:\/\//i, "").split(":")[0];
+  }
+
+  const root = rootDomain?.trim().toLowerCase();
+  if (root && hostname === `retail.${root}`) return true;
+
+  return false;
+}
+
+export function retailMarketingOrigin(
+  rootDomain: string | null | undefined,
+  retailHost?: string | null,
+): string {
+  const explicit = retailHost?.trim();
+  if (explicit) {
+    const host = explicit.replace(/^https?:\/\//i, "").split("/")[0];
+    return `https://${host}`;
+  }
+  const root = rootDomain?.trim().toLowerCase();
+  if (root) return `https://retail.${root}`;
+  return "http://localhost:3001";
 }
 
 export function mayleSoftHubOrigin(

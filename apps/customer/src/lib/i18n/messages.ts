@@ -248,6 +248,7 @@ export type MessageKey =
   | "hubProductsTitle"
   | "hubProductRestaurant"
   | "hubProductDugsi"
+  | "hubProductRetail"
   | "hubFeatureQr"
   | "hubFeatureKds"
   | "hubFeaturePos"
@@ -260,8 +261,15 @@ export type MessageKey =
   | "hubFeatureExams"
   | "hubFeatureFinance"
   | "hubFeatureReports"
+  | "hubFeatureRetailPos"
+  | "hubFeatureRetailInventory"
+  | "hubFeatureRetailOffline"
+  | "hubFeatureRetailStaff"
+  | "hubFeatureRetailReports"
+  | "hubFeatureRetailWindows"
   | "hubCtaRestaurant"
   | "hubCtaDugsi"
+  | "hubCtaRetail"
   | "hubEcosystemTitle"
   | "hubAvailableToday"
   | "hubComingSoon"
@@ -302,7 +310,44 @@ export type MessageKey =
   | "hubFooterPrivacyBody"
   | "hubFooterTerms"
   | "hubFooterTermsBody"
-  | "hubFooterCredit";
+  | "hubFooterCredit"
+  | "retailBrand"
+  | "retailContact"
+  | "retailEyebrow"
+  | "retailTitle"
+  | "retailLead"
+  | "retailCtaPrimary"
+  | "retailCtaSecondary"
+  | "retailPlatformNote"
+  | "retailFeaturesEyebrow"
+  | "retailFeaturesTitle"
+  | "retailFeatOfflineTitle"
+  | "retailFeatOfflineBody"
+  | "retailFeatPosTitle"
+  | "retailFeatPosBody"
+  | "retailFeatInventoryTitle"
+  | "retailFeatInventoryBody"
+  | "retailFeatStaffTitle"
+  | "retailFeatStaffBody"
+  | "retailFeatReportsTitle"
+  | "retailFeatReportsBody"
+  | "retailFeatLocalTitle"
+  | "retailFeatLocalBody"
+  | "retailFinalTitle"
+  | "retailFinalBody"
+  | "retailFooterCredit"
+  | "retailMockSell"
+  | "retailMockProducts"
+  | "retailMockStock"
+  | "retailMockStaff"
+  | "retailMockReports"
+  | "retailMockRegister"
+  | "retailMockCheckout"
+  | "retailMockItem1"
+  | "retailMockItem2"
+  | "retailMockItem3"
+  | "retailMockTotal"
+  | "retailMockPay";
 
 export type Messages = Record<MessageKey, string>;
 
@@ -576,6 +621,7 @@ const en: Messages = {
   hubProductsTitle: "Premium platforms, ready today",
   hubProductRestaurant: "Restaurant platform",
   hubProductDugsi: "Dugsi",
+  hubProductRetail: "Retail POS",
   hubFeatureQr: "QR ordering",
   hubFeatureKds: "Kitchen display",
   hubFeaturePos: "POS & till",
@@ -588,8 +634,15 @@ const en: Messages = {
   hubFeatureExams: "Exams",
   hubFeatureFinance: "Finance",
   hubFeatureReports: "Reports",
+  hubFeatureRetailPos: "Fast checkout",
+  hubFeatureRetailInventory: "Stock & products",
+  hubFeatureRetailOffline: "Works offline",
+  hubFeatureRetailStaff: "PIN staff access",
+  hubFeatureRetailReports: "Sales reports",
+  hubFeatureRetailWindows: "Windows desktop",
   hubCtaRestaurant: "Open platform",
   hubCtaDugsi: "Open Dugsi",
+  hubCtaRetail: "Open Retail",
   hubEcosystemTitle: "The MayleSoft ecosystem",
   hubAvailableToday: "Available today",
   hubComingSoon: "Coming soon",
@@ -636,6 +689,51 @@ const en: Messages = {
   hubFooterTermsBody:
     "Use of our platforms is subject to service availability, fair use, and each customer's active subscription.",
   hubFooterCredit: "© 2026 MayleSoft · Designed by Eng. Hasan Kamaal",
+  retailBrand: "MayleSoft Retail",
+  retailContact: "Contact",
+  retailEyebrow: "Windows POS",
+  retailTitle: "Retail checkout that keeps working offline",
+  retailLead:
+    "MayleSoft Retail is a Windows desktop POS and inventory manager for small shops — sell, track stock, and review sales without depending on the cloud every second.",
+  retailCtaPrimary: "Request a demo",
+  retailCtaSecondary: "See features",
+  retailPlatformNote: "Native Windows app for store counters and back office.",
+  retailFeaturesEyebrow: "Built for the counter",
+  retailFeaturesTitle: "Everything a small store needs",
+  retailFeatOfflineTitle: "Offline-first",
+  retailFeatOfflineBody:
+    "Keep selling when the connection drops. Your register stays usable on the shop floor.",
+  retailFeatPosTitle: "Fast POS",
+  retailFeatPosBody:
+    "Quick product lookup, cart checkout, and clear totals designed for busy counters.",
+  retailFeatInventoryTitle: "Inventory",
+  retailFeatInventoryBody:
+    "Track products and stock levels so you know what is running low before customers ask.",
+  retailFeatStaffTitle: "Staff PINs",
+  retailFeatStaffBody:
+    "Role-aware access with PINs so cashiers and managers see the right screens.",
+  retailFeatReportsTitle: "Sales reports",
+  retailFeatReportsBody:
+    "Review daily sales and product performance without exporting a maze of spreadsheets.",
+  retailFeatLocalTitle: "Local data",
+  retailFeatLocalBody:
+    "Store data stays on the device you control — practical for shops that want simple ownership.",
+  retailFinalTitle: "Ready for your counter?",
+  retailFinalBody:
+    "Tell us about your shop and we will help you try MayleSoft Retail on Windows.",
+  retailFooterCredit: "Retail POS · Designed by Eng. Hasan Kamaal",
+  retailMockSell: "Sell",
+  retailMockProducts: "Products",
+  retailMockStock: "Stock",
+  retailMockStaff: "Staff",
+  retailMockReports: "Reports",
+  retailMockRegister: "Register",
+  retailMockCheckout: "Checkout",
+  retailMockItem1: "Bottled water",
+  retailMockItem2: "Notebook A5",
+  retailMockItem3: "Snack pack",
+  retailMockTotal: "Total",
+  retailMockPay: "Pay €18.70",
 };
 
 const fi: Messages = {
@@ -911,6 +1009,7 @@ const fi: Messages = {
   hubProductsTitle: "Ensiluokkaiset alustat, käytössä jo tänään",
   hubProductRestaurant: "Ravintola-alusta",
   hubProductDugsi: "Dugsi",
+  hubProductRetail: "Vähittäiskaupan kassa",
   hubFeatureQr: "QR-tilaus",
   hubFeatureKds: "Keittiönäyttö",
   hubFeaturePos: "Kassa",
@@ -923,8 +1022,15 @@ const fi: Messages = {
   hubFeatureExams: "Kokeet",
   hubFeatureFinance: "Talous",
   hubFeatureReports: "Raportit",
+  hubFeatureRetailPos: "Nopea kassa",
+  hubFeatureRetailInventory: "Varasto ja tuotteet",
+  hubFeatureRetailOffline: "Toimii offline",
+  hubFeatureRetailStaff: "PIN-henkilöstö",
+  hubFeatureRetailReports: "Myyntiraportit",
+  hubFeatureRetailWindows: "Windows-työpöytä",
   hubCtaRestaurant: "Avaa alusta",
   hubCtaDugsi: "Avaa Dugsi",
+  hubCtaRetail: "Avaa Retail",
   hubEcosystemTitle: "MayleSoft-ekosysteemi",
   hubAvailableToday: "Saatavilla nyt",
   hubComingSoon: "Tulossa",
@@ -971,6 +1077,51 @@ const fi: Messages = {
   hubFooterTermsBody:
     "Alustojemme käyttö edellyttää palvelun saatavuuden, kohtuullisen käytön ja asiakkaan aktiivisen tilauksen ehtojen hyväksymistä.",
   hubFooterCredit: "© 2026 MayleSoft · Suunnittelu: ins. Hasan Kamaal",
+  retailBrand: "MayleSoft Retail",
+  retailContact: "Yhteystiedot",
+  retailEyebrow: "Windows-kassa",
+  retailTitle: "Vähittäiskaupan kassa, joka toimii myös offline",
+  retailLead:
+    "MayleSoft Retail on Windows-työpöytäsovellus pienille kaupoille — myynti, varasto ja raportit ilman jatkuvaa pilviyhteyttä.",
+  retailCtaPrimary: "Pyydä demo",
+  retailCtaSecondary: "Katso ominaisuudet",
+  retailPlatformNote: "Natiivi Windows-sovellus kassalle ja takahuoneeseen.",
+  retailFeaturesEyebrow: "Rakennettu tiskille",
+  retailFeaturesTitle: "Kaikki mitä pieni kauppa tarvitsee",
+  retailFeatOfflineTitle: "Offline ensin",
+  retailFeatOfflineBody:
+    "Myy myös kun verkko pätkii. Kassa pysyy käyttökelpoisena myymälässä.",
+  retailFeatPosTitle: "Nopea kassa",
+  retailFeatPosBody:
+    "Nopea tuotehaku, ostoskori ja selkeät summat kiireiseen palveluun.",
+  retailFeatInventoryTitle: "Varasto",
+  retailFeatInventoryBody:
+    "Seuraa tuotteita ja saldoja, jotta tiedät mitä loppuu ennen kuin asiakas kysyy.",
+  retailFeatStaffTitle: "Henkilöstö-PIN",
+  retailFeatStaffBody:
+    "Roolipohjainen pääsy PIN-koodilla — kassa ja esimies näkevät oikeat näkymät.",
+  retailFeatReportsTitle: "Myyntiraportit",
+  retailFeatReportsBody:
+    "Tarkastele päivittäistä myyntiä ja tuotteita ilman monimutkaisia taulukoita.",
+  retailFeatLocalTitle: "Paikallinen data",
+  retailFeatLocalBody:
+    "Tiedot pysyvät laitteessa, jota hallitset — käytännöllistä yksinkertaiseen omistajuuteen.",
+  retailFinalTitle: "Valmis tiskillesi?",
+  retailFinalBody:
+    "Kerro kaupastasi, niin autamme kokeilemaan MayleSoft Retailia Windowsissa.",
+  retailFooterCredit: "Vähittäiskaupan kassa · Suunnittelu: ins. Hasan Kamaal",
+  retailMockSell: "Myynti",
+  retailMockProducts: "Tuotteet",
+  retailMockStock: "Varasto",
+  retailMockStaff: "Henkilöstö",
+  retailMockReports: "Raportit",
+  retailMockRegister: "Kassa",
+  retailMockCheckout: "Kassalle",
+  retailMockItem1: "Pullo vettä",
+  retailMockItem2: "Viho A5",
+  retailMockItem3: "Välipalapakkaus",
+  retailMockTotal: "Yhteensä",
+  retailMockPay: "Maksa 18,70 €",
 };
 
 const ar: Messages = {
@@ -1241,6 +1392,7 @@ const ar: Messages = {
   hubProductsTitle: "منصات متميزة، جاهزة اليوم",
   hubProductRestaurant: "منصة المطاعم",
   hubProductDugsi: "دُكسي",
+  hubProductRetail: "نقطة بيع للتجزئة",
   hubFeatureQr: "طلب عبر QR",
   hubFeatureKds: "شاشة المطبخ",
   hubFeaturePos: "نقطة البيع",
@@ -1253,8 +1405,15 @@ const ar: Messages = {
   hubFeatureExams: "الاختبارات",
   hubFeatureFinance: "المالية",
   hubFeatureReports: "التقارير",
+  hubFeatureRetailPos: "دفع سريع",
+  hubFeatureRetailInventory: "المخزون والمنتجات",
+  hubFeatureRetailOffline: "يعمل دون اتصال",
+  hubFeatureRetailStaff: "وصول الموظفين برمز PIN",
+  hubFeatureRetailReports: "تقارير المبيعات",
+  hubFeatureRetailWindows: "تطبيق ويندوز",
   hubCtaRestaurant: "افتح المنصة",
   hubCtaDugsi: "افتح دُكسي",
+  hubCtaRetail: "افتح التجزئة",
   hubEcosystemTitle: "منظومة MayleSoft",
   hubAvailableToday: "متاح اليوم",
   hubComingSoon: "قريباً",
@@ -1301,6 +1460,51 @@ const ar: Messages = {
   hubFooterTermsBody:
     "يخضع استخدام منصاتنا لتوفر الخدمة والاستخدام العادل واشتراك العميل النشط.",
   hubFooterCredit: "© 2026 MayleSoft · تصميم المهندس حسن كمال",
+  retailBrand: "MayleSoft Retail",
+  retailContact: "تواصل",
+  retailEyebrow: "نقطة بيع لويندوز",
+  retailTitle: "كاشير تجزئة يعمل حتى دون اتصال",
+  retailLead:
+    "MayleSoft Retail تطبيق ويندوز لنقطة البيع والمخزون للمحلات الصغيرة — بيع وتتبع مخزون ومراجعة مبيعات دون الاعتماد على السحابة كل لحظة.",
+  retailCtaPrimary: "اطلب عرضاً",
+  retailCtaSecondary: "شاهد الميزات",
+  retailPlatformNote: "تطبيق ويندوز أصلي لكاونتر المحل والمكتب الخلفي.",
+  retailFeaturesEyebrow: "مبني للكاونتر",
+  retailFeaturesTitle: "كل ما يحتاجه محل صغير",
+  retailFeatOfflineTitle: "يعمل دون اتصال",
+  retailFeatOfflineBody:
+    "واصل البيع عند انقطاع الشبكة. يبقى الكاشير صالحاً للاستخدام في المحل.",
+  retailFeatPosTitle: "نقطة بيع سريعة",
+  retailFeatPosBody:
+    "بحث سريع عن المنتجات وسلة ودفع واضح لساعات الذروة.",
+  retailFeatInventoryTitle: "المخزون",
+  retailFeatInventoryBody:
+    "تتبع المنتجات والأرصدة لتعرف ما ينفد قبل أن يسأل الزبون.",
+  retailFeatStaffTitle: "رموز PIN للموظفين",
+  retailFeatStaffBody:
+    "صلاحيات حسب الدور برمز PIN حتى يرى الكاشير والمدير الشاشات المناسبة.",
+  retailFeatReportsTitle: "تقارير المبيعات",
+  retailFeatReportsBody:
+    "راجع مبيعات اليوم وأداء المنتجات دون جداول معقدة.",
+  retailFeatLocalTitle: "بيانات محلية",
+  retailFeatLocalBody:
+    "تبقى البيانات على الجهاز الذي تتحكم به — عملي للمحلات التي تريد ملكية بسيطة.",
+  retailFinalTitle: "جاهز لكاونترك؟",
+  retailFinalBody:
+    "أخبرنا عن محلك وسنساعدك على تجربة MayleSoft Retail على ويندوز.",
+  retailFooterCredit: "نقطة بيع للتجزئة · تصميم المهندس حسن كمال",
+  retailMockSell: "بيع",
+  retailMockProducts: "منتجات",
+  retailMockStock: "مخزون",
+  retailMockStaff: "موظفون",
+  retailMockReports: "تقارير",
+  retailMockRegister: "الكاشير",
+  retailMockCheckout: "الدفع",
+  retailMockItem1: "ماء معبأ",
+  retailMockItem2: "دفتر A5",
+  retailMockItem3: "وجبة خفيفة",
+  retailMockTotal: "الإجمالي",
+  retailMockPay: "ادفع €18.70",
 };
 
 const so: Messages = {
@@ -1575,6 +1779,7 @@ const so: Messages = {
   hubProductsTitle: "Platform-yo heer sare ah, diyaar maanta",
   hubProductRestaurant: "Platform-ka makhaayadda",
   hubProductDugsi: "Dugsi",
+  hubProductRetail: "POS-ka tafaariiqda",
   hubFeatureQr: "Dalab QR",
   hubFeatureKds: "Bandhigga jikada",
   hubFeaturePos: "POS & khasnada",
@@ -1587,8 +1792,15 @@ const so: Messages = {
   hubFeatureExams: "Imtixaannada",
   hubFeatureFinance: "Maaliyadda",
   hubFeatureReports: "Warbixinno",
+  hubFeatureRetailPos: "Checkout degdeg ah",
+  hubFeatureRetailInventory: "Alaabta iyo kaydka",
+  hubFeatureRetailOffline: "Wuxuu shaqeeyaa offline",
+  hubFeatureRetailStaff: "PIN-ka shaqaalaha",
+  hubFeatureRetailReports: "Warbixinnada iibka",
+  hubFeatureRetailWindows: "Desktop Windows",
   hubCtaRestaurant: "Fur platform-ka",
   hubCtaDugsi: "Fur Dugsi",
+  hubCtaRetail: "Fur Retail",
   hubEcosystemTitle: "Nidaamka MayleSoft",
   hubAvailableToday: "Diyaar maanta",
   hubComingSoon: "Dhawaan",
@@ -1635,6 +1847,51 @@ const so: Messages = {
   hubFooterTermsBody:
     "Isticmaalka platform-yadeenna wuxuu ku xiran yahay helitaanka adeegga, isticmaal cadaalad ah, iyo rukhsad firfircoon oo macaamilka ah.",
   hubFooterCredit: "© 2026 MayleSoft · Naqshadeeyaha: Eng. Hasan Kamaal",
+  retailBrand: "MayleSoft Retail",
+  retailContact: "Xiriir",
+  retailEyebrow: "POS Windows",
+  retailTitle: "Khasnada tafaariiqda ee offline u shaqaysa",
+  retailLead:
+    "MayleSoft Retail waa barnaamij Windows ah oo POS iyo kayd loogu talagalay dukaamada yaryar — iib, kayd, iyo warbixinno iyada oo aan ku tiirsanayn daruurta mar kasta.",
+  retailCtaPrimary: "Codso demo",
+  retailCtaSecondary: "Arag astaamaha",
+  retailPlatformNote: "App Windows ah oo loogu talagalay miiska iibka iyo xafiiska dambe.",
+  retailFeaturesEyebrow: "Loogu talagalay miiska",
+  retailFeaturesTitle: "Wax kasta oo dukaan yar u baahan yahay",
+  retailFeatOfflineTitle: "Offline marka hore",
+  retailFeatOfflineBody:
+    "Sii wad iibinta marka shabakadu dhacdo. Khasnaddu weli waa la isticmaali karaa dukaanka.",
+  retailFeatPosTitle: "POS degdeg ah",
+  retailFeatPosBody:
+    "Raadinta alaabta, cart-ka, iyo wadarta cad ee loogu talagalay miiska mashquulka badan.",
+  retailFeatInventoryTitle: "Kaydka",
+  retailFeatInventoryBody:
+    "La soco alaabta iyo heerarka kaydka si aad u ogaato waxa dhammaanaya ka hor inta macmiilku weydiin.",
+  retailFeatStaffTitle: "PIN-ka shaqaalaha",
+  retailFeatStaffBody:
+    "Helitaan doorka ku salaysan PIN si khasnadaha iyo maareeyayaashu u arkaan shaashadaha saxda ah.",
+  retailFeatReportsTitle: "Warbixinnada iibka",
+  retailFeatReportsBody:
+    "Eeg iibka maalinlaha ah iyo waxqabadka alaabta iyada oo aan la isticmaalin excel-yo badan.",
+  retailFeatLocalTitle: "Xog maxalli ah",
+  retailFeatLocalBody:
+    "Xogtu waxay ku jirtaa qalabka aad maamusho — wax ku ool ah dukaamada doonaya lahaansho fudud.",
+  retailFinalTitle: "Diyaar miiskaaga?",
+  retailFinalBody:
+    "Noo sheeg dukaankaaga, waxaan kaa caawinaynaa inaad tijaabiso MayleSoft Retail Windows-ka.",
+  retailFooterCredit: "POS tafaariiq · Naqshadeeyaha: Eng. Hasan Kamaal",
+  retailMockSell: "Iib",
+  retailMockProducts: "Alaabta",
+  retailMockStock: "Kayd",
+  retailMockStaff: "Shaqaale",
+  retailMockReports: "Warbixinno",
+  retailMockRegister: "Khasnada",
+  retailMockCheckout: "Bixinta",
+  retailMockItem1: "Biyo dhalada",
+  retailMockItem2: "Buug A5",
+  retailMockItem3: "Cunto fudud",
+  retailMockTotal: "Wadarta",
+  retailMockPay: "Bixi €18.70",
 };
 
 export const MESSAGES: Record<Locale, Messages> = { en, fi, ar, so };

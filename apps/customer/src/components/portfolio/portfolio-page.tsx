@@ -34,6 +34,7 @@ const MAYLESOFT_HREF = `https://${ROOT_DOMAIN}`;
 const PLATFORM_LINKS: Record<string, string> = {
   restaurant: `https://customer.${ROOT_DOMAIN}`,
   dugsi: `https://dugsi.${ROOT_DOMAIN}`,
+  retail: `https://retail.${ROOT_DOMAIN}`,
 };
 
 const fadeUp = {

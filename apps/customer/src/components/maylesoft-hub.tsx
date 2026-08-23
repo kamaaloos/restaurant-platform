@@ -21,7 +21,7 @@ import {
 import { HubAuroraBackground } from "@/components/hub-aurora-background";
 import { LanguageSwitcher, useLocale } from "@/lib/i18n/locale-provider";
 import type { MessageKey } from "@/lib/i18n/messages";
-import { restaurantMarketingOrigin, portfolioOrigin } from "@/lib/tenant-host";
+import { restaurantMarketingOrigin, portfolioOrigin, retailMarketingOrigin } from "@/lib/tenant-host";
 
 const ROOT_DOMAIN =
   process.env.NEXT_PUBLIC_ROOT_DOMAIN?.trim() || "maylesoft.com";
@@ -30,6 +30,10 @@ const CONTACT_MAIL = "mailto:contact@maylesoft.com?subject=MayleSoft%20inquiry";
 
 const RESTAURANT_URL = restaurantMarketingOrigin(ROOT_DOMAIN, MARKETING_HOST);
 const DUGSI_URL = `https://dugsi.${ROOT_DOMAIN}`;
+const RETAIL_URL = retailMarketingOrigin(
+  ROOT_DOMAIN,
+  process.env.NEXT_PUBLIC_RETAIL_HOST,
+);
 const PORTFOLIO_URL = portfolioOrigin(ROOT_DOMAIN, process.env.NEXT_PUBLIC_PORTFOLIO_HOST);
 
 const HERO_WORDS: MessageKey[] = [
@@ -73,9 +77,17 @@ const DUGSI_FEATURES: MessageKey[] = [
   "hubFeatureReports",
 ];
 
+const RETAIL_FEATURES: MessageKey[] = [
+  "hubFeatureRetailPos",
+  "hubFeatureRetailInventory",
+  "hubFeatureRetailOffline",
+  "hubFeatureRetailStaff",
+  "hubFeatureRetailReports",
+  "hubFeatureRetailWindows",
+];
+
 const COMING_SOON: { icon: typeof Stethoscope; key: MessageKey }[] = [
   { icon: Stethoscope, key: "hubSoonClinic" },
-  { icon: ShoppingCart, key: "hubSoonRetail" },
   { icon: Truck, key: "hubSoonLogistics" },
   { icon: Building2, key: "hubSoonHr" },
 ];
@@ -232,6 +244,14 @@ export function MayleSoftHub() {
       href: DUGSI_URL,
       ctaKey: "hubCtaDugsi" as const,
     },
+    {
+      icon: ShoppingCart,
+      nameKey: "hubProductRetail" as const,
+      gradient: "from-[#1d4e89]/15 via-[#3a86ff]/10 to-transparent",
+      features: RETAIL_FEATURES,
+      href: RETAIL_URL,
+      ctaKey: "hubCtaRetail" as const,
+    },
   ];
 
   return (
@@ -336,7 +356,7 @@ export function MayleSoftHub() {
             {t("hubProductsTitle")}
           </h2>
 
-          <ul className="mt-8 grid gap-4 sm:mt-12 sm:gap-6 lg:grid-cols-2">
+          <ul className="mt-8 grid gap-4 sm:mt-12 sm:gap-6 lg:grid-cols-3">
             {products.map(
               ({ icon: Icon, nameKey, gradient, features, href, ctaKey }) => (
                 <li key={nameKey}>
@@ -502,6 +522,11 @@ export function MayleSoftHub() {
               <li>
                 <Link href={DUGSI_URL} className="hover:text-white">
                   {t("hubProductDugsi")}
+                </Link>
+              </li>
+              <li>
+                <Link href={RETAIL_URL} className="hover:text-white">
+                  {t("hubProductRetail")}
                 </Link>
               </li>
             </ul>
