@@ -269,3 +269,11 @@ Guest menu/service-request 404s on `/t/maylesoft.com/customer/...` mean the **cu
 | Cashier | http://localhost:3005 |
 
 Copy `backend/.env.example` → `backend/.env` and each app’s `.env.example` → `.env.local` for local overrides.
+
+---
+
+## 7. Cloudflare & security.txt
+
+The customer Vercel project serves `/.well-known/security.txt` from `apps/customer/public/.well-known/security.txt` (apex `maylesoft.com` and tenant subdomains on the same project).
+
+DNS and edge hardening (Bot Fight Mode, DMARC, optional AI Labyrinth): **[cloudflare-checklist.md](./cloudflare-checklist.md)**.

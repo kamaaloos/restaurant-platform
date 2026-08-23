@@ -1,0 +1,6 @@
+Contact: mailto:security@maylesoft.com
+Contact: mailto:contact@maylesoft.com
+Preferred-Languages: en, fi
+Canonical: https://maylesoft.com/.well-known/security.txt
+Policy: https://maylesoft.com/privacy
+Expires: 2027-08-23T00:00:00.000Z
