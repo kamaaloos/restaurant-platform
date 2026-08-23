@@ -501,7 +501,7 @@ export function PortfolioPage() {
             description="Enterprise SaaS products I've designed and developed—live today, with the next verticals on the roadmap."
           />
 
-          <div className="mt-14 grid gap-6 lg:grid-cols-2">
+          <div className="mt-14 grid gap-6 lg:grid-cols-3">
             {PLATFORM_PRODUCTS.filter((p) => p.status === "live").map(
               (product, index) => {
                 const Icon = product.icon;
