@@ -18,7 +18,7 @@ Dine-in QR links are public. Guests must enter the **6-digit PIN** printed on th
 1. Set `TABLE_PRESENCE_SECRET` in production (falls back to `JWT_SECRET` if unset).
 2. After deploy, **rotate QR** on existing tables so they get 6-digit PINs (older 4-digit hashes stay valid until rotate).
 3. Re-seed local demos: demo PIN is `123456`.
-4. Require `REDIS_URL` so PIN verify rate limits are shared across API replicas.
+4. Prefer `REDIS_URL` when running multiple API replicas so PIN verify rate limits are shared (optional for a single instance).
 
 ## Related code
 

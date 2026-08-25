@@ -95,9 +95,7 @@ Copy from `backend/.env.example`. Minimum for production:
 | `CUSTOMER_APP_URL` | `https://your-customer.vercel.app` |
 | `CASHIER_APP_URL` | `https://your-cashier.vercel.app` |
 
-Required for production: `REDIS_URL` (Railway Redis plugin). Socket.IO uses the Redis adapter; rate limits share Redis. Local/dev may omit Redis for in-memory fallbacks.
-
-Do **not** set `REDIS_OPTIONAL` — that escape hatch was removed.
+Optional for now: `REDIS_URL` (Railway Redis plugin). When set, Socket.IO and rate limits use Redis. When omitted, the API uses in-memory fallbacks (**single instance only** — add Redis before scaling replicas).
 
 `PORT` is injected by Railway — do not hardcode.
 
