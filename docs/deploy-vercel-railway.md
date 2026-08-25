@@ -199,6 +199,8 @@ Guest ordering can live on **one subdomain per restaurant**:
 | `waiter.maylesoft.com` | Waiter |
 | `till.maylesoft.com` | Cashier |
 
+**Retail is not a 6th Vercel project.** Do not deploy the Flutter repo’s `site/` folder as a separate Vercel site. `retail.maylesoft.com` must point at the **customer** project (same as `customer.maylesoft.com`). Host-based routing in `apps/customer/src/app/page.tsx` serves `RetailLanding`; `retail` is a reserved label in `tenant-host.ts` (not a restaurant tenant).
+
 ### DNS (registrar)
 
 1. **Wildcard for guests** — Customer Vercel project:
@@ -210,10 +212,11 @@ Guest ordering can live on **one subdomain per restaurant**:
 
 ### Vercel (customer project)
 
-1. Domains → add `*.maylesoft.com`, `maylesoft.com`, and **`customer.maylesoft.com`**
+1. Domains → add `*.maylesoft.com`, `maylesoft.com`, **`customer.maylesoft.com`**, and **`retail.maylesoft.com`** (wildcard covers retail; explicit domain avoids misrouting to another project)
 2. Set env:
    - `NEXT_PUBLIC_ROOT_DOMAIN=maylesoft.com`
    - `NEXT_PUBLIC_MARKETING_HOST=customer.maylesoft.com`
+   - Optional: `NEXT_PUBLIC_RETAIL_HOST=retail.maylesoft.com` (default when unset)
    - Optional: `NEXT_PUBLIC_PORTFOLIO_HOST=hkamal.maylesoft.com` (default when unset)
 3. Redeploy customer after adding the env var.
 
@@ -231,6 +234,7 @@ Guest ordering can live on **one subdomain per restaurant**:
 - `customer.maylesoft.com` serves the restaurant platform marketing page.
 - `retail.maylesoft.com` serves the MayleSoft Retail (Windows POS) landing — `retail` is a **reserved** label (not a restaurant tenant).
 - Retail update feed: `https://retail.maylesoft.com/latest.json` (file: `apps/customer/public/latest.json`). Put the matching installer at `apps/customer/public/MayleSoftRetail-Setup-0.1.0.exe` (same path as `downloadUrl` in that JSON) before deploy.
+- **Retail license activation** is a **separate Railway service** (not the restaurant `backend`). The Windows app posts to `https://retail.maylesoft.com/api/activate`. That path is proxied to Railway in `apps/customer/vercel.json` — the Flutter repo’s `site/vercel.json` rewrite is **not** used in production because `retail.maylesoft.com` is on the customer Vercel project, not a standalone `site/` deploy. After changing the rewrite destination, redeploy the customer project.
 - `maylesoft.com` serves a small product hub (Restaurant platform, Dugsi, Retail, …).
 - Public API: `GET /api/customer/tenants/:slug`
 - Reserved labels (`admin`, `kitchen`, `customer`, `dugsi`, `retail`, `www`, …) are never treated as restaurant slugs.
