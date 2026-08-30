@@ -290,6 +290,61 @@ function RetailDashboardMock({ t }: { t: (key: MessageKey) => string }) {
   );
 }
 
+function ClinicDashboardMock({ t }: { t: (key: MessageKey) => string }) {
+  const nav = [
+    t("hubMockDashboard"),
+    t("hubMockClinicPatients"),
+    t("hubMockClinicQueue"),
+    t("hubMockClinicLab"),
+    t("hubMockClinicBilling"),
+  ];
+
+  return (
+    <div className="hub-glass hub-screenshot-mock overflow-hidden rounded-3xl p-1 shadow-xl">
+      <div className="flex min-h-64 overflow-hidden rounded-[1.35rem] bg-[#071f1c] sm:min-h-72">
+        <aside className="hidden w-28 shrink-0 flex-col gap-2 bg-[#042f2e] p-3 text-[0.65rem] text-teal-200/60 sm:flex">
+          <div className="mb-2 flex items-center gap-2">
+            <div className="h-7 w-7 rounded-full bg-gradient-to-br from-teal-400 to-emerald-600" />
+            <span className="font-semibold text-teal-50">OS</span>
+          </div>
+          {nav.map((l, i) => (
+            <span
+              key={l}
+              className={`rounded-lg px-2 py-1.5 ${i === 0 ? "bg-teal-500/25 text-white" : ""}`}
+            >
+              {l}
+            </span>
+          ))}
+        </aside>
+        <div className="flex flex-1 flex-col p-4 sm:p-5">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-teal-200/70">
+            {t("hubMockToday")}
+          </p>
+          <h4 className="mt-1 text-lg font-semibold text-teal-50">
+            {t("hubMockClinicOverview")}
+          </h4>
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            {[
+              [t("hubMockClinicVisits"), "28"],
+              [t("hubMockClinicWaiting"), "6"],
+              [t("hubMockClinicLabs"), "11"],
+              [t("hubMockClinicRevenue"), "€1.8k"],
+            ].map(([k, v]) => (
+              <div
+                key={k}
+                className="rounded-xl border border-teal-500/20 bg-teal-500/10 px-3 py-2.5"
+              >
+                <p className="text-[0.65rem] text-teal-200/70">{k}</p>
+                <p className="text-sm font-semibold text-teal-50">{v}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function MayleSoftHub() {
   const { t, dir } = useLocale();
 
@@ -539,7 +594,7 @@ export function MayleSoftHub() {
           <p className="mx-auto mt-3 max-w-xl text-center text-[#6b6560]">
             {t("hubScreensBody")}
           </p>
-          <div className="mt-8 grid gap-6 sm:mt-12 sm:gap-8 lg:grid-cols-3">
+          <div className="mt-8 grid gap-6 sm:mt-12 sm:gap-8 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
             <div>
               <p className="mb-4 text-sm font-semibold text-[#1c1917]">
                 {t("hubRestaurantDash")}
@@ -557,6 +612,12 @@ export function MayleSoftHub() {
                 {t("hubRetailDash")}
               </p>
               <RetailDashboardMock t={t} />
+            </div>
+            <div>
+              <p className="mb-4 text-sm font-semibold text-[#1c1917]">
+                {t("hubClinicDash")}
+              </p>
+              <ClinicDashboardMock t={t} />
             </div>
           </div>
         </div>

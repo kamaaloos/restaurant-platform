@@ -295,6 +295,7 @@ export type MessageKey =
   | "hubRestaurantDash"
   | "hubDugsiDash"
   | "hubRetailDash"
+  | "hubClinicDash"
   | "hubMockToday"
   | "hubMockLiveFloor"
   | "hubMockOpenOrders"
@@ -316,6 +317,15 @@ export type MessageKey =
   | "hubMockRetailTx"
   | "hubMockRetailProfit"
   | "hubMockRetailLowStock"
+  | "hubMockClinicPatients"
+  | "hubMockClinicQueue"
+  | "hubMockClinicLab"
+  | "hubMockClinicBilling"
+  | "hubMockClinicOverview"
+  | "hubMockClinicVisits"
+  | "hubMockClinicWaiting"
+  | "hubMockClinicLabs"
+  | "hubMockClinicRevenue"
   | "hubCtaTitle"
   | "hubCtaBody"
   | "hubFooterBlurb"
@@ -696,10 +706,11 @@ const en: Messages = {
   hubStatSupport: "Support",
   hubScreensTitle: "Built for real operations",
   hubScreensBody:
-    "Clean dashboards your team actually uses — from the floor to the classroom to the counter.",
+    "Clean dashboards your team actually uses — from the floor to the classroom, counter, and clinic.",
   hubRestaurantDash: "Restaurant dashboard",
   hubDugsiDash: "Dugsi dashboard",
   hubRetailDash: "Retail dashboard",
+  hubClinicDash: "ClinicOS dashboard",
   hubMockToday: "Today",
   hubMockLiveFloor: "Live floor",
   hubMockOpenOrders: "Open orders",
@@ -721,6 +732,15 @@ const en: Messages = {
   hubMockRetailTx: "Transactions",
   hubMockRetailProfit: "Gross profit",
   hubMockRetailLowStock: "Low stock",
+  hubMockClinicPatients: "Patients",
+  hubMockClinicQueue: "Queue",
+  hubMockClinicLab: "Lab",
+  hubMockClinicBilling: "Billing",
+  hubMockClinicOverview: "Clinic overview",
+  hubMockClinicVisits: "Visits today",
+  hubMockClinicWaiting: "Waiting",
+  hubMockClinicLabs: "Lab orders",
+  hubMockClinicRevenue: "Collected",
   hubCtaTitle: "Ready to transform your business?",
   hubCtaBody: "Explore our platforms today.",
   hubFooterBlurb:
@@ -1118,10 +1138,11 @@ const fi: Messages = {
   hubStatSupport: "Tuki",
   hubScreensTitle: "Rakennettu oikeaan arkeen",
   hubScreensBody:
-    "Selkeät näkymät, joita tiimi oikeasti käyttää — salista luokkahuoneeseen ja kassalle.",
+    "Selkeät näkymät, joita tiimi oikeasti käyttää — salista luokkahuoneeseen, kassalle ja klinikalle.",
   hubRestaurantDash: "Ravintolan hallinta",
   hubDugsiDash: "Dugsi-hallinta",
   hubRetailDash: "Vähittäiskaupan hallinta",
+  hubClinicDash: "ClinicOS-hallinta",
   hubMockToday: "Tänään",
   hubMockLiveFloor: "Sali live",
   hubMockOpenOrders: "Avoimet tilaukset",
@@ -1143,6 +1164,15 @@ const fi: Messages = {
   hubMockRetailTx: "Tapahtumat",
   hubMockRetailProfit: "Kate",
   hubMockRetailLowStock: "Vähäinen varasto",
+  hubMockClinicPatients: "Potilaat",
+  hubMockClinicQueue: "Jono",
+  hubMockClinicLab: "Labra",
+  hubMockClinicBilling: "Laskutus",
+  hubMockClinicOverview: "Klinikan yleiskuva",
+  hubMockClinicVisits: "Käynnit tänään",
+  hubMockClinicWaiting: "Odottaa",
+  hubMockClinicLabs: "Labratilaukset",
+  hubMockClinicRevenue: "Kerätty",
   hubCtaTitle: "Valmis uudistamaan liiketoimintasi?",
   hubCtaBody: "Tutustu alustoihimme jo tänään.",
   hubFooterBlurb:
@@ -1535,10 +1565,11 @@ const ar: Messages = {
   hubStatSupport: "دعم",
   hubScreensTitle: "مصممة للتشغيل الحقيقي",
   hubScreensBody:
-    "لوحات واضحة يستخدمها فريقك فعلاً — من صالة المطعم إلى الفصل والكاونتر.",
+    "لوحات واضحة يستخدمها فريقك فعلاً — من صالة المطعم إلى الفصل والكاونتر والعيادة.",
   hubRestaurantDash: "لوحة المطعم",
   hubDugsiDash: "لوحة دُكسي",
   hubRetailDash: "لوحة التجزئة",
+  hubClinicDash: "لوحة ClinicOS",
   hubMockToday: "اليوم",
   hubMockLiveFloor: "الصالة مباشرة",
   hubMockOpenOrders: "طلبات مفتوحة",
@@ -1560,6 +1591,15 @@ const ar: Messages = {
   hubMockRetailTx: "معاملات",
   hubMockRetailProfit: "إجمالي الربح",
   hubMockRetailLowStock: "مخزون منخفض",
+  hubMockClinicPatients: "المرضى",
+  hubMockClinicQueue: "الطابور",
+  hubMockClinicLab: "المختبر",
+  hubMockClinicBilling: "الفوترة",
+  hubMockClinicOverview: "نظرة على العيادة",
+  hubMockClinicVisits: "زيارات اليوم",
+  hubMockClinicWaiting: "في الانتظار",
+  hubMockClinicLabs: "طلبات المختبر",
+  hubMockClinicRevenue: "المحصّل",
   hubCtaTitle: "هل أنت مستعد لتحويل عملك؟",
   hubCtaBody: "استكشف منصاتنا اليوم.",
   hubFooterBlurb:
@@ -1956,10 +1996,11 @@ const so: Messages = {
   hubStatSupport: "Taageero",
   hubScreensTitle: "Loo dhisay howlaha dhabta ah",
   hubScreensBody:
-    "Dashboard-yo nadiif ah oo kooxdaadu run ahaantii isticmaasho — laga bilaabo dabaqa ilaa fasalka iyo miiska iibka.",
+    "Dashboard-yo nadiif ah oo kooxdaadu run ahaantii isticmaasho — laga bilaabo dabaqa ilaa fasalka, miiska iibka, iyo rugta caafimaadka.",
   hubRestaurantDash: "Dashboard-ka makhaayadda",
   hubDugsiDash: "Dashboard-ka Dugsi",
   hubRetailDash: "Dashboard-ka tafaariiqda",
+  hubClinicDash: "Dashboard-ka ClinicOS",
   hubMockToday: "Maanta",
   hubMockLiveFloor: "Dabaqa tooska ah",
   hubMockOpenOrders: "Dalabyo furan",
@@ -1981,6 +2022,15 @@ const so: Messages = {
   hubMockRetailTx: "Macaamilo",
   hubMockRetailProfit: "Faa'iidada",
   hubMockRetailLowStock: "Kayd hooseeya",
+  hubMockClinicPatients: "Bukaannada",
+  hubMockClinicQueue: "Safka",
+  hubMockClinicLab: "Shaybaar",
+  hubMockClinicBilling: "Biilka",
+  hubMockClinicOverview: "Rugta guud ahaan",
+  hubMockClinicVisits: "Booqashooyinka maanta",
+  hubMockClinicWaiting: "Sugaya",
+  hubMockClinicLabs: "Dalabyada shaybaarka",
+  hubMockClinicRevenue: "La ururiyay",
   hubCtaTitle: "Diyaar ma u tahay inaad beddesho ganacsigaaga?",
   hubCtaBody: "Sahamin platform-yadeenna maanta.",
   hubFooterBlurb:
