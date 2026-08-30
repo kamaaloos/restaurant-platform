@@ -115,13 +115,14 @@ export const CAREER_ROLES: CareerRole[] = [
     icon: Rocket,
     accent: "#2dd4bf",
     summary:
-      "Building a multi-product SaaS platform for restaurants, schools, and upcoming verticals—owning architecture, full-stack delivery, quality, and product direction.",
+      "Building a multi-product SaaS platform for restaurants, schools, clinics, and retail—owning architecture, full-stack delivery, quality, and product direction.",
     highlights: [
       "Designed and shipped MayleSoft Restaurant (QR ordering, KDS, POS, waiter, pickup)",
       "Launched MayleSoft Dugsi for school operations",
       "Shipped MayleSoft Retail — offline Windows POS with installer and update feed",
+      "Shipped ClinicOS at clinic.maylesoft.com — outpatient clinic operations workspace",
       "Cloud-native stack with Next.js, NestJS, Flutter, and modern DevOps practices",
-      "Roadmap for Clinic, Logistics, and HR platforms",
+      "Roadmap for Logistics and HR platforms",
     ],
     technologies: [
       "TypeScript",
@@ -385,15 +386,23 @@ export const PLATFORM_PRODUCTS: PlatformProduct[] = [
   },
   {
     id: "clinic",
-    name: "Clinic / Healthcare",
-    tagline: "Coming soon",
-    status: "coming",
-    description: "Practice operations for clinics and outpatient care.",
-    result: "On the MayleSoft product roadmap.",
+    name: "ClinicOS",
+    tagline: "Healthcare SaaS",
+    status: "live",
+    description:
+      "Operating system for outpatient clinics—patient day flow, clinical handoffs, lab, pharmacy, and billing in one workspace.",
+    result:
+      "A live product surface at clinic.maylesoft.com that connects roles across the patient journey.",
     icon: Stethoscope,
-    accent: "#a78bfa",
-    tech: [],
-    highlights: ["Appointments", "Patient records", "Billing"],
+    accent: "#14b8a6",
+    tech: ["Next.js", "TypeScript", "PostgreSQL"],
+    highlights: [
+      "Patient flow",
+      "Clinical records",
+      "Lab & pharmacy",
+      "Billing",
+      "Role workspaces",
+    ],
   },
   {
     id: "logistics",

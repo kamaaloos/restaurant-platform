@@ -34,6 +34,10 @@ const RETAIL_URL = retailMarketingOrigin(
   ROOT_DOMAIN,
   process.env.NEXT_PUBLIC_RETAIL_HOST,
 );
+const CLINIC_URL =
+  process.env.NEXT_PUBLIC_CLINIC_HOST?.trim()
+    ? `https://${process.env.NEXT_PUBLIC_CLINIC_HOST.trim().replace(/^https?:\/\//i, "").split("/")[0]}`
+    : `https://clinic.${ROOT_DOMAIN}`;
 const PORTFOLIO_URL = portfolioOrigin(ROOT_DOMAIN, process.env.NEXT_PUBLIC_PORTFOLIO_HOST);
 
 const HERO_WORDS: MessageKey[] = [
@@ -86,8 +90,16 @@ const RETAIL_FEATURES: MessageKey[] = [
   "hubFeatureRetailWindows",
 ];
 
-const COMING_SOON: { icon: typeof Stethoscope; key: MessageKey }[] = [
-  { icon: Stethoscope, key: "hubSoonClinic" },
+const CLINIC_FEATURES: MessageKey[] = [
+  "hubFeatureClinicFlow",
+  "hubFeatureClinicRecords",
+  "hubFeatureClinicBilling",
+  "hubFeatureClinicLab",
+  "hubFeatureClinicPharmacy",
+  "hubFeatureClinicRoles",
+];
+
+const COMING_SOON: { icon: typeof Truck; key: MessageKey }[] = [
   { icon: Truck, key: "hubSoonLogistics" },
   { icon: Building2, key: "hubSoonHr" },
 ];
@@ -306,6 +318,14 @@ export function MayleSoftHub() {
       href: RETAIL_URL,
       ctaKey: "hubCtaRetail" as const,
     },
+    {
+      icon: Stethoscope,
+      nameKey: "hubProductClinic" as const,
+      gradient: "from-[#0d9488]/15 via-[#14b8a6]/10 to-transparent",
+      features: CLINIC_FEATURES,
+      href: CLINIC_URL,
+      ctaKey: "hubCtaClinic" as const,
+    },
   ];
 
   return (
@@ -410,7 +430,7 @@ export function MayleSoftHub() {
             {t("hubProductsTitle")}
           </h2>
 
-          <ul className="mt-8 grid gap-4 sm:mt-12 sm:gap-6 lg:grid-cols-3">
+          <ul className="mt-8 grid gap-4 sm:mt-12 sm:gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
             {products.map(
               ({ icon: Icon, nameKey, gradient, features, href, ctaKey }) => (
                 <li key={nameKey}>
@@ -587,6 +607,11 @@ export function MayleSoftHub() {
               <li>
                 <Link href={RETAIL_URL} className="hover:text-white">
                   {t("hubProductRetail")}
+                </Link>
+              </li>
+              <li>
+                <Link href={CLINIC_URL} className="hover:text-white">
+                  {t("hubProductClinic")}
                 </Link>
               </li>
             </ul>

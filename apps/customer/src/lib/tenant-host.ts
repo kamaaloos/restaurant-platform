@@ -5,6 +5,7 @@ const RESERVED_SUBDOMAINS = new Set([
   "customer",
   "dugsi",
   "retail",
+  "clinic",
   "order",
   "orders",
   "admin",

@@ -106,6 +106,15 @@ curl https://YOUR-RAILWAY-HOST.up.railway.app/api/health
 curl https://YOUR-RAILWAY-HOST.up.railway.app/api/ready
 ```
 
+### Troubleshooting: `P1001 Can't reach database server`
+
+Deploy logs show `prisma migrate deploy` failing before Nest starts. This is **Neon connectivity**, not Nest code.
+
+1. **Neon Console** → open the project → confirm the compute is **Active** (not Suspended). Free tier sleeps after idle; open the SQL Editor once to wake it, then **Redeploy** on Railway.
+2. **Connection string** — Railway `DATABASE_URL` must be the **pooled** Neon URL (`…-pooler….neon.tech`) with `?sslmode=require`. If you reset the password in Neon, paste the new URL into Railway.
+3. **IP allowlist** — Neon → Settings → Networking: if allowlisting is on, allow Railway (or disable allowlisting for the project).
+4. Start command already retries migrate (`scripts/migrate-deploy-with-retry.mjs`) for cold starts; a persistent P1001 still means Neon/Railway cannot open TCP to the host.
+
 ---
 
 ## 3. Vercel (five Next.js apps)
@@ -129,7 +138,18 @@ Each app includes a `vercel.json` that installs dependencies from the monorepo r
 }
 ```
 
-### Environment variables (all apps)
+### Troubleshooting Vercel builds
+
+**`Couldn't find any pages or app directory`** — Vercel is building from the **repo root** instead of `apps/<app>`. The log shows `npm run vercel-build` → `next build` at `@org/source` (root). Fix:
+
+1. Vercel → **customer** project (the one that serves `retail.maylesoft.com`) → **Settings → General**
+2. **Root Directory** → `apps/customer` (not empty, not `.`)
+3. Save → **Redeploy**
+
+When Root Directory is correct, the build log should show `npm run build` (from `apps/customer/vercel.json`), not root `vercel-build`. Rewrites in `apps/customer/vercel.json` (e.g. `/api/activate` → Railway) only apply after a successful deploy with this setting.
+
+**Wrong Vercel project** — If you created a sixth project linked to the repo without a Root Directory, delete it or set Root Directory; do not point `retail.maylesoft.com` at a root-level project.
+
 
 | Variable | Value |
 |----------|-------|
@@ -192,6 +212,7 @@ Guest ordering can live on **one subdomain per restaurant**:
 | `maylesoft.com` / `www` | Customer — MayleSoft product hub (links to each product) |
 | `customer.maylesoft.com` | Customer — restaurant platform marketing landing |
 | `retail.maylesoft.com` | Customer — MayleSoft Retail (Windows POS) landing |
+| `clinic.maylesoft.com` | **Separate** ClinicOS app (not the customer project) |
 | `hkamal.maylesoft.com` | Customer — personal portfolio (Hasan Kamal) |
 | `alhuda.maylesoft.com` | Customer (tenant home + `/w`, `/t`) |
 | `admin.maylesoft.com` | Admin |
@@ -200,6 +221,8 @@ Guest ordering can live on **one subdomain per restaurant**:
 | `till.maylesoft.com` | Cashier |
 
 **Retail is not a 6th Vercel project.** Do not deploy the Flutter repo’s `site/` folder as a separate Vercel site. `retail.maylesoft.com` must point at the **customer** project (same as `customer.maylesoft.com`). Host-based routing in `apps/customer/src/app/page.tsx` serves `RetailLanding`; `retail` is a reserved label in `tenant-host.ts` (not a restaurant tenant).
+
+**ClinicOS is a separate app.** `clinic.maylesoft.com` already hosts ClinicOS on its own Vercel project. Keep DNS pointed at that project. The MayleSoft hub only **links** to it; do not serve a duplicate clinic landing from the customer app. `clinic` is reserved in `tenant-host.ts` so a misrouted wildcard never treats it as a restaurant slug.
 
 ### DNS (registrar)
 

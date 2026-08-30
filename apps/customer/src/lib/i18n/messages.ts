@@ -249,6 +249,7 @@ export type MessageKey =
   | "hubProductRestaurant"
   | "hubProductDugsi"
   | "hubProductRetail"
+  | "hubProductClinic"
   | "hubFeatureQr"
   | "hubFeatureKds"
   | "hubFeaturePos"
@@ -267,9 +268,16 @@ export type MessageKey =
   | "hubFeatureRetailStaff"
   | "hubFeatureRetailReports"
   | "hubFeatureRetailWindows"
+  | "hubFeatureClinicFlow"
+  | "hubFeatureClinicRecords"
+  | "hubFeatureClinicBilling"
+  | "hubFeatureClinicLab"
+  | "hubFeatureClinicPharmacy"
+  | "hubFeatureClinicRoles"
   | "hubCtaRestaurant"
   | "hubCtaDugsi"
   | "hubCtaRetail"
+  | "hubCtaClinic"
   | "hubEcosystemTitle"
   | "hubAvailableToday"
   | "hubComingSoon"
@@ -645,6 +653,7 @@ const en: Messages = {
   hubProductRestaurant: "Restaurant platform",
   hubProductDugsi: "Dugsi",
   hubProductRetail: "Retail POS",
+  hubProductClinic: "ClinicOS",
   hubFeatureQr: "QR ordering",
   hubFeatureKds: "Kitchen display",
   hubFeaturePos: "POS & till",
@@ -663,9 +672,16 @@ const en: Messages = {
   hubFeatureRetailStaff: "PIN staff access",
   hubFeatureRetailReports: "Sales reports",
   hubFeatureRetailWindows: "Windows desktop",
+  hubFeatureClinicFlow: "Patient day flow",
+  hubFeatureClinicRecords: "Clinical records",
+  hubFeatureClinicBilling: "Billing & cashier",
+  hubFeatureClinicLab: "Lab orders",
+  hubFeatureClinicPharmacy: "Pharmacy",
+  hubFeatureClinicRoles: "Role-based workspaces",
   hubCtaRestaurant: "Open platform",
   hubCtaDugsi: "Open Dugsi",
   hubCtaRetail: "Open Retail",
+  hubCtaClinic: "Open ClinicOS",
   hubEcosystemTitle: "The MayleSoft ecosystem",
   hubAvailableToday: "Available today",
   hubComingSoon: "Coming soon",
@@ -1059,6 +1075,7 @@ const fi: Messages = {
   hubProductRestaurant: "Ravintola-alusta",
   hubProductDugsi: "Dugsi",
   hubProductRetail: "Vähittäiskaupan kassa",
+  hubProductClinic: "ClinicOS",
   hubFeatureQr: "QR-tilaus",
   hubFeatureKds: "Keittiönäyttö",
   hubFeaturePos: "Kassa",
@@ -1077,9 +1094,16 @@ const fi: Messages = {
   hubFeatureRetailStaff: "PIN-henkilöstö",
   hubFeatureRetailReports: "Myyntiraportit",
   hubFeatureRetailWindows: "Windows-työpöytä",
+  hubFeatureClinicFlow: "Potilaan päiväkulku",
+  hubFeatureClinicRecords: "Kliiniset tiedot",
+  hubFeatureClinicBilling: "Laskutus ja kassa",
+  hubFeatureClinicLab: "Labratilaukset",
+  hubFeatureClinicPharmacy: "Apteekki",
+  hubFeatureClinicRoles: "Roolipohjaiset näkymät",
   hubCtaRestaurant: "Avaa alusta",
   hubCtaDugsi: "Avaa Dugsi",
   hubCtaRetail: "Avaa Retail",
+  hubCtaClinic: "Avaa ClinicOS",
   hubEcosystemTitle: "MayleSoft-ekosysteemi",
   hubAvailableToday: "Saatavilla nyt",
   hubComingSoon: "Tulossa",
@@ -1468,6 +1492,7 @@ const ar: Messages = {
   hubProductRestaurant: "منصة المطاعم",
   hubProductDugsi: "دُكسي",
   hubProductRetail: "نقطة بيع للتجزئة",
+  hubProductClinic: "ClinicOS",
   hubFeatureQr: "طلب عبر QR",
   hubFeatureKds: "شاشة المطبخ",
   hubFeaturePos: "نقطة البيع",
@@ -1486,9 +1511,16 @@ const ar: Messages = {
   hubFeatureRetailStaff: "وصول الموظفين برمز PIN",
   hubFeatureRetailReports: "تقارير المبيعات",
   hubFeatureRetailWindows: "تطبيق ويندوز",
+  hubFeatureClinicFlow: "مسار يوم المريض",
+  hubFeatureClinicRecords: "السجلات السريرية",
+  hubFeatureClinicBilling: "الفوترة والكاشير",
+  hubFeatureClinicLab: "طلبات المختبر",
+  hubFeatureClinicPharmacy: "الصيدلية",
+  hubFeatureClinicRoles: "مساحات عمل حسب الدور",
   hubCtaRestaurant: "افتح المنصة",
   hubCtaDugsi: "افتح دُكسي",
   hubCtaRetail: "افتح التجزئة",
+  hubCtaClinic: "افتح ClinicOS",
   hubEcosystemTitle: "منظومة MayleSoft",
   hubAvailableToday: "متاح اليوم",
   hubComingSoon: "قريباً",
@@ -1881,6 +1913,7 @@ const so: Messages = {
   hubProductRestaurant: "Platform-ka makhaayadda",
   hubProductDugsi: "Dugsi",
   hubProductRetail: "POS-ka tafaariiqda",
+  hubProductClinic: "ClinicOS",
   hubFeatureQr: "Dalab QR",
   hubFeatureKds: "Bandhigga jikada",
   hubFeaturePos: "POS & khasnada",
@@ -1899,9 +1932,16 @@ const so: Messages = {
   hubFeatureRetailStaff: "PIN-ka shaqaalaha",
   hubFeatureRetailReports: "Warbixinnada iibka",
   hubFeatureRetailWindows: "Desktop Windows",
+  hubFeatureClinicFlow: "Socodka maalinlaha ee bukaanka",
+  hubFeatureClinicRecords: "Diiwaanka caafimaadka",
+  hubFeatureClinicBilling: "Biilka & khasnada",
+  hubFeatureClinicLab: "Dalabka shaybaarka",
+  hubFeatureClinicPharmacy: "Farmashiyaha",
+  hubFeatureClinicRoles: "Shaashado ku salaysan doorka",
   hubCtaRestaurant: "Fur platform-ka",
   hubCtaDugsi: "Fur Dugsi",
   hubCtaRetail: "Fur Retail",
+  hubCtaClinic: "Fur ClinicOS",
   hubEcosystemTitle: "Nidaamka MayleSoft",
   hubAvailableToday: "Diyaar maanta",
   hubComingSoon: "Dhawaan",

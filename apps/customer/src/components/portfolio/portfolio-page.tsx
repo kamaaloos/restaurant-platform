@@ -35,6 +35,7 @@ const PLATFORM_LINKS: Record<string, string> = {
   restaurant: `https://customer.${ROOT_DOMAIN}`,
   dugsi: `https://dugsi.${ROOT_DOMAIN}`,
   retail: `https://retail.${ROOT_DOMAIN}`,
+  clinic: `https://clinic.${ROOT_DOMAIN}`,
 };
 
 const fadeUp = {
@@ -498,13 +499,17 @@ export function PortfolioPage() {
           <SectionHeading
             eyebrow="Platforms"
             title="Software platforms built and shipping"
-            description="Enterprise SaaS products I've designed and developed—live today, with the next verticals on the roadmap."
+            description="Enterprise SaaS products I've designed and developed—Restaurant, Dugsi, Retail, and ClinicOS live today."
           />
 
-          <div className="mt-14 grid gap-6 lg:grid-cols-3">
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
             {PLATFORM_PRODUCTS.filter((p) => p.status === "live").map(
               (product, index) => {
                 const Icon = product.icon;
+                const liveUrl = PLATFORM_LINKS[product.id];
+                const liveHost = liveUrl
+                  ? liveUrl.replace(/^https?:\/\//i, "")
+                  : null;
                 return (
                   <motion.article
                     key={product.id}
@@ -544,14 +549,14 @@ export function PortfolioPage() {
                     <p className="mt-5 text-xs leading-relaxed text-slate-500">
                       Tech · {product.tech.join(" · ")}
                     </p>
-                    {PLATFORM_LINKS[product.id] ? (
+                    {liveUrl && liveHost ? (
                       <a
-                        href={PLATFORM_LINKS[product.id]}
+                        href={liveUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-teal-300/90 transition-colors hover:text-teal-200"
                       >
-                        Visit platform
+                        {liveHost}
                         <ArrowUpRight className="h-3.5 w-3.5" />
                       </a>
                     ) : null}
@@ -565,7 +570,7 @@ export function PortfolioPage() {
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
               Coming Soon
             </p>
-            <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mt-5 grid gap-4 sm:grid-cols-2">
               {PLATFORM_PRODUCTS.filter((p) => p.status === "coming").map(
                 (product) => {
                   const Icon = product.icon;
