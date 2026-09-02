@@ -4,6 +4,12 @@ import * as React from "react";
 import { useQuery } from "@tanstack/react-query";
 import { adminApi } from "@/lib/api";
 import { PageHeader } from "@/components/page-header";
+import {
+  ReportMetricCard,
+  ReportPageShell,
+  reportCategoryTone,
+  reportPanelClass,
+} from "@/components/report-page-shell";
 import { Button } from "@/components/ui/button";
 import { useSelectedBranch } from "@/hooks/use-selected-branch";
 import {
@@ -14,6 +20,7 @@ import { getStoredUser } from "@/lib/session";
 import { formatMoney } from "@/lib/utils";
 import { useLocale } from "@/lib/i18n/locale-provider";
 import type { MessageKey } from "@/lib/i18n/messages";
+import { downloadReportPdf } from "@/lib/export-report-pdf";
 
 const PAGE_SIZE = 50;
 
@@ -82,6 +89,8 @@ export function LedgerPage() {
   const totalPages = Math.ceil((entriesQuery.data?.total ?? 0) / PAGE_SIZE);
   const summary = summaryQuery.data;
   const currency = summary?.totals.currency ?? "EUR";
+  const restaurantName =
+    restaurants.find((r) => r.id === restaurantId)?.name ?? "";
 
   function exportCsv() {
     const entries = entriesQuery.data?.entries ?? [];
@@ -113,7 +122,84 @@ export function LedgerPage() {
     URL.revokeObjectURL(url);
   }
 
+  async function exportPdf() {
+    if (!summary) return;
+
+    const allEntries = await adminApi.ledgerEntries({
+      ...filterParams,
+      skip: 0,
+      take: 50_000,
+    });
+
+    const money = (n: number) => formatMoney(n, currency);
+    const channelLabel = (channel: string) =>
+      t(CHANNEL_KEYS[channel] ?? "ledgerChannel");
+    const categoryLabel = (category: string) =>
+      t(CATEGORY_KEYS[category] ?? "ledgerCategory");
+
+    downloadReportPdf({
+      filename: `ledger-${from || "all"}-${to || "all"}.pdf`,
+      title: t("ledgerTitle"),
+      subtitle: restaurantName,
+      meta: [
+        `${t("ledgerFrom")}: ${from || "—"}  ${t("ledgerTo")}: ${to || "—"}`,
+        `${t("ledgerNetSales")}: ${money(summary.totals.netSales)}  ${t("ledgerTips")}: ${money(summary.totals.tips)}  ${t("ledgerRefunds")}: ${money(summary.totals.refunds)}  ${t("ledgerTaxCollected")}: ${money(summary.totals.taxCollected)}  ${t("ledgerNetExTax")}: ${money(summary.totals.netExTax)}`,
+      ],
+      sections: [
+        {
+          title: t("ledgerByChannel"),
+          head: [
+            [
+              t("ledgerChannel"),
+              t("ledgerAmount"),
+              t("ledgerTip"),
+              t("ledgerPayments"),
+            ],
+          ],
+          body: summary.salesByChannel.map((row) => [
+            channelLabel(row.channel),
+            money(row.amount),
+            money(row.tipAmount),
+            row.count,
+          ]),
+        },
+        {
+          title: t("ledgerTitle"),
+          head: [
+            [
+              t("ledgerDate"),
+              t("ledgerCategory"),
+              t("ledgerDescription"),
+              t("ledgerChannel"),
+              t("ledgerDebit"),
+              t("ledgerCredit"),
+            ],
+          ],
+          body: allEntries.entries.map((e) => [
+            new Date(e.date).toLocaleDateString(),
+            categoryLabel(e.category),
+            e.description,
+            e.payment?.channel ? channelLabel(e.payment.channel) : "—",
+            Number(e.debit) > 0 ? money(Number(e.debit)) : "",
+            Number(e.credit) > 0 ? money(Number(e.credit)) : "",
+          ]),
+          foot: [
+            [
+              t("salesTotalRow"),
+              "",
+              "",
+              "",
+              money(summary.totals.revenue + summary.totals.tips),
+              money(summary.totals.refunds),
+            ],
+          ],
+        },
+      ],
+    });
+  }
+
   return (
+    <ReportPageShell>
     <div className="space-y-6">
       <PageHeader title={t("ledgerTitle")} subtitle={t("ledgerSubtitle")} />
 
@@ -180,34 +266,47 @@ export function LedgerPage() {
         >
           {t("ledgerExportCsv")}
         </Button>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => void exportPdf()}
+          disabled={!summary?.totals}
+        >
+          {t("exportPdf")}
+        </Button>
       </div>
 
       {summary ? (
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            <StatCard
+            <ReportMetricCard
               label={t("ledgerNetSales")}
               value={formatMoney(summary.totals.netSales, currency)}
+              tone="emerald"
             />
-            <StatCard
+            <ReportMetricCard
               label={t("ledgerTips")}
               value={formatMoney(summary.totals.tips, currency)}
+              tone="amber"
             />
-            <StatCard
+            <ReportMetricCard
               label={t("ledgerRefunds")}
               value={formatMoney(summary.totals.refunds, currency)}
-              tone="danger"
+              tone="rose"
             />
-            <StatCard
+            <ReportMetricCard
               label={t("ledgerTaxCollected")}
               value={formatMoney(summary.totals.taxCollected, currency)}
               hint={t("ledgerTaxRate", {
                 rate: summary.totals.taxRatePercent,
               })}
+              tone="sky"
             />
-            <StatCard
+            <ReportMetricCard
               label={t("ledgerNetExTax")}
               value={formatMoney(summary.totals.netExTax, currency)}
+              tone="olive"
             />
           </div>
 
@@ -218,22 +317,19 @@ export function LedgerPage() {
               </h2>
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                 {summary.categories.map((s) => (
-                  <div
+                  <ReportMetricCard
                     key={s.category}
-                    className="rounded-lg border border-[var(--line)] bg-[var(--surface)] p-4 text-center"
-                  >
-                    <div className="text-xs uppercase text-[var(--muted)]">
-                      {t(CATEGORY_KEYS[s.category] ?? "ledgerCategory")}
-                    </div>
-                    <div className="text-lg font-semibold text-emerald-700">
-                      +{formatMoney(s.totalDebit, currency)}
-                    </div>
-                    {s.totalCredit > 0 ? (
-                      <div className="text-sm text-[var(--danger)]">
-                        −{formatMoney(s.totalCredit, currency)}
-                      </div>
-                    ) : null}
-                  </div>
+                    label={t(CATEGORY_KEYS[s.category] ?? "ledgerCategory")}
+                    value={`+${formatMoney(s.totalDebit, currency)}`}
+                    secondaryValue={
+                      s.totalCredit > 0
+                        ? `−${formatMoney(s.totalCredit, currency)}`
+                        : undefined
+                    }
+                    secondaryTone={s.totalCredit > 0 ? "rose" : undefined}
+                    tone={reportCategoryTone(s.category)}
+                    align="center"
+                  />
                 ))}
               </div>
             </div>
@@ -244,7 +340,7 @@ export function LedgerPage() {
               <h2 className="mb-2 text-sm font-semibold text-[var(--muted)]">
                 {t("ledgerByChannel")}
               </h2>
-              <div className="overflow-x-auto rounded-lg border border-[var(--line)]">
+              <div className={`overflow-x-auto ${reportPanelClass}`}>
                 <table className="min-w-full text-sm">
                   <thead>
                     <tr className="bg-[var(--surface-2)] text-left">
@@ -281,7 +377,7 @@ export function LedgerPage() {
         </div>
       ) : null}
 
-      <div className="overflow-x-auto rounded-lg border border-[var(--line)]">
+      <div className={`overflow-x-auto ${reportPanelClass}`}>
         <table className="min-w-full text-sm">
           <thead>
             <tr className="bg-[var(--surface-2)] text-left">
@@ -360,35 +456,7 @@ export function LedgerPage() {
         </div>
       ) : null}
     </div>
+    </ReportPageShell>
   );
 }
 
-function StatCard({
-  label,
-  value,
-  hint,
-  tone,
-}: {
-  label: string;
-  value: string;
-  hint?: string;
-  tone?: "danger";
-}) {
-  return (
-    <div className="rounded-lg border border-[var(--line)] bg-[var(--surface)] p-4">
-      <div className="text-xs uppercase tracking-[0.12em] text-[var(--muted)]">
-        {label}
-      </div>
-      <div
-        className={`mt-1 text-xl font-semibold tabular-nums ${
-          tone === "danger" ? "text-[var(--danger)]" : "text-[var(--ink)]"
-        }`}
-      >
-        {value}
-      </div>
-      {hint ? (
-        <div className="mt-1 text-xs text-[var(--muted)]">{hint}</div>
-      ) : null}
-    </div>
-  );
-}

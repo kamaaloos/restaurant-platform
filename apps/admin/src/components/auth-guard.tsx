@@ -12,6 +12,7 @@ import {
   Users,
   LogOut,
   BookMarked,
+  BarChart3,
 } from "lucide-react";
 import { useSelectedRestaurant } from "@/hooks/use-selected-restaurant";
 import {
@@ -53,6 +54,7 @@ function navForRole(role: string, t: (key: MessageKey) => string) {
     role === "ACCOUNTANT"
   ) {
     items.push({ href: "/ledger", label: t("navLedger"), icon: BookMarked });
+    items.push({ href: "/sales", label: t("navSales"), icon: BarChart3 });
   }
   return items;
 }

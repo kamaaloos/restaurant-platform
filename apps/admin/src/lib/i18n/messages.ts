@@ -37,6 +37,8 @@ export type MessageKey =
   | "navMenu"
   | "navUsers"
   | "navLedger"
+  | "navSales"
+  | "overviewLinkSalesBody"
   | "rolePlatformAdmin"
   | "roleRestaurantOwner"
   | "roleBranchManager"
@@ -93,6 +95,7 @@ export type MessageKey =
   | "ledgerPrev"
   | "ledgerNext"
   | "ledgerExportCsv"
+  | "exportPdf"
   | "ledgerCatRevenue"
   | "ledgerCatTips"
   | "ledgerCatRefund"
@@ -102,6 +105,32 @@ export type MessageKey =
   | "ledgerChannelTerminal"
   | "ledgerChannelOnline"
   | "ledgerChannelCounter"
+  | "salesTitle"
+  | "salesSubtitle"
+  | "salesPresetToday"
+  | "salesPresetMonth"
+  | "salesPresetYear"
+  | "salesPresetLastYear"
+  | "salesTotalRow"
+  | "salesShowingLines"
+  | "salesSummaryQty"
+  | "salesByProduct"
+  | "salesDetailLines"
+  | "salesNoLines"
+  | "salesClickProduct"
+  | "salesProductDetail"
+  | "salesShowAllProducts"
+  | "salesLoading"
+  | "salesColProduct"
+  | "salesColCategory"
+  | "salesColQty"
+  | "salesColTaxRate"
+  | "salesColNet"
+  | "salesColTax"
+  | "salesColTotal"
+  | "salesColDate"
+  | "salesColPaymentId"
+  | "salesColCashier"
   | "kitchenService"
   | "kitchenServiceBody"
   | "selectABranch"
@@ -369,6 +398,7 @@ const en: Messages = {
   navMenu: "Menu",
   navUsers: "Users",
   navLedger: "Ledger",
+  navSales: "Product sales",
   rolePlatformAdmin: "Platform admin",
   roleRestaurantOwner: "Restaurant owner",
   roleBranchManager: "Branch manager",
@@ -402,6 +432,35 @@ const en: Messages = {
     "Create kitchen/waiter devices; pair with short-lived QR codes.",
   overviewLinkMenuBody: "Add categories and items for the QR menu.",
   overviewLinkLedgerBody: "Period P&L, tax estimate, sales by channel, and journal export.",
+  overviewLinkSalesBody:
+    "Products sold with tax breakdown — daily, monthly, or yearly via calendar.",
+  salesTitle: "Product sales report",
+  salesSubtitle:
+    "Paid order lines with tax-inclusive prices split into net, tax, and total.",
+  salesPresetToday: "Today",
+  salesPresetMonth: "This month",
+  salesPresetYear: "This year",
+  salesPresetLastYear: "Last year",
+  salesTotalRow: "Total",
+  salesShowingLines: "Showing {from}–{to} of {total} lines",
+  salesSummaryQty: "Units sold",
+  salesByProduct: "Summary by product",
+  salesDetailLines: "Line detail",
+  salesNoLines: "No paid sales in this period.",
+  salesClickProduct: "Click a product to see its sale lines",
+  salesProductDetail: "Detail for {product}",
+  salesShowAllProducts: "Show all products",
+  salesLoading: "Loading sales…",
+  salesColProduct: "Product",
+  salesColCategory: "Category",
+  salesColQty: "Qty",
+  salesColTaxRate: "Tax %",
+  salesColNet: "Net (excl. tax)",
+  salesColTax: "Tax",
+  salesColTotal: "Total",
+  salesColDate: "Date",
+  salesColPaymentId: "Payment ID",
+  salesColCashier: "Cashier",
   ledgerTitle: "Ledger",
   ledgerSubtitle: "Period summary, tax estimate, and journal entries",
   ledgerAllBranches: "All branches",
@@ -428,6 +487,7 @@ const en: Messages = {
   ledgerPrev: "Prev",
   ledgerNext: "Next",
   ledgerExportCsv: "Export CSV",
+  exportPdf: "Export PDF",
   ledgerCatRevenue: "Revenue",
   ledgerCatTips: "Tips",
   ledgerCatRefund: "Refund",
@@ -722,9 +782,10 @@ const fi: Messages = {
   navBranches: "Toimipisteet",
   navTables: "Pöydät",
   navDevices: "Laitteet",
-  navMenu: "Menu",
+  navMenu: "Ruokalista",
   navUsers: "Käyttäjät",
   navLedger: "Kirjanpito",
+  navSales: "Tuotemyynti",
   rolePlatformAdmin: "Alustan ylläpitäjä",
   roleRestaurantOwner: "Ravintolan omistaja",
   roleBranchManager: "Toimipisteen esimies",
@@ -757,6 +818,35 @@ const fi: Messages = {
     "Luo keittiö- ja tarjoilijalaitteita; parita lyhytkestoisilla QR-koodeilla.",
   overviewLinkMenuBody: "Lisää kategorioita ja annoksia QR-menuun.",
   overviewLinkLedgerBody: "Jakson tulos, veroarvio, myynti kanavittain ja päiväkirjan vienti.",
+  overviewLinkSalesBody:
+    "Myydyt tuotteet veroerittelyllä — päivä, kuukausi tai vuosi kalenterista.",
+  salesTitle: "Tuotemyyntiraportti",
+  salesSubtitle:
+    "Maksetut rivit verollisista hinnoista: netto, vero ja yhteensä.",
+  salesPresetToday: "Tänään",
+  salesPresetMonth: "Tämä kuukausi",
+  salesPresetYear: "Tämä vuosi",
+  salesPresetLastYear: "Viime vuosi",
+  salesTotalRow: "Yhteensä",
+  salesShowingLines: "Rivejä {from}–{to} / {total}",
+  salesSummaryQty: "Myyty määrä",
+  salesByProduct: "Yhteenveto tuotteittain",
+  salesDetailLines: "Rivitiedot",
+  salesNoLines: "Ei maksettuja myyntejä tällä jaksolla.",
+  salesClickProduct: "Napsauta tuotetta nähdäksesi rivit",
+  salesProductDetail: "Tiedot: {product}",
+  salesShowAllProducts: "Näytä kaikki tuotteet",
+  salesLoading: "Ladataan myyntiä…",
+  salesColProduct: "Tuote",
+  salesColCategory: "Kategoria",
+  salesColQty: "Määrä",
+  salesColTaxRate: "Vero %",
+  salesColNet: "Netto (ilman veroa)",
+  salesColTax: "Vero",
+  salesColTotal: "Yhteensä",
+  salesColDate: "Päivä",
+  salesColPaymentId: "Maksu-ID",
+  salesColCashier: "Kassanhoitaja",
   ledgerTitle: "Kirjanpito",
   ledgerSubtitle: "Jakson yhteenveto, veroarvio ja päiväkirjarivit",
   ledgerAllBranches: "Kaikki toimipisteet",
@@ -783,6 +873,7 @@ const fi: Messages = {
   ledgerPrev: "Edellinen",
   ledgerNext: "Seuraava",
   ledgerExportCsv: "Vie CSV",
+  exportPdf: "Vie PDF",
   ledgerCatRevenue: "Liikevaihto",
   ledgerCatTips: "Tipit",
   ledgerCatRefund: "Palautus",
@@ -1080,6 +1171,7 @@ const ar: Messages = {
   navMenu: "القائمة",
   navUsers: "المستخدمون",
   navLedger: "دفتر الأستاذ",
+  navSales: "مبيعات المنتجات",
   rolePlatformAdmin: "مسؤول المنصة",
   roleRestaurantOwner: "صاحب المطعم",
   roleBranchManager: "مدير الفرع",
@@ -1112,6 +1204,35 @@ const ar: Messages = {
     "أنشئ أجهزة المطبخ والنادل؛ اربطها برموز QR قصيرة العمر.",
   overviewLinkMenuBody: "أضف التصنيفات والأصناف لقائمة QR.",
   overviewLinkLedgerBody: "أرباح الفترة وتقدير الضريبة والمبيعات حسب القناة وتصدير اليومية.",
+  overviewLinkSalesBody:
+    "المنتجات المباعة مع تفصيل الضريبة — يومي أو شهري أو سنوي عبر التقويم.",
+  salesTitle: "تقرير مبيعات المنتجات",
+  salesSubtitle:
+    "بنود الطلبات المدفوعة بأسعار شاملة الضريبة: صافي، ضريبة، وإجمالي.",
+  salesPresetToday: "اليوم",
+  salesPresetMonth: "هذا الشهر",
+  salesPresetYear: "هذه السنة",
+  salesPresetLastYear: "السنة الماضية",
+  salesTotalRow: "الإجمالي",
+  salesShowingLines: "عرض {from}–{to} من {total} سطر",
+  salesSummaryQty: "الوحدات المباعة",
+  salesByProduct: "ملخص حسب المنتج",
+  salesDetailLines: "تفاصيل البنود",
+  salesNoLines: "لا مبيعات مدفوعة في هذه الفترة.",
+  salesClickProduct: "انقر على منتج لعرض بنوده",
+  salesProductDetail: "تفاصيل {product}",
+  salesShowAllProducts: "عرض كل المنتجات",
+  salesLoading: "جارٍ تحميل المبيعات…",
+  salesColProduct: "المنتج",
+  salesColCategory: "الفئة",
+  salesColQty: "الكمية",
+  salesColTaxRate: "الضريبة %",
+  salesColNet: "الصافي (بدون ضريبة)",
+  salesColTax: "الضريبة",
+  salesColTotal: "الإجمالي",
+  salesColDate: "التاريخ",
+  salesColPaymentId: "معرّف الدفع",
+  salesColCashier: "أمين الصندوق",
   ledgerTitle: "دفتر الأستاذ",
   ledgerSubtitle: "ملخص الفترة وتقدير الضريبة وقيود اليومية",
   ledgerAllBranches: "كل الفروع",
@@ -1138,6 +1259,7 @@ const ar: Messages = {
   ledgerPrev: "السابق",
   ledgerNext: "التالي",
   ledgerExportCsv: "تصدير CSV",
+  exportPdf: "تصدير PDF",
   ledgerCatRevenue: "إيرادات",
   ledgerCatTips: "إكراميات",
   ledgerCatRefund: "استرداد",
@@ -1433,6 +1555,7 @@ const so: Messages = {
   navMenu: "Liiska",
   navUsers: "Isticmaalayaasha",
   navLedger: "Xisaabaadka",
+  navSales: "Iibka alaabta",
   rolePlatformAdmin: "Maamulaha madasha",
   roleRestaurantOwner: "Milkiilaha makhaayadda",
   roleBranchManager: "Maareeyaha laanta",
@@ -1466,6 +1589,35 @@ const so: Messages = {
     "Abuur qalabka jikada/adeegaha; isku xidh QR gaaban.",
   overviewLinkMenuBody: "Kudar qaybo iyo cuntooyin liiska QR.",
   overviewLinkLedgerBody: "Natiijada muddada, qiyaasta canshuurta, iibka kanaalka, iyo dhoofinta joornaalka.",
+  overviewLinkSalesBody:
+    "Alaabta la iibiyay oo leh canshuur — maalin, bil, ama sanad taariikhda.",
+  salesTitle: "Warbixinta iibka alaabta",
+  salesSubtitle:
+    "Khadadka dalabka la bixiyay: net, canshuur, iyo wadarta (qiimaha waa canshuur ku jirta).",
+  salesPresetToday: "Maanta",
+  salesPresetMonth: "Bishan",
+  salesPresetYear: "Sanadkan",
+  salesPresetLastYear: "Sanadkii hore",
+  salesTotalRow: "Wadarta",
+  salesShowingLines: "Muujinaya {from}–{to} / {total} saf",
+  salesSummaryQty: "Tirada la iibiyay",
+  salesByProduct: "Soo koobid alaab ahaan",
+  salesDetailLines: "Faahfaahinta khadadka",
+  salesNoLines: "Iib la bixiyay lama helin muddadan.",
+  salesClickProduct: "Guji alaab si aad u aragto khadadkeeda",
+  salesProductDetail: "Faahfaahin: {product}",
+  salesShowAllProducts: "Muuji dhammaan alaabaha",
+  salesLoading: "Iibka ayaa la soo rarayaa…",
+  salesColProduct: "Alaab",
+  salesColCategory: "Qaybta",
+  salesColQty: "Tirada",
+  salesColTaxRate: "Canshuur %",
+  salesColNet: "Net (canshuur la'aan)",
+  salesColTax: "Canshuur",
+  salesColTotal: "Wadarta",
+  salesColDate: "Taariikh",
+  salesColPaymentId: "Aqoonsiga lacag-bixinta",
+  salesColCashier: "Khasnajiga",
   ledgerTitle: "Xisaabaadka",
   ledgerSubtitle: "Soo koobidda muddada, qiyaasta canshuurta, iyo gelinta joornaalka",
   ledgerAllBranches: "Dhammaan laamaha",
@@ -1492,6 +1644,7 @@ const so: Messages = {
   ledgerPrev: "Hore",
   ledgerNext: "Xiga",
   ledgerExportCsv: "Dhoofi CSV",
+  exportPdf: "Dhoofi PDF",
   ledgerCatRevenue: "Dakhliga",
   ledgerCatTips: "Tips",
   ledgerCatRefund: "Celin",

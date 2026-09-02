@@ -56,6 +56,11 @@ function overviewLinks(
       title: t("navLedger"),
       body: t("overviewLinkLedgerBody"),
     });
+    links.push({
+      href: "/sales",
+      title: t("navSales"),
+      body: t("overviewLinkSalesBody"),
+    });
   }
   return links;
 }

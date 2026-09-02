@@ -400,6 +400,65 @@ export const adminApi = {
     }>(`/ledger/summary${qs ? `?${qs}` : ""}`);
   },
 
+  productSales: (params?: {
+    restaurantId?: string;
+    branchId?: string;
+    from?: string;
+    to?: string;
+    skip?: number;
+    take?: number;
+    productName?: string;
+    categoryName?: string;
+  }) => {
+    const q = new URLSearchParams();
+    if (params?.restaurantId) q.set("restaurantId", params.restaurantId);
+    if (params?.branchId) q.set("branchId", params.branchId);
+    if (params?.from) q.set("from", params.from);
+    if (params?.to) q.set("to", params.to);
+    if (params?.skip != null) q.set("skip", String(params.skip));
+    if (params?.take != null) q.set("take", String(params.take));
+    if (params?.productName) q.set("productName", params.productName);
+    if (params?.categoryName) q.set("categoryName", params.categoryName);
+    const qs = q.toString();
+    return request<{
+      currency: string;
+      taxRatePercent: number;
+      linesTotal: number;
+      lines: Array<{
+        productName: string;
+        categoryName: string;
+        quantity: number;
+        taxRatePercent: number;
+        netExTax: number;
+        taxAmount: number;
+        grossTotal: number;
+        soldAt: string;
+        orderId: string;
+        paymentId: string;
+        cashierName: string | null;
+      }>;
+      summary: {
+        quantitySold: number;
+        lineCount: number;
+        grossTotal: number;
+        netExTax: number;
+        taxAmount: number;
+      };
+      byProduct: Array<{
+        productName: string;
+        categoryName: string;
+        quantitySold: number;
+        grossTotal: number;
+        netExTax: number;
+        taxAmount: number;
+      }>;
+      filter: {
+        productName: string | null;
+        categoryName: string | null;
+      };
+    }>(`/ledger/product-sales${qs ? `?${qs}` : ""}`);
+  },
+
   uploadImage: async (file: File, opts?: { restaurantId?: string }) => {
     const send = async (token: string | null) => {
       const body = new FormData();

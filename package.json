@@ -16,6 +16,7 @@
     "backend:dev": "npm run start:dev --workspace=backend",
     "backend:build": "npm run build --workspace=backend",
     "backend:seed": "npm run seed --workspace=backend",
+    "backend:seed:finance": "npm run seed:finance-demo --workspace=backend",
     "backend:test:ci": "npm run test:ci --workspace=backend",
     "customer:e2e": "npm run test:e2e --workspace=customer",
     "customer:e2e:smoke": "npm run test:e2e:smoke --workspace=customer",
