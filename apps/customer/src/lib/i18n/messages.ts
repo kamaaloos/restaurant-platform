@@ -235,6 +235,7 @@ export type MessageKey =
   | "hubHeroWordSchools"
   | "hubHeroWordHealthcare"
   | "hubHeroWordRetail"
+  | "hubHeroWordFabrics"
   | "hubHeroLead"
   | "hubHeroPills"
   | "hubWhyTitle"
@@ -250,6 +251,7 @@ export type MessageKey =
   | "hubProductDugsi"
   | "hubProductRetail"
   | "hubProductClinic"
+  | "hubProductFabrics"
   | "hubFeatureQr"
   | "hubFeatureKds"
   | "hubFeaturePos"
@@ -274,10 +276,17 @@ export type MessageKey =
   | "hubFeatureClinicLab"
   | "hubFeatureClinicPharmacy"
   | "hubFeatureClinicRoles"
+  | "hubFeatureFabricsMeters"
+  | "hubFeatureFabricsPieces"
+  | "hubFeatureFabricsOffline"
+  | "hubFeatureFabricsTransfers"
+  | "hubFeatureFabricsWholesale"
+  | "hubFeatureFabricsReports"
   | "hubCtaRestaurant"
   | "hubCtaDugsi"
   | "hubCtaRetail"
   | "hubCtaClinic"
+  | "hubCtaFabrics"
   | "hubEcosystemTitle"
   | "hubAvailableToday"
   | "hubComingSoon"
@@ -296,6 +305,7 @@ export type MessageKey =
   | "hubDugsiDash"
   | "hubRetailDash"
   | "hubClinicDash"
+  | "hubFabricsDash"
   | "hubMockToday"
   | "hubMockLiveFloor"
   | "hubMockOpenOrders"
@@ -326,6 +336,14 @@ export type MessageKey =
   | "hubMockClinicWaiting"
   | "hubMockClinicLabs"
   | "hubMockClinicRevenue"
+  | "hubMockFabricsRolls"
+  | "hubMockFabricsGarments"
+  | "hubMockFabricsStock"
+  | "hubMockFabricsOverview"
+  | "hubMockFabricsMeters"
+  | "hubMockFabricsPieces"
+  | "hubMockFabricsLow"
+  | "hubMockFabricsShops"
   | "hubCtaTitle"
   | "hubCtaBody"
   | "hubFooterBlurb"
@@ -648,8 +666,9 @@ const en: Messages = {
   hubHeroWordSchools: "schools",
   hubHeroWordHealthcare: "clinics",
   hubHeroWordRetail: "stores",
+  hubHeroWordFabrics: "fabric shops",
   hubHeroLead:
-    "Modern cloud software for restaurants, schools, healthcare, retail, and growing organizations.",
+    "Modern cloud software for restaurants, schools, healthcare, retail, fabric shops, and growing organizations.",
   hubHeroPills: "Restaurant POS · School management · More coming",
   hubWhyTitle: "Why MayleSoft?",
   hubFeatFast: "Fast cloud platform",
@@ -664,6 +683,7 @@ const en: Messages = {
   hubProductDugsi: "Dugsi",
   hubProductRetail: "Retail POS",
   hubProductClinic: "ClinicOS",
+  hubProductFabrics: "Fabrics & Garments",
   hubFeatureQr: "QR ordering",
   hubFeatureKds: "Kitchen display",
   hubFeaturePos: "POS & till",
@@ -688,10 +708,17 @@ const en: Messages = {
   hubFeatureClinicLab: "Lab orders",
   hubFeatureClinicPharmacy: "Pharmacy",
   hubFeatureClinicRoles: "Role-based workspaces",
+  hubFeatureFabricsMeters: "Fabric by the meter",
+  hubFeatureFabricsPieces: "Clothes by the piece",
+  hubFeatureFabricsOffline: "Offline sales",
+  hubFeatureFabricsTransfers: "Stock transfers",
+  hubFeatureFabricsWholesale: "Wholesale supply",
+  hubFeatureFabricsReports: "Reports & receipts",
   hubCtaRestaurant: "Open platform",
   hubCtaDugsi: "Open Dugsi",
   hubCtaRetail: "Open Retail",
   hubCtaClinic: "Open ClinicOS",
+  hubCtaFabrics: "Open Fabrics",
   hubEcosystemTitle: "The MayleSoft ecosystem",
   hubAvailableToday: "Available today",
   hubComingSoon: "Coming soon",
@@ -706,11 +733,12 @@ const en: Messages = {
   hubStatSupport: "Support",
   hubScreensTitle: "Built for real operations",
   hubScreensBody:
-    "Clean dashboards your team actually uses — from the floor to the classroom, counter, and clinic.",
+    "Clean dashboards your team actually uses — from the floor to the classroom, counter, clinic, and fabric shop.",
   hubRestaurantDash: "Restaurant dashboard",
   hubDugsiDash: "Dugsi dashboard",
   hubRetailDash: "Retail dashboard",
   hubClinicDash: "ClinicOS dashboard",
+  hubFabricsDash: "Fabrics & Garments",
   hubMockToday: "Today",
   hubMockLiveFloor: "Live floor",
   hubMockOpenOrders: "Open orders",
@@ -741,10 +769,18 @@ const en: Messages = {
   hubMockClinicWaiting: "Waiting",
   hubMockClinicLabs: "Lab orders",
   hubMockClinicRevenue: "Collected",
+  hubMockFabricsRolls: "Rolls",
+  hubMockFabricsGarments: "Garments",
+  hubMockFabricsStock: "Stock",
+  hubMockFabricsOverview: "Shop floor",
+  hubMockFabricsMeters: "Meters sold",
+  hubMockFabricsPieces: "Pieces sold",
+  hubMockFabricsLow: "Low stock",
+  hubMockFabricsShops: "Shops",
   hubCtaTitle: "Ready to transform your business?",
   hubCtaBody: "Explore our platforms today.",
   hubFooterBlurb:
-    "Modern cloud software for restaurants, schools, and growing organizations.",
+    "Modern cloud software for restaurants, schools, clinics, retail, and fabric shops.",
   hubFooterProducts: "Products",
   hubFooterCompany: "Company",
   hubFooterAbout: "About",
@@ -1080,8 +1116,9 @@ const fi: Messages = {
   hubHeroWordSchools: "kouluja",
   hubHeroWordHealthcare: "klinikoita",
   hubHeroWordRetail: "myymälöitä",
+  hubHeroWordFabrics: "kangaskauppoja",
   hubHeroLead:
-    "Nykyaikainen pilviohjelmisto ravintoloille, kouluille, terveydenhuollolle, vähittäiskaupalle ja kasvaville organisaatioille.",
+    "Nykyaikainen pilviohjelmisto ravintoloille, kouluille, terveydenhuollolle, vähittäiskaupalle, kangaskaupoille ja kasvaville organisaatioille.",
   hubHeroPills: "Ravintola-POS · Kouluhallinta · Lisää tulossa",
   hubWhyTitle: "Miksi MayleSoft?",
   hubFeatFast: "Nopea pilvialusta",
@@ -1096,6 +1133,7 @@ const fi: Messages = {
   hubProductDugsi: "Dugsi",
   hubProductRetail: "Vähittäiskaupan kassa",
   hubProductClinic: "ClinicOS",
+  hubProductFabrics: "Kankaat ja vaatteet",
   hubFeatureQr: "QR-tilaus",
   hubFeatureKds: "Keittiönäyttö",
   hubFeaturePos: "Kassa",
@@ -1120,10 +1158,17 @@ const fi: Messages = {
   hubFeatureClinicLab: "Labratilaukset",
   hubFeatureClinicPharmacy: "Apteekki",
   hubFeatureClinicRoles: "Roolipohjaiset näkymät",
+  hubFeatureFabricsMeters: "Kangas metreittäin",
+  hubFeatureFabricsPieces: "Vaatteet kappaleittain",
+  hubFeatureFabricsOffline: "Offline-myynti",
+  hubFeatureFabricsTransfers: "Varastosiirrot",
+  hubFeatureFabricsWholesale: "Tukkutoimitus",
+  hubFeatureFabricsReports: "Raportit ja kuitit",
   hubCtaRestaurant: "Avaa alusta",
   hubCtaDugsi: "Avaa Dugsi",
   hubCtaRetail: "Avaa Retail",
   hubCtaClinic: "Avaa ClinicOS",
+  hubCtaFabrics: "Avaa kankaat",
   hubEcosystemTitle: "MayleSoft-ekosysteemi",
   hubAvailableToday: "Saatavilla nyt",
   hubComingSoon: "Tulossa",
@@ -1138,11 +1183,12 @@ const fi: Messages = {
   hubStatSupport: "Tuki",
   hubScreensTitle: "Rakennettu oikeaan arkeen",
   hubScreensBody:
-    "Selkeät näkymät, joita tiimi oikeasti käyttää — salista luokkahuoneeseen, kassalle ja klinikalle.",
+    "Selkeät näkymät, joita tiimi oikeasti käyttää — salista luokkahuoneeseen, kassalle, klinikalle ja kangaskauppaan.",
   hubRestaurantDash: "Ravintolan hallinta",
   hubDugsiDash: "Dugsi-hallinta",
   hubRetailDash: "Vähittäiskaupan hallinta",
   hubClinicDash: "ClinicOS-hallinta",
+  hubFabricsDash: "Kankaat ja vaatteet",
   hubMockToday: "Tänään",
   hubMockLiveFloor: "Sali live",
   hubMockOpenOrders: "Avoimet tilaukset",
@@ -1173,10 +1219,18 @@ const fi: Messages = {
   hubMockClinicWaiting: "Odottaa",
   hubMockClinicLabs: "Labratilaukset",
   hubMockClinicRevenue: "Kerätty",
+  hubMockFabricsRolls: "Rullat",
+  hubMockFabricsGarments: "Vaatteet",
+  hubMockFabricsStock: "Varasto",
+  hubMockFabricsOverview: "Kaupan lattia",
+  hubMockFabricsMeters: "Metriä myyty",
+  hubMockFabricsPieces: "Kappaleita myyty",
+  hubMockFabricsLow: "Vähäinen varasto",
+  hubMockFabricsShops: "Myymälät",
   hubCtaTitle: "Valmis uudistamaan liiketoimintasi?",
   hubCtaBody: "Tutustu alustoihimme jo tänään.",
   hubFooterBlurb:
-    "Nykyaikainen pilviohjelmisto ravintoloille, kouluille ja kasvaville organisaatioille.",
+    "Nykyaikainen pilviohjelmisto ravintoloille, kouluille, klinikoille, vähittäiskaupalle ja kangaskaupoille.",
   hubFooterProducts: "Tuotteet",
   hubFooterCompany: "Yritys",
   hubFooterAbout: "Tietoa",
@@ -1507,8 +1561,9 @@ const ar: Messages = {
   hubHeroWordSchools: "مدارس",
   hubHeroWordHealthcare: "عيادات",
   hubHeroWordRetail: "متاجر",
+  hubHeroWordFabrics: "محلات الأقمشة",
   hubHeroLead:
-    "برمجيات سحابية حديثة للمطاعم والمدارس والرعاية الصحية والتجزئة والمنظمات النامية.",
+    "برمجيات سحابية حديثة للمطاعم والمدارس والرعاية الصحية والتجزئة ومحلات الأقمشة والمنظمات النامية.",
   hubHeroPills: "نقطة بيع للمطاعم · إدارة المدارس · المزيد قادم",
   hubWhyTitle: "لماذا MayleSoft؟",
   hubFeatFast: "منصة سحابية سريعة",
@@ -1523,6 +1578,7 @@ const ar: Messages = {
   hubProductDugsi: "دُكسي",
   hubProductRetail: "نقطة بيع للتجزئة",
   hubProductClinic: "ClinicOS",
+  hubProductFabrics: "الأقمشة والملابس",
   hubFeatureQr: "طلب عبر QR",
   hubFeatureKds: "شاشة المطبخ",
   hubFeaturePos: "نقطة البيع",
@@ -1547,10 +1603,17 @@ const ar: Messages = {
   hubFeatureClinicLab: "طلبات المختبر",
   hubFeatureClinicPharmacy: "الصيدلية",
   hubFeatureClinicRoles: "مساحات عمل حسب الدور",
+  hubFeatureFabricsMeters: "قماش بالمتر",
+  hubFeatureFabricsPieces: "ملابس بالقطعة",
+  hubFeatureFabricsOffline: "مبيعات دون اتصال",
+  hubFeatureFabricsTransfers: "نقل المخزون",
+  hubFeatureFabricsWholesale: "توريد الجملة",
+  hubFeatureFabricsReports: "التقارير والإيصالات",
   hubCtaRestaurant: "افتح المنصة",
   hubCtaDugsi: "افتح دُكسي",
   hubCtaRetail: "افتح التجزئة",
   hubCtaClinic: "افتح ClinicOS",
+  hubCtaFabrics: "افتح الأقمشة",
   hubEcosystemTitle: "منظومة MayleSoft",
   hubAvailableToday: "متاح اليوم",
   hubComingSoon: "قريباً",
@@ -1565,11 +1628,12 @@ const ar: Messages = {
   hubStatSupport: "دعم",
   hubScreensTitle: "مصممة للتشغيل الحقيقي",
   hubScreensBody:
-    "لوحات واضحة يستخدمها فريقك فعلاً — من صالة المطعم إلى الفصل والكاونتر والعيادة.",
+    "لوحات واضحة يستخدمها فريقك فعلاً — من صالة المطعم إلى الفصل والكاونتر والعيادة ومحل الأقمشة.",
   hubRestaurantDash: "لوحة المطعم",
   hubDugsiDash: "لوحة دُكسي",
   hubRetailDash: "لوحة التجزئة",
   hubClinicDash: "لوحة ClinicOS",
+  hubFabricsDash: "الأقمشة والملابس",
   hubMockToday: "اليوم",
   hubMockLiveFloor: "الصالة مباشرة",
   hubMockOpenOrders: "طلبات مفتوحة",
@@ -1600,10 +1664,18 @@ const ar: Messages = {
   hubMockClinicWaiting: "في الانتظار",
   hubMockClinicLabs: "طلبات المختبر",
   hubMockClinicRevenue: "المحصّل",
+  hubMockFabricsRolls: "اللفات",
+  hubMockFabricsGarments: "الملابس",
+  hubMockFabricsStock: "المخزون",
+  hubMockFabricsOverview: "أرضية المحل",
+  hubMockFabricsMeters: "أمتار مباعة",
+  hubMockFabricsPieces: "قطع مباعة",
+  hubMockFabricsLow: "مخزون منخفض",
+  hubMockFabricsShops: "المتاجر",
   hubCtaTitle: "هل أنت مستعد لتحويل عملك؟",
   hubCtaBody: "استكشف منصاتنا اليوم.",
   hubFooterBlurb:
-    "برمجيات سحابية حديثة للمطاعم والمدارس والمنظمات النامية.",
+    "برمجيات سحابية حديثة للمطاعم والمدارس والعيادات والتجزئة ومحلات الأقمشة.",
   hubFooterProducts: "المنتجات",
   hubFooterCompany: "الشركة",
   hubFooterAbout: "حول",
@@ -1938,8 +2010,9 @@ const so: Messages = {
   hubHeroWordSchools: "dugsiyo",
   hubHeroWordHealthcare: "caafimaad",
   hubHeroWordRetail: "dukaan",
+  hubHeroWordFabrics: "dukaamada marada",
   hubHeroLead:
-    "Software daruur casri ah oo loogu talagalay makhaayadaha, dugsiyada, caafimaadka, tafaariiqda, iyo ururada koraya.",
+    "Software daruur casri ah oo loogu talagalay makhaayadaha, dugsiyada, caafimaadka, tafaariiqda, dukaamada marada, iyo ururada koraya.",
   hubHeroPills: "POS-ka makhaayadda · Maamulka dugsiga · Wax kale ayaa imanaya",
   hubWhyTitle: "Maxaa MayleSoft?",
   hubFeatFast: "Platform daruur degdeg ah",
@@ -1954,6 +2027,7 @@ const so: Messages = {
   hubProductDugsi: "Dugsi",
   hubProductRetail: "POS-ka tafaariiqda",
   hubProductClinic: "ClinicOS",
+  hubProductFabrics: "Marada iyo dharka",
   hubFeatureQr: "Dalab QR",
   hubFeatureKds: "Bandhigga jikada",
   hubFeaturePos: "POS & khasnada",
@@ -1978,10 +2052,17 @@ const so: Messages = {
   hubFeatureClinicLab: "Dalabka shaybaarka",
   hubFeatureClinicPharmacy: "Farmashiyaha",
   hubFeatureClinicRoles: "Shaashado ku salaysan doorka",
+  hubFeatureFabricsMeters: "Maro mitir ahaan",
+  hubFeatureFabricsPieces: "Dharka qayb ahaan",
+  hubFeatureFabricsOffline: "Iib offline",
+  hubFeatureFabricsTransfers: "Wareejinta kaydka",
+  hubFeatureFabricsWholesale: "Jumlada",
+  hubFeatureFabricsReports: "Warbixinno iyo rasiidyo",
   hubCtaRestaurant: "Fur platform-ka",
   hubCtaDugsi: "Fur Dugsi",
   hubCtaRetail: "Fur Retail",
   hubCtaClinic: "Fur ClinicOS",
+  hubCtaFabrics: "Fur marada",
   hubEcosystemTitle: "Nidaamka MayleSoft",
   hubAvailableToday: "Diyaar maanta",
   hubComingSoon: "Dhawaan",
@@ -1996,11 +2077,12 @@ const so: Messages = {
   hubStatSupport: "Taageero",
   hubScreensTitle: "Loo dhisay howlaha dhabta ah",
   hubScreensBody:
-    "Dashboard-yo nadiif ah oo kooxdaadu run ahaantii isticmaasho — laga bilaabo dabaqa ilaa fasalka, miiska iibka, iyo rugta caafimaadka.",
+    "Dashboard-yo nadiif ah oo kooxdaadu run ahaantii isticmaasho — laga bilaabo dabaqa ilaa fasalka, miiska iibka, rugta caafimaadka, iyo dukaanka marada.",
   hubRestaurantDash: "Dashboard-ka makhaayadda",
   hubDugsiDash: "Dashboard-ka Dugsi",
   hubRetailDash: "Dashboard-ka tafaariiqda",
   hubClinicDash: "Dashboard-ka ClinicOS",
+  hubFabricsDash: "Marada iyo dharka",
   hubMockToday: "Maanta",
   hubMockLiveFloor: "Dabaqa tooska ah",
   hubMockOpenOrders: "Dalabyo furan",
@@ -2031,10 +2113,18 @@ const so: Messages = {
   hubMockClinicWaiting: "Sugaya",
   hubMockClinicLabs: "Dalabyada shaybaarka",
   hubMockClinicRevenue: "La ururiyay",
+  hubMockFabricsRolls: "Duubab",
+  hubMockFabricsGarments: "Dharka",
+  hubMockFabricsStock: "Kayd",
+  hubMockFabricsOverview: "Dabaqa dukaanka",
+  hubMockFabricsMeters: "Mitir la iibiyay",
+  hubMockFabricsPieces: "Qaybo la iibiyay",
+  hubMockFabricsLow: "Kayd hooseeya",
+  hubMockFabricsShops: "Dukaamo",
   hubCtaTitle: "Diyaar ma u tahay inaad beddesho ganacsigaaga?",
   hubCtaBody: "Sahamin platform-yadeenna maanta.",
   hubFooterBlurb:
-    "Software daruur casri ah oo loogu talagalay makhaayadaha, dugsiyada, iyo ururada koraya.",
+    "Software daruur casri ah oo loogu talagalay makhaayadaha, dugsiyada, caafimaadka, tafaariiqda, iyo dukaamada marada.",
   hubFooterProducts: "Alaabta",
   hubFooterCompany: "Shirkadda",
   hubFooterAbout: "Ku saabsan",

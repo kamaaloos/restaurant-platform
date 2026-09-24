@@ -11,6 +11,7 @@ import {
   Globe,
   GraduationCap,
   Shield,
+  Shirt,
   ShoppingCart,
   Smartphone,
   Stethoscope,
@@ -38,6 +39,10 @@ const CLINIC_URL =
   process.env.NEXT_PUBLIC_CLINIC_HOST?.trim()
     ? `https://${process.env.NEXT_PUBLIC_CLINIC_HOST.trim().replace(/^https?:\/\//i, "").split("/")[0]}`
     : `https://clinic.${ROOT_DOMAIN}`;
+const FABRICS_URL =
+  process.env.NEXT_PUBLIC_FABRICS_HOST?.trim()
+    ? `https://${process.env.NEXT_PUBLIC_FABRICS_HOST.trim().replace(/^https?:\/\//i, "").split("/")[0]}`
+    : `https://fb.${ROOT_DOMAIN}`;
 const PORTFOLIO_URL = portfolioOrigin(ROOT_DOMAIN, process.env.NEXT_PUBLIC_PORTFOLIO_HOST);
 
 const HERO_WORDS: MessageKey[] = [
@@ -45,6 +50,7 @@ const HERO_WORDS: MessageKey[] = [
   "hubHeroWordSchools",
   "hubHeroWordHealthcare",
   "hubHeroWordRetail",
+  "hubHeroWordFabrics",
 ];
 
 const TRUST_FEATURES: { icon: typeof Zap; key: MessageKey }[] = [
@@ -97,6 +103,15 @@ const CLINIC_FEATURES: MessageKey[] = [
   "hubFeatureClinicLab",
   "hubFeatureClinicPharmacy",
   "hubFeatureClinicRoles",
+];
+
+const FABRICS_FEATURES: MessageKey[] = [
+  "hubFeatureFabricsMeters",
+  "hubFeatureFabricsPieces",
+  "hubFeatureFabricsOffline",
+  "hubFeatureFabricsTransfers",
+  "hubFeatureFabricsWholesale",
+  "hubFeatureFabricsReports",
 ];
 
 const COMING_SOON: { icon: typeof Truck; key: MessageKey }[] = [
@@ -345,6 +360,60 @@ function ClinicDashboardMock({ t }: { t: (key: MessageKey) => string }) {
   );
 }
 
+function FabricsDashboardMock({ t }: { t: (key: MessageKey) => string }) {
+  const nav = [
+    t("hubMockDashboard"),
+    t("hubMockFabricsRolls"),
+    t("hubMockFabricsGarments"),
+    t("hubMockFabricsStock"),
+  ];
+
+  return (
+    <div className="hub-glass hub-screenshot-mock overflow-hidden rounded-3xl p-1 shadow-xl">
+      <div className="flex min-h-64 overflow-hidden rounded-[1.35rem] bg-[#1c2836] sm:min-h-72">
+        <aside className="hidden w-28 shrink-0 flex-col gap-2 bg-[#15202b] p-3 text-[0.65rem] text-[#e8d5c4]/60 sm:flex">
+          <div className="mb-2 flex items-center gap-2">
+            <div className="h-7 w-7 rounded-full bg-[#c4a484]" />
+            <span className="font-semibold text-[#f6efe8]">FB</span>
+          </div>
+          {nav.map((l, i) => (
+            <span
+              key={l}
+              className={`rounded-lg px-2 py-1.5 ${i === 0 ? "bg-white/12 text-white" : ""}`}
+            >
+              {l}
+            </span>
+          ))}
+        </aside>
+        <div className="flex flex-1 flex-col p-4 sm:p-5">
+          <p className="text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-[#e8d5c4]/70">
+            {t("hubMockToday")}
+          </p>
+          <h4 className="mt-1 text-lg font-semibold text-[#f6efe8]">
+            {t("hubMockFabricsOverview")}
+          </h4>
+          <div className="mt-4 grid grid-cols-2 gap-2">
+            {[
+              [t("hubMockFabricsMeters"), "184m"],
+              [t("hubMockFabricsPieces"), "62"],
+              [t("hubMockFabricsLow"), "4"],
+              [t("hubMockFabricsShops"), "3"],
+            ].map(([k, v]) => (
+              <div
+                key={k}
+                className="rounded-xl border border-[#c4a484]/25 bg-white/5 px-3 py-2.5"
+              >
+                <p className="text-[0.65rem] text-[#e8d5c4]/70">{k}</p>
+                <p className="text-sm font-semibold text-[#f6efe8]">{v}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function MayleSoftHub() {
   const { t, dir } = useLocale();
 
@@ -380,6 +449,14 @@ export function MayleSoftHub() {
       features: CLINIC_FEATURES,
       href: CLINIC_URL,
       ctaKey: "hubCtaClinic" as const,
+    },
+    {
+      icon: Shirt,
+      nameKey: "hubProductFabrics" as const,
+      gradient: "from-[#2F4159]/15 via-[#c4a484]/20 to-transparent",
+      features: FABRICS_FEATURES,
+      href: FABRICS_URL,
+      ctaKey: "hubCtaFabrics" as const,
     },
   ];
 
@@ -485,7 +562,7 @@ export function MayleSoftHub() {
             {t("hubProductsTitle")}
           </h2>
 
-          <ul className="mt-8 grid gap-4 sm:mt-12 sm:gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
+          <ul className="mt-8 grid gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3">
             {products.map(
               ({ icon: Icon, nameKey, gradient, features, href, ctaKey }) => (
                 <li key={nameKey}>
@@ -594,7 +671,7 @@ export function MayleSoftHub() {
           <p className="mx-auto mt-3 max-w-xl text-center text-[#6b6560]">
             {t("hubScreensBody")}
           </p>
-          <div className="mt-8 grid gap-6 sm:mt-12 sm:gap-8 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-8 grid gap-6 sm:mt-12 sm:grid-cols-2 sm:gap-8 xl:grid-cols-3">
             <div>
               <p className="mb-4 text-sm font-semibold text-[#1c1917]">
                 {t("hubRestaurantDash")}
@@ -618,6 +695,12 @@ export function MayleSoftHub() {
                 {t("hubClinicDash")}
               </p>
               <ClinicDashboardMock t={t} />
+            </div>
+            <div>
+              <p className="mb-4 text-sm font-semibold text-[#1c1917]">
+                {t("hubFabricsDash")}
+              </p>
+              <FabricsDashboardMock t={t} />
             </div>
           </div>
         </div>
@@ -673,6 +756,11 @@ export function MayleSoftHub() {
               <li>
                 <Link href={CLINIC_URL} className="hover:text-white">
                   {t("hubProductClinic")}
+                </Link>
+              </li>
+              <li>
+                <Link href={FABRICS_URL} className="hover:text-white">
+                  {t("hubProductFabrics")}
                 </Link>
               </li>
             </ul>
