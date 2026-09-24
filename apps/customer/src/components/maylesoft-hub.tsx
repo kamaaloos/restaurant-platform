@@ -119,6 +119,247 @@ const COMING_SOON: { icon: typeof Truck; key: MessageKey }[] = [
   { icon: Building2, key: "hubSoonHr" },
 ];
 
+type CodeTone = "c" | "k" | "f" | "s" | "t" | "n";
+type CodeTok = { c: CodeTone; v: string };
+
+const CODE_TONE: Record<CodeTone, string> = {
+  c: "text-[#b5a89a]",
+  k: "text-[#e07a3a]",
+  f: "text-[#e9c46a]",
+  s: "text-[#f6d2b5]",
+  t: "text-[#f7f1ea]",
+  n: "text-[#d4c4b4]",
+};
+
+const CODE_SCENES: { file: string; lines: CodeTok[][] }[] = [
+  {
+    file: "order.ts",
+    lines: [
+      [{ c: "c", v: "// live floor" }],
+      [
+        { c: "k", v: "export async function " },
+        { c: "f", v: "openTable" },
+        { c: "n", v: "(id: " },
+        { c: "k", v: "string" },
+        { c: "n", v: ") {" },
+      ],
+      [
+        { c: "k", v: "  const " },
+        { c: "t", v: "ticket" },
+        { c: "n", v: " = " },
+        { c: "k", v: "await " },
+        { c: "f", v: "queue.push" },
+        { c: "n", v: "(id)" },
+      ],
+      [
+        { c: "k", v: "  return " },
+        { c: "t", v: "ticket" },
+        { c: "n", v: ".live" },
+      ],
+      [{ c: "n", v: "}" }],
+    ],
+  },
+  {
+    file: "attendance.ts",
+    lines: [
+      [{ c: "c", v: "// school day" }],
+      [
+        { c: "k", v: "const " },
+        { c: "t", v: "present" },
+        { c: "n", v: " = " },
+        { c: "f", v: "mark" },
+        { c: "n", v: "(" },
+        { c: "s", v: '"7A"' },
+        { c: "n", v: ")" },
+      ],
+      [
+        { c: "k", v: "await " },
+        { c: "f", v: "ledger.save" },
+        { c: "n", v: "(present)" },
+      ],
+      [
+        { c: "t", v: "report" },
+        { c: "n", v: ".rate" },
+        { c: "k", v: " === " },
+        { c: "s", v: '"98%"' },
+      ],
+    ],
+  },
+  {
+    file: "visit.ts",
+    lines: [
+      [{ c: "c", v: "// clinic handoff" }],
+      [
+        { c: "k", v: "const " },
+        { c: "t", v: "visit" },
+        { c: "n", v: " = " },
+        { c: "k", v: "await " },
+        { c: "f", v: "admit" },
+        { c: "n", v: "(" },
+        { c: "s", v: '"room-4"' },
+        { c: "n", v: ")" },
+      ],
+      [
+        { c: "t", v: "visit" },
+        { c: "n", v: ".lab" },
+        { c: "n", v: " = " },
+        { c: "f", v: "orderLabs" },
+        { c: "n", v: "(visit)" },
+      ],
+      [
+        { c: "k", v: "return " },
+        { c: "t", v: "visit" },
+        { c: "n", v: ".ready" },
+      ],
+    ],
+  },
+  {
+    file: "rolls.ts",
+    lines: [
+      [{ c: "c", v: "// fabric by the meter" }],
+      [
+        { c: "k", v: "const " },
+        { c: "t", v: "cut" },
+        { c: "n", v: " = " },
+        { c: "f", v: "sellMeters" },
+        { c: "n", v: "(" },
+        { c: "s", v: '"QR-18"' },
+        { c: "n", v: ", " },
+        { c: "f", v: "2.4" },
+        { c: "n", v: ")" },
+      ],
+      [
+        { c: "t", v: "stock" },
+        { c: "n", v: ".remain" },
+        { c: "n", v: " -= " },
+        { c: "t", v: "cut" },
+      ],
+      [
+        { c: "k", v: "await " },
+        { c: "f", v: "sync" },
+        { c: "n", v: "()" },
+      ],
+    ],
+  },
+];
+
+function sceneLength(lines: CodeTok[][]) {
+  return lines.reduce((sum, line) => sum + line.reduce((n, tok) => n + tok.v.length, 0) + 1, 0);
+}
+
+function sliceScene(lines: CodeTok[][], count: number) {
+  let left = count;
+  const visible: CodeTok[][] = [];
+  for (const line of lines) {
+    const row: CodeTok[] = [];
+    for (const tok of line) {
+      if (left <= 0) break;
+      const v = tok.v.slice(0, left);
+      left -= v.length;
+      if (v) row.push({ c: tok.c, v });
+    }
+    visible.push(row);
+    if (left <= 0) break;
+    left -= 1;
+  }
+  return visible;
+}
+
+function HeroProgrammingMock() {
+  const reduceMotion = useReducedMotion();
+  const [scene, setScene] = React.useState(0);
+  const [count, setCount] = React.useState(0);
+  const current = CODE_SCENES[scene];
+  const total = sceneLength(current.lines);
+  const done = reduceMotion || count >= total;
+  const visible = sliceScene(current.lines, done ? total : count);
+
+  React.useEffect(() => {
+    if (reduceMotion) return;
+    if (count < total) {
+      const id = window.setTimeout(() => setCount((n) => n + 1), 18);
+      return () => window.clearTimeout(id);
+    }
+    const id = window.setTimeout(() => {
+      setScene((n) => (n + 1) % CODE_SCENES.length);
+      setCount(0);
+    }, 2600);
+    return () => window.clearTimeout(id);
+  }, [count, reduceMotion, scene, total]);
+
+  return (
+    <div className="hub-code-stage landing-hero-mock relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
+      <div
+        className="pointer-events-none absolute -inset-10 -z-10 rounded-full bg-[#e07a3a]/25 blur-3xl"
+        aria-hidden
+      />
+      <div className="hub-code-enter">
+        <div className="hub-code-float relative" aria-hidden>
+          <div className="hub-code-frame relative overflow-hidden rounded-[1.35rem] border border-white/10 bg-[#161311] shadow-[0_40px_90px_rgba(28,25,23,0.32)]">
+            <div className="hub-code-sweep pointer-events-none absolute inset-0 z-10" />
+            <div className="flex items-center gap-2 border-b border-white/8 px-4 py-3">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#e07a3a]/80" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#e9c46a]/70" />
+              <span className="h-2.5 w-2.5 rounded-full bg-white/25" />
+              <div className="ml-3 flex min-w-0 gap-1.5 overflow-hidden">
+                {CODE_SCENES.map((item, i) => (
+                  <span
+                    key={item.file}
+                    className={`truncate rounded-md px-2 py-0.5 font-mono text-[10px] ${
+                      i === scene
+                        ? "bg-white/10 text-[#f7f1ea]"
+                        : "text-white/35"
+                    }`}
+                  >
+                    {item.file}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.pre
+                key={current.file}
+                initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                className="min-h-[11.25rem] overflow-hidden px-4 py-4 font-mono text-[11px] leading-6 sm:min-h-[12.25rem] sm:text-xs"
+              >
+                {visible.map((line, i) => (
+                  <div key={`${current.file}-${i}`} className="flex gap-3">
+                    <span className="w-4 shrink-0 text-right text-white/25">
+                      {i + 1}
+                    </span>
+                    <span className="min-w-0 whitespace-pre">
+                      {line.map((tok, j) => (
+                        <span key={j} className={CODE_TONE[tok.c]}>
+                          {tok.v}
+                        </span>
+                      ))}
+                      {i === visible.length - 1 && !done ? (
+                        <span className="hub-caret ml-0.5 inline-block h-3.5 w-[2px] translate-y-[2px] bg-[#e9c46a]" />
+                      ) : null}
+                    </span>
+                  </div>
+                ))}
+              </motion.pre>
+            </AnimatePresence>
+            <div className="flex items-center justify-between border-t border-white/8 px-4 py-2.5 font-mono text-[10px] text-white/45">
+              <span className="inline-flex items-center gap-2">
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${done ? "bg-[#e9c46a]" : "bg-[#e07a3a]"}`}
+                />
+                {done ? "ready" : "building"}
+              </span>
+              <span>maylesoft · ts</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function HeroWording() {
   const { t, locale } = useLocale();
   const reduceMotion = useReducedMotion();
@@ -135,7 +376,7 @@ function HeroWording() {
   const word = t(HERO_WORDS[index]);
 
   return (
-    <h1 className="mx-auto mt-4 max-w-4xl text-balance font-[family-name:var(--font-display)] text-[2.2rem] leading-[1.08] tracking-tight sm:mt-5 sm:text-6xl lg:text-[4.25rem]">
+    <h1 className="mt-4 max-w-xl text-balance font-[family-name:var(--font-display)] text-[2.15rem] leading-[1.06] tracking-tight sm:mt-5 sm:text-5xl lg:max-w-none lg:text-[3.35rem]">
       <span className="landing-hero-line2">{t("hubHeroTitleBefore")} </span>
       <span className="relative inline-flex h-[1.2em] min-w-[5.5ch] items-center justify-center overflow-hidden align-bottom sm:min-w-[4.5ch]">
         <AnimatePresence mode="wait" initial={false}>
@@ -494,41 +735,47 @@ export function MayleSoftHub() {
         </div>
       </header>
 
-      <section className="relative z-10 overflow-hidden px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-24">
-        <div className="relative mx-auto max-w-6xl text-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/brand/maylesoft-logo.png"
-            alt=""
-            className="landing-brand-zoom mx-auto h-16 w-16 rounded-3xl object-cover shadow-lg ring-4 ring-white/60 sm:h-24 sm:w-24"
-          />
+      <section className="hub-hero-cinema relative z-10 overflow-hidden px-4 pb-16 pt-10 sm:px-6 sm:pb-24 sm:pt-16">
+        <div
+          dir="ltr"
+          className="relative mx-auto grid max-w-6xl items-center gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-14"
+        >
+          <div dir={dir} className="text-center lg:text-start">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/brand/maylesoft-logo.png"
+              alt=""
+              className="landing-brand-zoom mx-auto h-16 w-16 rounded-3xl object-cover shadow-lg ring-4 ring-white/60 sm:h-20 sm:w-20 lg:mx-0"
+            />
 
-          <p className="landing-hero-line1 mt-6 text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-[#e07a3a] sm:mt-8 sm:text-xs sm:tracking-[0.28em]">
-            {t("hubHeroEyebrow")}
-          </p>
-          <HeroWording />
-          <p className="landing-hero-lead mx-auto mt-5 max-w-xl text-sm leading-relaxed text-[#6b6560] sm:mt-6 sm:max-w-2xl sm:text-lg">
-            {t("hubHeroLead")}
-          </p>
-          <p className="landing-hero-lead mt-3 text-xs font-medium text-[#1c1917]/70 sm:mt-4 sm:text-base">
-            {t("hubHeroPills")}
-          </p>
+            <p className="landing-hero-line1 mt-6 text-[0.65rem] font-semibold uppercase tracking-[0.22em] text-[#e07a3a] sm:text-xs sm:tracking-[0.28em]">
+              {t("hubHeroEyebrow")}
+            </p>
+            <HeroWording />
+            <p className="landing-hero-lead mx-auto mt-5 max-w-xl text-sm leading-relaxed text-[#6b6560] sm:mt-6 sm:text-lg lg:mx-0">
+              {t("hubHeroLead")}
+            </p>
+            <p className="landing-hero-lead mt-3 text-xs font-medium text-[#1c1917]/70 sm:mt-4 sm:text-base">
+              {t("hubHeroPills")}
+            </p>
 
-          <div className="landing-hero-cta mt-8 flex flex-col items-stretch justify-center gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center">
-            <a
-              href="#products"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#e07a3a] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#e07a3a]/25 transition hover:brightness-110 sm:w-auto"
-            >
-              {t("hubExploreProducts")}
-              <ArrowRight className="h-4 w-4" />
-            </a>
-            <Link
-              href={CONTACT_MAIL}
-              className="hub-glass inline-flex w-full items-center justify-center rounded-full px-6 py-3.5 text-sm font-semibold transition hover:bg-white/80 sm:w-auto"
-            >
-              {t("hubContactUs")}
-            </Link>
+            <div className="landing-hero-cta mt-8 flex flex-col items-stretch justify-center gap-3 sm:mt-10 sm:flex-row sm:flex-wrap sm:items-center lg:justify-start">
+              <a
+                href="#products"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-[#e07a3a] px-6 py-3.5 text-sm font-semibold text-white shadow-lg shadow-[#e07a3a]/25 transition hover:brightness-110 sm:w-auto"
+              >
+                {t("hubExploreProducts")}
+                <ArrowRight className="h-4 w-4" />
+              </a>
+              <Link
+                href={CONTACT_MAIL}
+                className="hub-glass inline-flex w-full items-center justify-center rounded-full px-6 py-3.5 text-sm font-semibold transition hover:bg-white/80 sm:w-auto"
+              >
+                {t("hubContactUs")}
+              </Link>
+            </div>
           </div>
+          <HeroProgrammingMock />
         </div>
       </section>
 

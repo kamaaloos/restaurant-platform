@@ -479,7 +479,11 @@ html[dir="rtl"] body {
   .landing-fade-up,
   .landing-float,
   .hub-card-lift,
-  .hub-mesh {
+  .hub-mesh,
+  .hub-code-float,
+  .hub-code-enter,
+  .hub-code-sweep::after,
+  .hub-caret {
     animation: none !important;
   }
 
@@ -582,6 +586,112 @@ html[dir="rtl"] body {
 .hub-lang select:focus {
   --tw-ring-color: #e07a3a;
   box-shadow: 0 0 0 2px color-mix(in oklab, #e07a3a 35%, transparent);
+}
+
+.hub-hero-cinema::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: -10% 0 auto;
+  height: 120%;
+  background:
+    radial-gradient(ellipse 42% 55% at 78% 48%, rgba(224, 122, 58, 0.2), transparent 68%),
+    radial-gradient(ellipse 36% 40% at 12% 30%, rgba(233, 196, 106, 0.16), transparent 70%);
+}
+
+.hub-code-stage {
+  perspective: 1400px;
+}
+
+@keyframes hub-code-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(56px, 36px, 0) rotateY(-16deg) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) rotateY(0deg) scale(1);
+  }
+}
+
+@keyframes hub-code-enter-flat {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.hub-code-enter {
+  animation: hub-code-enter-flat 1s cubic-bezier(0.22, 1, 0.36, 1) 0.2s both;
+}
+
+@keyframes hub-code-float {
+  0%,
+  100% {
+    transform: translateY(0) rotateX(3deg) rotateY(-7deg);
+  }
+  50% {
+    transform: translateY(-14px) rotateX(5deg) rotateY(-3deg);
+  }
+}
+
+@media (min-width: 1024px) {
+  .hub-code-enter {
+    animation-name: hub-code-enter;
+    transform-style: preserve-3d;
+  }
+
+  .hub-code-float {
+    animation: hub-code-float 9s ease-in-out infinite;
+    transform-style: preserve-3d;
+  }
+}
+
+.hub-code-sweep::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 -40%;
+  width: 42%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 244, 230, 0.16),
+    transparent
+  );
+  animation: hub-code-sweep 7.5s ease-in-out 1.4s infinite;
+}
+
+@keyframes hub-code-sweep {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(340%);
+    opacity: 0;
+  }
+}
+
+.hub-caret {
+  animation: hub-caret-blink 1s steps(1) infinite;
+}
+
+@keyframes hub-caret-blink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
 }
 
 .hub-cta-glow {
